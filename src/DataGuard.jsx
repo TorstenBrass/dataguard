@@ -845,8 +845,8 @@ export default function DataGuardApp() {
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
         select option { background: #0f0f20; color: white; }
       `}</style>
-      {screen === "landing" && <LandingScreen onPurchase={() => setScreen("purchase")} />}
-      {screen === "purchase" && <PurchaseScreen onComplete={() => setScreen("app")} />}
+      {screen === "landing" && <LandingScreen onPurchase={() => window.location.href = "https://buy.stripe.com/eVqcN58Ww5rsf5w56j97G00"} />}
+      
       {screen === "app" && <MainApp />}
     </>
   );
