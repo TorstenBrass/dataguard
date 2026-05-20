@@ -833,7 +833,10 @@ function SubmitView({ onBack }) {
 // ─── ROOT CONTROLLER ──────────────────────────────────────────────────────────
 
 export default function DataGuardApp() {
-  const [screen, setScreen] = useState("landing"); // landing | purchase | app
+  const params = new URLSearchParams(window.location.search);
+  const paid = params.get("success") === "true" || localStorage.getItem("dg_paid") === "true";
+  if (paid) localStorage.setItem("dg_paid", "true");
+  const [screen, setScreen] = useState(paid ? "app" : "landing");
 
   return (
     <>
