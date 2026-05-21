@@ -1,4 +1,28 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
+
+// ─── SUPABASE CONFIG ─────────────────────────────────────────────────────────
+
+const SUPABASE_URL = "https://pgwrfbbznklerwipakrw.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBnd3JmYmJ6bmtsZXJ3aXBha3J3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzMTY4NTcsImV4cCI6MjA5NDg5Mjg1N30.LZONSaRsh4TXyis-Zfbuu8oGZN5qy0MVcfU40ItmzP4";
+
+async function submitToSupabase(table, data) {
+  try {
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": SUPABASE_ANON_KEY,
+        "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
+        "Prefer": "return=minimal"
+      },
+      body: JSON.stringify(data)
+    });
+    return response.ok;
+  } catch (err) {
+    console.error("Supabase error:", err);
+    return false;
+  }
+}
 
 // ─── DATA ────────────────────────────────────────────────────────────────────
 
@@ -150,6 +174,19 @@ function Tag({ label, color }) {
   );
 }
 
+function Field({ label, placeholder, value, onChange, type="text" }) {
+  return (
+    <div>
+      <label style={{ color:"rgba(255,255,255,0.5)", fontSize:"11px", fontWeight:"700", letterSpacing:"0.8px", textTransform:"uppercase", fontFamily:"'DM Mono', monospace", display:"block", marginBottom:"6px" }}>{label}</label>
+      <input type={type} value={value} onChange={onChange} placeholder={placeholder}
+        style={{ width:"100%", background:"rgba(255,255,255,0.06)", border:"1px solid rgba(255,255,255,0.1)", borderRadius:"12px", color:"white", padding:"13px 16px", fontSize:"15px", fontFamily:"'DM Mono', monospace", outline:"none", boxSizing:"border-box", transition:"border-color 0.2s" }}
+        onFocus={e => e.target.style.borderColor="rgba(239,83,80,0.5)"}
+        onBlur={e => e.target.style.borderColor="rgba(255,255,255,0.1)"}
+      />
+    </div>
+  );
+}
+
 function LandingScreen({ onPurchase }) {
   const [hovered, setHovered] = useState(false);
   const features = [
@@ -193,10 +230,7 @@ function LandingScreen({ onPurchase }) {
             </div>
           </div>
           <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:"12px" }}>
-            <button
-              onClick={onPurchase}
-              onMouseEnter={() => setHovered(true)}
-              onMouseLeave={() => setHovered(false)}
+            <button onClick={onPurchase} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
               style={{ background: hovered ? "#ff6b6b" : "#ef5350", border:"none", borderRadius:"16px", color:"white", fontWeight:"800", fontSize:"18px", padding:"18px 48px", cursor:"pointer", fontFamily:"'Syne', sans-serif", letterSpacing:"-0.3px", boxShadow: hovered ? "0 0 40px rgba(239,83,80,0.5)" : "0 0 20px rgba(239,83,80,0.3)", transition:"all 0.2s ease", transform: hovered ? "translateY(-2px)" : "translateY(0)" }}
             >Get DataGuard — $3 one-time</button>
             <span style={{ color:"rgba(255,255,255,0.3)", fontSize:"12px" }}>One-time payment · No subscription · Instant access</span>
@@ -233,23 +267,10 @@ function LandingScreen({ onPurchase }) {
           <button onClick={onPurchase} style={{ background:"#ef5350", border:"none", borderRadius:"14px", color:"white", fontWeight:"800", fontSize:"17px", padding:"16px 42px", cursor:"pointer", fontFamily:"'Syne', sans-serif", boxShadow:"0 0 24px rgba(239,83,80,0.35)", transition:"all 0.2s ease" }}
             onMouseEnter={e => { e.currentTarget.style.background="#ff6b6b"; e.currentTarget.style.transform="translateY(-2px)"; }}
             onMouseLeave={e => { e.currentTarget.style.background="#ef5350"; e.currentTarget.style.transform="translateY(0)"; }}
-          >Get DataGuard for $3 →</button>
+          >Get DataGuard for $3</button>
         </div>
       </div>
       <style>{`@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }`}</style>
-    </div>
-  );
-}
-
-function Field({ label, placeholder, value, onChange, type="text" }) {
-  return (
-    <div>
-      <label style={{ color:"rgba(255,255,255,0.5)", fontSize:"11px", fontWeight:"700", letterSpacing:"0.8px", textTransform:"uppercase", fontFamily:"'DM Mono', monospace", display:"block", marginBottom:"6px" }}>{label}</label>
-      <input type={type} value={value} onChange={onChange} placeholder={placeholder}
-        style={{ width:"100%", background:"rgba(255,255,255,0.06)", border:"1px solid rgba(255,255,255,0.1)", borderRadius:"12px", color:"white", padding:"13px 16px", fontSize:"15px", fontFamily:"'DM Mono', monospace", outline:"none", boxSizing:"border-box", transition:"border-color 0.2s" }}
-        onFocus={e => e.target.style.borderColor="rgba(239,83,80,0.5)"}
-        onBlur={e => e.target.style.borderColor="rgba(255,255,255,0.1)"}
-      />
     </div>
   );
 }
@@ -448,6 +469,19 @@ function DetailView({ app, watched, onToggleWatch, onBack }) {
   const [feedbackType, setFeedbackType] = useState("correction");
   const [feedbackText, setFeedbackText] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleFeedback = async () => {
+    if (!feedbackText.trim()) return;
+    setSubmitting(true);
+    const ok = await submitToSupabase("community_reports", {
+      app_name: app.name,
+      report_type: feedbackType,
+      content: feedbackText,
+    });
+    setSubmitting(false);
+    if (ok) setSubmitted(true);
+  };
 
   return (
     <div style={{ animation:"fadeUp 0.3s ease" }}>
@@ -536,14 +570,14 @@ function DetailView({ app, watched, onToggleWatch, onBack }) {
               placeholder="Your feedback, source links, personal experience…"
               style={{ width:"100%", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.09)", borderRadius:"12px", color:"white", padding:"14px", fontSize:"13px", resize:"vertical", minHeight:"90px", fontFamily:"'Syne', sans-serif", boxSizing:"border-box", outline:"none" }}
             />
-            <button onClick={() => { if (feedbackText.trim()) setSubmitted(true); }} style={{ marginTop:"12px", background:"rgba(0,188,212,0.12)", border:"1px solid rgba(0,188,212,0.35)", color:"#00bcd4", padding:"11px 22px", borderRadius:"12px", cursor:"pointer", fontWeight:"800", fontSize:"13px", fontFamily:"'Syne', sans-serif", transition:"all 0.2s" }}>
-              Submit Feedback
+            <button onClick={handleFeedback} disabled={submitting} style={{ marginTop:"12px", background: submitting ? "rgba(255,255,255,0.05)" : "rgba(0,188,212,0.12)", border:"1px solid rgba(0,188,212,0.35)", color:"#00bcd4", padding:"11px 22px", borderRadius:"12px", cursor: submitting ? "not-allowed" : "pointer", fontWeight:"800", fontSize:"13px", fontFamily:"'Syne', sans-serif", transition:"all 0.2s" }}>
+              {submitting ? "Submitting…" : "Submit Feedback"}
             </button>
           </>
         ) : (
           <div style={{ textAlign:"center", padding:"24px", background:"rgba(0,230,118,0.06)", borderRadius:"12px", border:"1px solid rgba(0,230,118,0.15)" }}>
             <div style={{ fontSize:"32px", marginBottom:"8px" }}>✅</div>
-            <div style={{ color:"#00e676", fontWeight:"700", fontFamily:"'DM Mono', monospace" }}>Thank you! Your report is queued for review.</div>
+            <div style={{ color:"#00e676", fontWeight:"700", fontFamily:"'DM Mono', monospace" }}>Thank you! Your report has been saved to our database.</div>
           </div>
         )}
       </div>
@@ -571,6 +605,19 @@ function SubmitView({ onBack }) {
   const [category, setCategory] = useState("");
   const [details, setDetails] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async () => {
+    if (!name.trim()) return;
+    setSubmitting(true);
+    const ok = await submitToSupabase("app_submissions", {
+      app_name: name,
+      category: category,
+      details: details,
+    });
+    setSubmitting(false);
+    if (ok) setSubmitted(true);
+  };
 
   return (
     <div style={{ animation:"fadeUp 0.3s ease" }}>
@@ -596,10 +643,9 @@ function SubmitView({ onBack }) {
                   <strong style={{ color:"#00e676" }}>Privacy note:</strong> Submitting this form sends only the text above. No metadata, no IP address, no account linking. Your submission is completely anonymous.
                 </div>
               </div>
-              <button onClick={() => { if (name.trim()) setSubmitted(true); }} style={{ background:"#ef5350", border:"none", borderRadius:"12px", color:"white", padding:"14px", cursor:"pointer", fontWeight:"800", fontFamily:"'Syne', sans-serif", fontSize:"15px", transition:"all 0.2s" }}
-                onMouseEnter={e => e.currentTarget.style.background="#ff6b6b"}
-                onMouseLeave={e => e.currentTarget.style.background="#ef5350"}
-              >Submit for Community Review</button>
+              <button onClick={handleSubmit} disabled={submitting} style={{ background: submitting ? "rgba(255,255,255,0.05)" : "#ef5350", border:"none", borderRadius:"12px", color:"white", padding:"14px", cursor: submitting ? "not-allowed" : "pointer", fontWeight:"800", fontFamily:"'Syne', sans-serif", fontSize:"15px", transition:"all 0.2s" }}>
+                {submitting ? "Submitting…" : "Submit for Community Review"}
+              </button>
             </div>
           </>
         ) : (
@@ -607,7 +653,7 @@ function SubmitView({ onBack }) {
             <div style={{ fontSize:"56px", marginBottom:"16px" }}>✅</div>
             <div style={{ color:"#00e676", fontWeight:"800", fontFamily:"'DM Mono', monospace", fontSize:"18px", marginBottom:"10px" }}>Submitted!</div>
             <div style={{ color:"rgba(255,255,255,0.5)", fontSize:"14px", lineHeight:1.7 }}>
-              <strong style={{ color:"white" }}>{name}</strong> has been added to the review queue. Expect a full analysis within 72 hours. Thank you for helping the community.
+              <strong style={{ color:"white" }}>{name}</strong> has been saved to our database. Expect a full analysis within 72 hours. Thank you for helping the community.
             </div>
             <button onClick={onBack} style={{ marginTop:"24px", background:"rgba(255,255,255,0.06)", border:"1px solid rgba(255,255,255,0.1)", borderRadius:"12px", color:"rgba(255,255,255,0.7)", padding:"12px 24px", cursor:"pointer", fontWeight:"700", fontFamily:"'Syne', sans-serif" }}>← Back to Browse</button>
           </div>
