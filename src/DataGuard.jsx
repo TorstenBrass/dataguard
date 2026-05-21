@@ -137,6 +137,17 @@ const APP_DB = [
     communityFlags: 38, communityVerified: true,
     knownIncidents: ["2020: Affiliate link insertion controversy (fixed)"],
   },
+  {
+    id: 11, name: "Granola: AI App Advices", category: "Deceptive Guide App", icon: "⚠️",
+    score: 15, privacyGrade: "F",
+    dataTypes: ["App Activity","App Info","Device ID","Performance Data"],
+    sellsData: true, misleadingAds: true, thirdParties: 8,
+    founded: "2023", headquarters: "Kalimantan Timur, Indonesia",
+    summary: "This is NOT the real Granola AI note-taking app. It is a fake guide app made by an unrelated Indonesian developer (CV. Binungan Jaya) deliberately named to impersonate the legitimate Granola AI product. It contains ads, shares app activity and device IDs with third parties, does not encrypt data, and does not allow data deletion. A textbook example of a deceptive app designed to mislead users searching for the real product.",
+    sources: ["Google Play Store listing","Google Play Data Safety disclosure","Developer contact: fansurfahim@gmail.com"],
+    communityFlags: 47, communityVerified: true,
+    knownIncidents: ["Impersonates legitimate Granola AI product","Data not encrypted per Play Store disclosure","Data cannot be deleted per Play Store disclosure","Contains ads despite mimicking a trusted brand"],
+  },
 ];
 
 const GRADE_COLOR = { "A+":"#00e676","A":"#69f0ae","B":"#fff176","C":"#ffb74d","D":"#ff7043","F":"#ef5350" };
@@ -255,7 +266,7 @@ function LandingScreen({ onPurchase }) {
           ))}
         </div>
         <div style={{ background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.07)", borderRadius:"24px", padding:"40px", display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))", gap:"32px", textAlign:"center", marginBottom:"64px" }}>
-          {[["10+","apps in database"],["18,000+","community reports"],["$0","ad revenue"],["100%","open source"],["0","data points collected about you"]].map(([n,l],i) => (
+          {[["11+","apps in database"],["18,000+","community reports"],["$0","ad revenue"],["100%","open source"],["0","data points collected about you"]].map(([n,l],i) => (
             <div key={i}>
               <div style={{ fontSize:"clamp(28px,5vw,40px)", fontWeight:"800", letterSpacing:"-1px", fontFamily:"'DM Mono', monospace", color:"#ef5350" }}>{n}</div>
               <div style={{ color:"rgba(255,255,255,0.4)", fontSize:"12px", marginTop:"4px" }}>{l}</div>
@@ -285,6 +296,7 @@ function MainApp() {
   const [notifications, setNotifications] = useState([
     { id:1, app:"Facebook", msg:"New incident: €1.2B GDPR fine upheld in appeal", time:"2h ago", read:false },
     { id:2, app:"TikTok", msg:"Community flag count passed 3,800", time:"1d ago", read:false },
+    { id:3, app:"Granola: AI App Advices", msg:"New deceptive app added: impersonates real Granola AI", time:"Just now", read:false },
   ]);
   const [showNotifs, setShowNotifs] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
@@ -663,8 +675,6 @@ function SubmitView({ onBack }) {
     </div>
   );
 }
-
-// ─── ROOT CONTROLLER ──────────────────────────────────────────────────────────
 
 export default function DataGuardApp() {
   const params = new URLSearchParams(window.location.search);
