@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 const SUPABASE_URL = "https://pgwrfbbznklerwipakrw.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBnd3JmYmJ6bmtsZXJ3aXBha3J3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzMTY4NTcsImV4cCI6MjA5NDg5Mjg1N30.LZONSaRsh4TXyis-Zfbuu8oGZN5qy0MVcfU40ItmzP4";
@@ -16,198 +16,550 @@ async function submitToSupabase(table, data) {
 
 const APP_DB = [
   // ── ORIGINAL 23 ──────────────────────────────────────────────────────────────
-  { id:1,  name: "TikTok",                   category: "Social Media",            icon: "🎵", score:8,  privacyGrade: "F",  playStoreId: "com.zhiliaoapp.musically" },
-  { id:2,  name: "Signal",                   category: "Messaging",               icon: "💬", score:97, privacyGrade: "A+", playStoreId: "org.thoughtcrime.securesms" },
-  { id:3,  name: "WhatsApp",                 category: "Messaging",               icon: "🟢", score:42, privacyGrade: "D-", playStoreId: "com.whatsapp" },
-  { id:4,  name: "Telegram",                 category: "Messaging",               icon: "✈️", score:58, privacyGrade: "C",  playStoreId: "org.telegram.messenger" },
-  { id:5,  name: "Instagram",                category: "Social Media",            icon: "📸", score:12, privacyGrade: "F",  playStoreId: "com.instagram.android" },
-  { id:6,  name: "Facebook",                 category: "Social Media",            icon: "📘", score:5,  privacyGrade: "F",  playStoreId: "com.facebook.katana" },
-  { id:7,  name: "X (Twitter)",              category: "Social Media",            icon: "🐦", score:21, privacyGrade: "E",  playStoreId: "com.twitter.android" },
-  { id:8,  name: "ProtonMail",               category: "Productivity",           icon: "⚛️", score:95, privacyGrade: "A",  playStoreId: "ch.protonmail.android" },
-  { id:9,  name: "DuckDuckGo Browser",       category: "Utilities",              icon: "🦆", score:94, privacyGrade: "A",  playStoreId: "com.duckduckgo.mobile.android" },
-  { id:10, name: "Brave Browser",            category: "Utilities",              icon: "🦁", score:92, privacyGrade: "A-", playStoreId: "com.brave.browser" },
-  { id:11, name: "Google Maps",              category: "Navigation",             icon: "🗺️", score:28, privacyGrade: "E+", playStoreId: "com.google.android.apps.maps" },
-  { id:12, name: "Uber",                     category: "Lifestyle",              icon: "🚗", score:34, privacyGrade: "D",  playStoreId: "com.ubercab" },
-  { id:13, name: "Spotify",                  category: "Entertainment",          icon: "🎧", score:48, privacyGrade: "C-", playStoreId: "com.spotify.music" },
-  { id:14, name: "Netflix",                  category: "Entertainment",          icon: "🍿", score:52, privacyGrade: "C",  playStoreId: "com.netflix.mediaclient" },
-  { id:15, name: "Zoom",                     category: "Business",               icon: "📹", score:45, privacyGrade: "D+", playStoreId: "us.zoom.videomeetings" },
-  { id:16, name: "Discord",                  category: "Social Media",            icon: "👾", score:38, privacyGrade: "D",  playStoreId: "com.discord" },
-  { id:17, name: "Snapchat",                 category: "Social Media",            icon: "👻", score:18, privacyGrade: "E-", playStoreId: "com.snapchat.android" },
-  { id:18, name: "LinkedIn",                 category: "Business",               icon: "💼", score:25, privacyGrade: "E+", playStoreId: "com.linkedin.android" },
-  { id:19, name: "Pinterest",                category: "Social Media",            icon: "📌", score:40, privacyGrade: "D-", playStoreId: "com.pinterest" },
-  { id:20, name: "Reddit",                   category: "Social Media",            icon: "🤖", score:35, privacyGrade: "D",  playStoreId: "com.reddit.frontpage" },
-  { id:21, name: "YouTube",                  category: "Entertainment",          icon: "📺", score:22, privacyGrade: "E",  playStoreId: "com.google.android.youtube" },
-  { id:22, name: "Microsoft Teams",          category: "Business",               icon: "👥", score:50, privacyGrade: "C",  playStoreId: "com.microsoft.teams" },
-  { id:23, name: "Duolingo",                 category: "Education",              icon: "🦉", score:55, privacyGrade: "C+", playStoreId: "com.duolingo" },
+  { id:1,  name:"TikTok",                   category:"Social Media",            icon:"🎵", score:8,  privacyGrade:"F",  playStoreId:"com.zhiliaoapp.musically",          dataTypes:["Precise Location","Contacts","Biometrics","Face Data","Browsing History","Keystrokes","Device ID","Financial Info","Clipboard Contents","App Usage"], sellsData:true,  misleadingAds:true,  thirdParties:47, founded:"2016", headquarters:"Beijing, China",                          summary:"One of the most aggressive data collectors on any platform. Harvests biometrics, clipboard contents, and keystroke patterns. Parent company ByteDance is legally required to share data with the Chinese government upon request. Cross-tracks users even after app is closed.", sources:["WSJ Investigation 2021","FTC Report 2023","Irish DPC Ruling 2023"], communityFlags:3842, communityVerified:true, knownIncidents:["$5.4M GDPR fine (2023)","US Congress testimony on data practices","Banned on US government devices"] },
+  { id:2,  name:"Instagram",                category:"Social Media",            icon:"📸", score:14, privacyGrade:"F",  playStoreId:"com.instagram.android",             dataTypes:["Location","Contacts","Browsing History","Purchase History","Financial Info","Health Data","Device ID","Face Recognition","Ad Interactions"], sellsData:true,  misleadingAds:true,  thirdParties:39, founded:"2010", headquarters:"Menlo Park, USA",                          summary:"Builds shadow profiles on non-users using uploaded contact lists. Tracks browsing across the web via invisible pixels. Ad targeting uses off-app behavior. Part of Meta's data empire that operates across Facebook, WhatsApp, and Messenger.", sources:["Meta Privacy Policy 2024","EFF Analysis","Norwegian DPA Report"], communityFlags:2841, communityVerified:true, knownIncidents:["$1.3B GDPR fine for EU data transfers","FTC settlement for COPPA violations","Cambridge Analytica connection"] },
+  { id:3,  name:"Signal",                   category:"Messaging",               icon:"🔒", score:97, privacyGrade:"A+", playStoreId:"org.thoughtcrime.securesms",         dataTypes:["Phone Number (only)"], sellsData:false, misleadingAds:false, thirdParties:0,  founded:"2013", headquarters:"Mountain View, USA",                        summary:"The gold standard for private communication. Open source, end-to-end encrypted by default, collects virtually no metadata. Run by a non-profit with no investors to answer to. Has repeatedly refused government requests and proven they have nothing to hand over.", sources:["Signal Source Code (GitHub)","EFF Secure Messaging Scorecard","Court-proven data minimalism"], communityFlags:11, communityVerified:true, knownIncidents:[] },
+  { id:4,  name:"Spotify",                  category:"Music",                   icon:"🎧", score:38, privacyGrade:"D",  playStoreId:"com.spotify.music",                 dataTypes:["Location","Browsing History","Listening Habits","Device ID","Voice Data","Search History","Payment Info"], sellsData:true,  misleadingAds:true,  thirdParties:21, founded:"2006", headquarters:"Stockholm, Sweden",                          summary:"Shares listening data with record labels and targeted advertisers. Microphone access used for audio recognition. Free tier users are heavily profiled. Podcast listening behavior is tracked and sold. Privacy settings are deliberately buried.", sources:["Spotify Privacy Policy 2024","Privacy International Report"], communityFlags:921, communityVerified:true, knownIncidents:["Data-sharing agreements with major labels","Microphone access controversy 2015"] },
+  { id:5,  name:"WhatsApp",                 category:"Messaging",               icon:"💬", score:31, privacyGrade:"D",  playStoreId:"com.whatsapp",                      dataTypes:["Contacts","Location","Device ID","Phone Number","Usage Metadata","Financial Info","IP Address"], sellsData:true,  misleadingAds:false, thirdParties:18, founded:"2009", headquarters:"Menlo Park, USA",                          summary:"Message content is encrypted but metadata is fully shared with Meta — who you talk to, when, how often, your IP, device info. Contact lists uploaded to Meta servers. Business account messages are not private. 2021 policy update forced users to share data with Facebook or lose access.", sources:["Meta Privacy Policy","German DPA ruling 2021","EFF Analysis"], communityFlags:1584, communityVerified:true, knownIncidents:["Forced 2021 policy update","Hamburg DPA suspended WhatsApp-Meta data sharing"] },
+  { id:6,  name:"DuckDuckGo",               category:"Browser / Search",        icon:"🦆", score:91, privacyGrade:"A",  playStoreId:"com.duckduckgo.mobile.android",     dataTypes:["Anonymous search queries (no IP logged)"], sellsData:false, misleadingAds:false, thirdParties:0,  founded:"2008", headquarters:"Paoli, USA",                                summary:"No personal data collected, no user profiles, no cross-site tracking. Keyword-based ads only — not profile-based. Has consistently delivered on privacy promises with third-party audits. Browser extension blocks trackers across the web.", sources:["DuckDuckGo Privacy Policy","Third-party audit results"], communityFlags:29, communityVerified:true, knownIncidents:[] },
+  { id:7,  name:"Facebook",                 category:"Social Media",            icon:"👤", score:4,  privacyGrade:"F",  playStoreId:"com.facebook.katana",               dataTypes:["Location","Contacts","Browsing History","Purchase History","Face Recognition","Financial Info","Political Views","Religious Beliefs","Relationship Status","Health Data"], sellsData:true,  misleadingAds:true,  thirdParties:61, founded:"2004", headquarters:"Menlo Park, USA",                          summary:"The original data broker masquerading as a social network. Tracks users across 30% of all websites via hidden pixels. Builds shadow profiles on people who never signed up. Sells psychographic profiles to advertisers. Fined billions across multiple continents for privacy violations.", sources:["FTC $5B Settlement","EU GDPR fines","Cambridge Analytica hearings"], communityFlags:5201, communityVerified:true, knownIncidents:["$5B FTC fine (2019)","Cambridge Analytica scandal","$1.3B EU GDPR fine (2023)","Admitted to suppressing reach to force ad spend"] },
+  { id:8,  name:"ProtonMail",               category:"Email",                   icon:"✉️", score:94, privacyGrade:"A+", playStoreId:"ch.protonmail.android",             dataTypes:["Email address","Payment method (if paid)"], sellsData:false, misleadingAds:false, thirdParties:0,  founded:"2013", headquarters:"Geneva, Switzerland",                      summary:"Swiss-based, end-to-end encrypted email. Open source and audited. Zero-access encryption means Proton cannot read your emails even if compelled. Protected by Swiss privacy law — stricter than EU GDPR. Free tier available with optional paid plans.", sources:["Proton Source Code (GitHub)","Swiss Federal Data Protection Act"], communityFlags:14, communityVerified:true, knownIncidents:[] },
+  { id:9,  name:"Shein",                    category:"Shopping",                icon:"👗", score:3,  privacyGrade:"F",  playStoreId:"com.zzkko",                         dataTypes:["Location","Contacts","Browsing History","Purchase History","Financial Info","Device ID","Biometrics","Face Data","Clipboard","Network Info"], sellsData:true,  misleadingAds:true,  thirdParties:53, founded:"2008", headquarters:"Singapore / China",                        summary:"Among the worst data collectors in retail. Harvests clipboard contents in real-time, tracks location constantly, and shares data with dozens of undisclosed third parties. Fake countdown timers and manufactured original prices are standard dark patterns. Class action lawsuits pending in multiple countries.", sources:["NortonLifeLock Research 2023","CCPA complaints","EU Consumer Protection Report"], communityFlags:4102, communityVerified:true, knownIncidents:["Data breach exposing 6.42M users","Class action for dark pattern pricing","Banned from several government networks"] },
+  { id:10, name:"Brave Browser",            category:"Browser",                 icon:"🦁", score:89, privacyGrade:"A",  playStoreId:"com.brave.browser",                 dataTypes:["Opt-in: anonymous ad metrics only"], sellsData:false, misleadingAds:false, thirdParties:0,  founded:"2015", headquarters:"San Francisco, USA",                        summary:"Blocks ads and trackers by default. Fingerprinting protection built in. Optional Brave Rewards lets users earn crypto for viewing privacy-respecting ads — fully opt-in. Open source and regularly audited. One of the strongest privacy browsers available.", sources:["Brave Source Code (GitHub)","uBlock Origin comparison tests"], communityFlags:38, communityVerified:true, knownIncidents:["2020: Affiliate link insertion controversy (fixed)"] },
+  { id:11, name:"Granola: AI App Advices",  category:"Deceptive Guide App",     icon:"⚠️", score:15, privacyGrade:"F",  playStoreId:"com.granola.guide",                 dataTypes:["App Activity","App Info","Device ID","Performance Data"], sellsData:true,  misleadingAds:true,  thirdParties:8,  founded:"2023", headquarters:"Kalimantan Timur, Indonesia",                summary:"This is NOT the real Granola AI note-taking app. It is a fake guide app made by an unrelated Indonesian developer deliberately named to impersonate the legitimate Granola AI product. It contains ads, shares app activity and device IDs with third parties, does not encrypt data, and does not allow data deletion.", sources:["Google Play Store listing","Google Play Data Safety disclosure"], communityFlags:47, communityVerified:true, knownIncidents:["Impersonates legitimate Granola AI product","Data not encrypted per Play Store disclosure","Data cannot be deleted per Play Store disclosure"] },
+  { id:12, name:"Netflix",                  category:"Streaming",               icon:"🎬", score:42, privacyGrade:"D",  playStoreId:"com.netflix.mediaclient",           dataTypes:["Email Address","Payment Info","Viewing History","Device ID","IP Address","Browsing Behavior","Inferred Interests","Search History"], sellsData:true,  misleadingAds:true,  thirdParties:15, founded:"1997", headquarters:"Los Gatos, USA",                            summary:"Collects extensive viewing history, device data, and behavioral patterns to build detailed user profiles. Shares personal information with affiliates, advertising partners and third-party service providers. Cross-references your contact info with third-party databases to target you with ads on other platforms.", sources:["Netflix Privacy Statement 2024","Common Sense Privacy Report","OpenTermsArchive Netflix Policy"], communityFlags:412, communityVerified:true, knownIncidents:["Shares viewing data with advertising partners","Cross-platform ad targeting using contact matching","Personal information sold to third parties per Common Sense Privacy evaluation"] },
+  { id:13, name:"Paramount+",               category:"Streaming",               icon:"⭐", score:35, privacyGrade:"D",  playStoreId:"com.cbs.app",                       dataTypes:["Precise Geolocation","Viewing History","Device ID","Payment Info","Behavioral Data","Inferred Interests","Demographics","Ad Interactions"], sellsData:true,  misleadingAds:true,  thirdParties:22, founded:"2021", headquarters:"New York, USA",                             summary:"Collects precise geolocation, viewing history, and inferred interests to build advertising profiles. Shares this data with advertising partners, measurement companies, and Paramount Global affiliates. No specific data retention timelines — your data could be held indefinitely.", sources:["Paramount Privacy Policy 2024","ConductAtlas Data Retention Analysis","Common Sense Privacy Report"], communityFlags:287, communityVerified:true, knownIncidents:["Collects data from children under 13 in child-directed services","Viewing data shared with advertising measurement companies","No clear data retention limits"] },
+  { id:14, name:"Crave",                    category:"Streaming",               icon:"📺", score:44, privacyGrade:"D",  playStoreId:"com.bellmedia.bravo",               dataTypes:["Email Address","Payment Info","Viewing History","Device ID","Usage Data","Advertising ID"], sellsData:true,  misleadingAds:true,  thirdParties:12, founded:"2014", headquarters:"Montreal, Canada (Bell Media)",              summary:"Crave is Canada's home of HBO, operated by Bell Media. Collects viewing history, device identifiers, and usage data for advertising purposes. Email address used for developer advertising and marketing. Auto-renewal practices flagged by Canadian consumer groups.", sources:["Crave Google Play Data Safety disclosure","Amazon Appstore Privacy Label","Bell Media Privacy Policy"], communityFlags:156, communityVerified:true, knownIncidents:["Bell Media subject to CRTC data handling scrutiny","Auto-renewal practices flagged by Canadian consumer groups"] },
+  { id:15, name:"LinkedIn",                 category:"Professional Network",    icon:"💼", score:29, privacyGrade:"D",  playStoreId:"com.linkedin.android",              dataTypes:["Full Name","Email","Employment History","Location","Device ID","Browsing History","Behavioral Data","Contacts","Browser Extensions (alleged)"], sellsData:false, misleadingAds:true,  thirdParties:24, founded:"2003", headquarters:"Sunnyvale, USA (Microsoft)",                 summary:"Owned by Microsoft, LinkedIn collects extensive professional and behavioral data. A 2026 investigation alleged LinkedIn scans users browser extensions without disclosure and transmits data to third parties. Used member data for AI training without clear opt-in in 2024.", sources:["LinkedIn Privacy Policy 2024","Common Sense Privacy Report","BrowserGate Investigation 2026"], communityFlags:891, communityVerified:true, knownIncidents:["2026 BrowserGate allegations: scanning browser extensions without consent","$1.8M FTC settlement for misusing member data (2014)","Used member data for AI training without clear opt-in (2024)"] },
+  { id:16, name:"Indeed",                   category:"Job Search",              icon:"🔍", score:52, privacyGrade:"C",  playStoreId:"com.indeed.android.jobsearch",      dataTypes:["Full Name","Email","Resume Data","Location (GPS)","Employment History","Device ID","Usage Data","Search History"], sellsData:false, misleadingAds:false, thirdParties:14, founded:"2004", headquarters:"Austin, USA (Recruit Holdings)",             summary:"Indeed does not sell personal data as defined under CCPA. However it shares resume and application data broadly with employers and affiliates. Collects GPS location data from the mobile app. Shares data for targeted advertising purposes which may qualify as a sale under some state laws.", sources:["Indeed Privacy Policy 2024","Indeed CCPA Disclosure","Indeed Recruitment Privacy Policy"], communityFlags:203, communityVerified:true, knownIncidents:["Location data collected via GPS without always-clear disclosure","Indeed new data sharing policy raised privacy concerns in 2025"] },
+  { id:17, name:"Chicken Run (STEM Studios)",category:"Mobile Game",            icon:"🐔", score:38, privacyGrade:"D",  playStoreId:"com.stemstudios.chickenrun",         dataTypes:["Location","Device ID"], sellsData:false, misleadingAds:true,  thirdParties:3,  founded:"2019", headquarters:"India (STEM Studios)",                          summary:"A simple casual mobile game that contains ads and shares location data and device IDs with third parties. Data cannot be deleted once collected. Concerning for what appears to be a children-friendly game. Last updated in 2019, suggesting limited ongoing privacy maintenance.", sources:["Google Play Data Safety disclosure","Play Store listing"], communityFlags:18, communityVerified:true, knownIncidents:["Location data shared with third parties despite being a casual game","Data cannot be deleted per Play Store disclosure"] },
+  { id:18, name:"Speedtest by Ookla",       category:"Network Tools",           icon:"⚡", score:33, privacyGrade:"D",  playStoreId:"org.zwanoo.android.speedtest",      dataTypes:["Precise Location","Device ID","Usage Data","User Content","Identifiers","Network Data"], sellsData:true,  misleadingAds:true,  thirdParties:47, founded:"2006", headquarters:"Seattle, USA (Ziff Davis)",                  summary:"A seemingly innocent speed testing app that is actually one of the most aggressive trackers in the tools category. Integrates 47 third-party SDKs including advertising trackers. Tracks users across other apps and websites using location and device identifiers. Network speed data sold commercially to ISPs and telecom companies.", sources:["Apple App Store Privacy Label","Blankspaces Privacy Report April 2026","Google Play Data Safety disclosure"], communityFlags:634, communityVerified:true, knownIncidents:["47 third-party SDKs embedded including 2 for advertising","Cross-app tracking via location and device identifiers confirmed","Network speed data sold to ISPs and telecom companies"] },
+  { id:19, name:"Telegram",                 category:"Messaging",               icon:"✈️", score:48, privacyGrade:"C",  playStoreId:"org.telegram.messenger",            dataTypes:["Phone Number","IP Address","Device Info","Username History","Contact List (optional)","Cloud Chat Messages"], sellsData:false, misleadingAds:false, thirdParties:2,  founded:"2013", headquarters:"Dubai, UAE",                                summary:"Telegram is not as private as it claims. Regular cloud chats are NOT end-to-end encrypted by default — only Secret Chats are. Messages are stored on Telegram's servers and can be read by moderators. In Q1 2025 alone, Telegram handed user data to authorities for over 22,000 users — a dramatic increase from 5,826 in Q1 2024. CEO Pavel Durov was arrested in France in 2024.", sources:["Telegram Privacy Policy","Freedom of the Press Foundation Report 2025","Telegram Transparency Data 2025"], communityFlags:743, communityVerified:true, knownIncidents:["Q1 2025: Data handed to authorities on 22,777 users","CEO Pavel Durov arrested in France August 2024","Cloud chats not end-to-end encrypted by default","Russian infrastructure links alleged by 2025 investigation"] },
+  { id:20, name:"WeChat",                   category:"Messaging / Super App",   icon:"🟢", score:2,  privacyGrade:"F",  playStoreId:"com.tencent.mm",                    dataTypes:["Messages","Contacts","Location","Payment Data","Browsing History","Device ID","Biometrics","Government ID","App Usage","Social Connections"], sellsData:true,  misleadingAds:true,  thirdParties:35, founded:"2011", headquarters:"Shenzhen, China (Tencent)",                  summary:"One of the most dangerous apps in the world for privacy. Operated by Tencent under Chinese law, WeChat is legally required to give government authorities access to all user data. Academic research confirmed it functions as a frontline policing tool — over 50,000 police accounts exist on the platform. Even international users outside China have their messages scanned for politically sensitive content. No end-to-end encryption.", sources:["Wiley Policy & Internet Research 2025","The Conversation December 2025","Citizen Lab Research","Radio Free Asia Investigation"], communityFlags:6821, communityVerified:true, knownIncidents:["Banned in India for exporting user data to China","Functions as active Chinese government policing tool","International users messages scanned for Chinese political content","Cross-references data across QQ, WeChat, and gaming platforms"] },
+  { id:21, name:"Snapchat",                 category:"Social Media",            icon:"👻", score:36, privacyGrade:"D",  playStoreId:"com.snapchat.android",              dataTypes:["Location","Contacts","Device ID","Behavioral Data","Camera","Biometrics (Lenses)","Purchase History","Search History","AI Conversation Data"], sellsData:false, misleadingAds:true,  thirdParties:19, founded:"2011", headquarters:"Santa Monica, USA",                         summary:"Snapchat does not sell personal data directly but shares it broadly with business partners and third-party advertisers for targeted ads. The April 2025 privacy policy update explicitly added AI conversation data from My AI to its data collection scope for model training. Third-party bot developers receive user data without Snapchat oversight. The disappearing message feature creates a false sense of privacy.", sources:["Snap Privacy Policy April 2025","Common Sense Privacy Report","TOSTracker Analysis 2025"], communityFlags:1203, communityVerified:true, knownIncidents:["April 2025: Added My AI conversation data to model training","Third-party lens developers receive biometric data without clear disclosure","2023 FTC action over COPPA violations and misleading privacy claims"] },
+  { id:22, name:"QQ",                       category:"Messaging / Social",      icon:"🐧", score:5,  privacyGrade:"F",  playStoreId:"com.tencent.mobileqq",              dataTypes:["Messages","Contacts","Location","Payment Data","Device ID","Government ID","Identity Card Images","App Usage","Group Activity"], sellsData:true,  misleadingAds:true,  thirdParties:28, founded:"1999", headquarters:"Shenzhen, China (Tencent)",                  summary:"QQ is Tencent's original messaging platform and shares the same catastrophic privacy profile as WeChat. Subject to Chinese cybersecurity law requiring full government data access. Forensic research in 2025 found raw identity card images stored in plain text. The Citizen Lab documented insecure transmission of user data to QQ servers. Banned in India alongside WeChat.", sources:["Citizen Lab Research: WUP! There It Is","Springer Forensic Analysis 2025","India government ban documentation"], communityFlags:4201, communityVerified:true, knownIncidents:["Banned in India for exporting user data to China","Forensic research found identity card images stored in plain text (2025)","Citizen Lab documented insecure data transmission","Widely exploited by Southeast Asian scam operations"] },
+  { id:23, name:"Discord",                  category:"Gaming / Chat",           icon:"🎮", score:55, privacyGrade:"C",  playStoreId:"com.discord",                       dataTypes:["Email","Phone Number","Messages","Voice Activity Metadata","Device Info","Game Activity (Rich Presence)","Linked Account Data","IP Address","Behavioral Data"], sellsData:false, misleadingAds:false, thirdParties:12, founded:"2015", headquarters:"San Francisco, USA",                        summary:"Discord does not sell personal data and is funded by subscriptions and paid products. However it collects almost everything you do: every game you play is tracked via Rich Presence, every bot you interact with gets your user data. In October 2025 a third-party vendor breach exposed user names, emails, billing details and government ID images. No end-to-end encryption on messages.", sources:["Discord Privacy Policy September 2025","Common Sense Privacy Report","Discord Breach Report October 2025","WhatDoTheyCollect Analysis 2026"], communityFlags:387, communityVerified:true, knownIncidents:["October 2025: Third-party vendor breach exposed government IDs and billing data","August 2025: Policy update added third-party data for sponsored content targeting","No end-to-end encryption on messages or calls","Bot developers receive user data without Discord oversight"] },
 
-  // ── PREVIOUS ADDITIONS ──────────────────────────────────────────────────────
-  { id:24, name: "Temu",                     category: "Shopping",               icon: "🛍️", score:4,  privacyGrade: "F",  playStoreId: "com.einnovation.temu" },
-  { id:25, name: "Shein",                    category: "Shopping",               icon: "👗", score:7,  privacyGrade: "F",  playStoreId: "com.zzkko" },
-  { id:26, name: "ChatGPT",                  category: "Productivity",           icon: "🧠", score:46, privacyGrade: "D+", playStoreId: "com.openai.chatgpt" },
-  { id:27, name: "Claude AI",                category: "Productivity",           icon: "🦺", score:51, privacyGrade: "C",  playStoreId: "com.anthropic.claude" },
-  { id:28, name: "Microsoft Copilot",        category: "Productivity",           icon: "🪙", score:43, privacyGrade: "D",  playStoreId: "com.microsoft.copilot" },
-  { id:29, name: "CapCut",                   category: "Utilities",              icon: "🎬", score:9,  privacyGrade: "F",  playStoreId: "com.lemon.lvoverseas" },
-  { id:30, name: "Threads",                  category: "Social Media",            icon: "🧵", score:11, privacyGrade: "F",  playStoreId: "com.instagram.barcelona" },
-  { id:31, name: "BeReal",                   category: "Social Media",            icon: "📸", score:44, privacyGrade: "D+", playStoreId: "com.bereal.ft" },
-  { id:32, name: "Roblox",                   category: "Entertainment",          icon: "🧱", score:30, privacyGrade: "E+", playStoreId: "com.roblox.client" },
-  { id:33, name: "Twitch",                   category: "Entertainment",          icon: "🔮", score:37, privacyGrade: "D",  playStoreId: "tv.twitch.android.app" },
-  { id:34, name: "Airbnb",                   category: "Lifestyle",              icon: "🏡", score:53, privacyGrade: "C",  playStoreId: "com.airbnb.android" },
-  { id:35, name: "Booking.com",              category: "Lifestyle",              icon: "🏨", score:41, privacyGrade: "D-", playStoreId: "com.booking" },
-  { id:36, name: "Lyft",                     category: "Lifestyle",              icon: "🚘", score:36, privacyGrade: "D",  playStoreId: "me.lyft.android" },
-  { id:37, name: "Tinder",                   category: "Lifestyle",              icon: "🔥", score:15, privacyGrade: "E-", playStoreId: "com.tinder" },
-  { id:38, name: "Bumble",                   category: "Lifestyle",              icon: "🐝", score:23, privacyGrade: "E",  playStoreId: "com.bumble.app" },
-  { id:39, name: "Grindr",                   category: "Lifestyle",              icon: "🟡", score:13, privacyGrade: "F",  playStoreId: "com.grindr.android" },
-  { id:40, name: "Strava",                   category: "Health & Fitness",       icon: "🏃", score:56, privacyGrade: "C+", playStoreId: "com.strava" },
-  { id:41, name: "MyFitnessPal",             category: "Health & Fitness",       icon: "🥗", score:33, privacyGrade: "D",  playStoreId: "com.myfitnesspal.android" },
-  { id:42, name: "Flo Period Tracker",       category: "Health & Fitness",       icon: "🌸", score:62, privacyGrade: "B-", playStoreId: "org.flo.android" },
-  { id:43, name: "Coinbase",                 category: "Finance",                icon: "🪙", score:72, privacyGrade: "B",  playStoreId: "com.coinbase.android" },
+  // ── BATCH 2: SHOPPING + SIMPLEXCHAT ─────────────────────────────────────────
+  { id:24, name:"Walmart Canada",           category:"Shopping",                icon:"🛒", score:54, privacyGrade:"C",  playStoreId:"ca.walmart.ecommerceapp",           dataTypes:["Personal Info","Financial Info","Device ID","Purchase History","Location","Usage Data","Ad Interactions"], sellsData:true,  misleadingAds:false, thirdParties:9,  founded:"1994", headquarters:"Mississauga, Canada (Walmart Inc.)",         summary:"Walmart Canada's app collects personal info, financial data, and device identifiers shared with third parties for advertising. Data is encrypted in transit and users can request deletion. GPS location used for grocery pickup. Owned by US parent Walmart Inc., so Canadian data is subject to US data access laws.", sources:["Walmart Canada Google Play Data Safety 2024","Walmart Canada Privacy Notice","App Store Privacy Label"], communityFlags:312, communityVerified:true, knownIncidents:["Persistent app bugs affecting grocery ordering reported by thousands of users","US parent company subject to US government data access laws","Customer data stored on US servers"] },
+  { id:25, name:"Temu",                     category:"Shopping",                icon:"🛍️", score:6,  privacyGrade:"F",  playStoreId:"com.einnovation.temu",               dataTypes:["Precise Location","Contacts","Camera","Microphone","Bluetooth","Wi-Fi Network Info","Device ID","Financial Info","Browsing History","Purchase History","App Usage","Clipboard Contents","Biometrics"], sellsData:true,  misleadingAds:true,  thirdParties:31, founded:"2022", headquarters:"Boston, USA (PDD Holdings, China)",          summary:"One of the most dangerous shopping apps ever published. Temu requests 24 permissions including Bluetooth, Wi-Fi scanning, microphone, and camera — no legitimate reason for an e-commerce app. A class action lawsuit alleges tools are embedded to exfiltrate virtually all private data from a user's device. Developed by the same engineers behind Pinduoduo, removed from Google Play for malware.", sources:["Temu Class Action Lawsuit (2024)","Compassitc Security Analysis 2025","Swiss NTC Security Analysis","FTC Consumer Reports 2024"], communityFlags:5841, communityVerified:true, knownIncidents:["Class action: alleged tools to exfiltrate 'literally everything' on your phone","Parent company Pinduoduo pulled from Google Play for malware","South Korea PIPC investigation opened 2024","Compiles code at runtime — technique used by malware to evade antivirus","Reports of credit card and banking info leaked after purchase"] },
+  { id:26, name:"AliExpress",               category:"Shopping",                icon:"📦", score:18, privacyGrade:"F",  playStoreId:"com.alibaba.aliexpresshd",          dataTypes:["Precise Location","Contacts","Camera","Device ID","Financial Info","Browsing History","Purchase History","Usage Data","IP Address","Cookie Tracking","Government ID (some regions)"], sellsData:true,  misleadingAds:true,  thirdParties:24, founded:"2010", headquarters:"Singapore (Alibaba Group, China)",            summary:"AliExpress has a persistent record of data privacy violations. In 2024 South Korea fined it $1.37M after user data was shared with 180,000 sellers without consent. In 2025 EU privacy group Noyb filed GDPR complaints for unlawfully transferring EU user data to China. AliExpress refused to comply with GDPR data access requests.", sources:["Noyb GDPR Complaint January 2025","South Korea PIPC Fine 2024","Surfshark AliExpress Safety Analysis 2026","Noyb Follow-up Complaint July 2025"], communityFlags:3207, communityVerified:true, knownIncidents:["2024: $1.37M fine — shared Korean user data with 180,000 sellers without consent","2025: Noyb GDPR complaint for illegal EU-to-China data transfers","Refused to comply with GDPR Article 15 data access requests","2017: Check Point Research found code injection vulnerability leaking user data","Subject to Chinese government data disclosure law"] },
+  { id:27, name:"CapCut",                   category:"Video Editing",           icon:"✂️", score:11, privacyGrade:"F",  playStoreId:"com.lemon.lvoverseas",              dataTypes:["Camera","Microphone","Face Data","Biometrics (Lenses)","Location","Device ID","Browsing History","Usage Data","Contacts","Video Content","User-Generated Content","Ad Interactions"], sellsData:true,  misleadingAds:true,  thirdParties:19, founded:"2020", headquarters:"Culver City, USA (ByteDance, China)",         summary:"CapCut is owned by ByteDance — the same Chinese company behind TikTok. In June 2025, CapCut quietly updated its terms to claim a perpetual, royalty-free, worldwide license to use, modify, and share any content users upload — with no opt-out and no alert. The app was banned in the United States in January 2025 alongside TikTok, and remains banned in India.", sources:["CapCut Terms of Service Update June 2025","Digital Information World June 2025","Wikipedia: CapCut US Ban January 2025","ByteDance China Data Law Analysis"], communityFlags:4103, communityVerified:true, knownIncidents:["Banned in the United States January 2025 (ByteDance/TikTok ban)","Banned in India 2020 — national security concerns","June 2025: ToS updated to claim perpetual global license to all uploaded content, no opt-out","Parent company ByteDance legally required to share data with Chinese government","Collects biometric face data through AR lenses without prominent disclosure"] },
+  { id:28, name:"Meesho",                   category:"Shopping",                icon:"🏪", score:36, privacyGrade:"D",  playStoreId:"com.meesho.supply",                 dataTypes:["Full Name","Email","Phone Number","Shipping Address","Payment Info","Browsing History","IP Address","Device ID","Cookie Tracking","Usage Data"], sellsData:false, misleadingAds:false, thirdParties:7,  founded:"2015", headquarters:"Bengaluru, India (Meesho Inc.)",             summary:"Meesho is India's largest social commerce platform. Multiple App Store reviews report a pattern of spam calls beginning immediately after delivery, suggesting phone numbers may be shared with third-party sellers without clear user consent. Data is retained after account closure with no defined deletion timeline.", sources:["Meesho Privacy Policy","Apple App Store User Reviews","Google Play Data Safety Disclosure"], communityFlags:624, communityVerified:true, knownIncidents:["Widespread user reports of spam/scam calls after purchase — possible unauthorized seller data sharing","Data retained after account closure with no defined deletion timeline","Phone numbers shared with third-party sellers per commerce model"] },
+  { id:29, name:"SimpleX Chat",             category:"Messaging",               icon:"🔐", score:93, privacyGrade:"A+", playStoreId:"chat.simplex.app",                  dataTypes:["None — no account, no phone number, no email required"], sellsData:false, misleadingAds:false, thirdParties:0,  founded:"2020", headquarters:"London, UK (SimpleX Chat Ltd)",               summary:"SimpleX Chat is one of the most privacy-forward messaging apps in existence. Unlike Signal, it requires no phone number or email to create an account — not even a username tied to your identity. Each conversation uses a unique, disposable messaging queue. Fully end-to-end encrypted, open source, and independently audited by Trail of Bits in 2022 and 2024.", sources:["SimpleX Chat Source Code (GitHub)","Trail of Bits Audit 2022","Trail of Bits Audit 2024","SimpleX Chat Privacy Policy"], communityFlags:22, communityVerified:true, knownIncidents:[] },
 
-  // ── NEW COMMUNITY RESEARCH TARGETS ──────────────────────────────────────────
-  { id:44, name: "ABCmouse.com",             category: "Education",              icon: "🐭", score:68, privacyGrade: "B-", playStoreId: "com.aofl.abcmouse.google" }
+  // ── BATCH 3: GAMING APPS ─────────────────────────────────────────────────────
+  { id:30, name:"Roblox",                   category:"Gaming / Social Platform", icon:"🟥", score:22, privacyGrade:"F", playStoreId:"com.roblox.client",                 dataTypes:["Full Name","Email","Date of Birth","Device ID","IP Address","Chat Logs","Keystrokes","Mouse Movements","Canvas Fingerprint","Audio Fingerprint","Purchase History","Behavioral Data","Location"], sellsData:true,  misleadingAds:true,  thirdParties:18, founded:"2006", headquarters:"San Mateo, USA",                           summary:"Roblox blurs the line between gaming and social media for children — approximately 46% of its 90 million daily users are under 13. A 2025 class action alleges Roblox uses hidden scripts to harvest granular data from children including keystrokes, mouse movements, chat logs, canvas fingerprinting and audio fingerprinting, in violation of COPPA. Critics call child safety measures 'too little too late'.", sources:["Garcia v. Roblox Class Action April 2025","Capitol Forum Investigation 2025","Security Buzz Analysis May 2025","Keller Rohrback COPPA Investigation 2025"], communityFlags:3214, communityVerified:true, knownIncidents:["April 2025: Class action for illegal harvesting of children's data via hidden scripts","Canvas fingerprinting and audio fingerprinting applied to child users without consent","COPPA violations alleged: personalized ads served to under-13 users without parental consent","Platform historically exploited by predators to access minors","FTC scrutiny ongoing as of 2025"] },
+  { id:31, name:"Monopoly GO!",             category:"Mobile Game",             icon:"🎩", score:31, privacyGrade:"D",  playStoreId:"com.scopely.monopolygo",            dataTypes:["Device ID","Advertising ID","Purchase History","Gameplay Data","IP Address","Usage Data","Behavioral Data","Facebook Data (if linked)","Email (optional)"], sellsData:true,  misleadingAds:true,  thirdParties:14, founded:"2023", headquarters:"Culver City, USA (Scopely / Savvy Games Group, Saudi Arabia)", summary:"Monopoly GO! is published by Scopely, owned by Saudi Arabia's Public Investment Fund. The game generated $5 billion in revenue by April 2025 using heavily gamified mechanics critics compare to slot machines. Data is shared with advertising partners including Facebook, AppsFlyer, Firebase, and Unity. The Hasbro branding creates a misleading perception of family-safety.", sources:["Scopely Privacy Policy 2024","Wikipedia: Monopoly GO!","Outlook Respawn Casino Mechanics Analysis 2026","Scopely Wikipedia page"], communityFlags:1842, communityVerified:true, knownIncidents:["Publisher Scopely owned by Saudi Arabia's sovereign wealth fund (PIF)","Gambling-style mechanics disguised under family board game branding","$500M+ marketing budget used aggressive psychological targeting","Data shared with Facebook, Unity, AppsFlyer, and Firebase without granular user control"] },
+  { id:32, name:"Pokémon GO",               category:"Augmented Reality Game",  icon:"🔴", score:41, privacyGrade:"D",  playStoreId:"com.nianticlabs.pokemongo",         dataTypes:["Precise GPS Location","Camera","Contacts (optional)","Device ID","IP Address","Gameplay Data","Movement Patterns","Visual Scans of Public Spaces (opt-in)","Sleep Data (Pokémon GO Plus+)"], sellsData:false, misleadingAds:false, thirdParties:11, founded:"2016", headquarters:"Culver City, USA (Scopely, formerly Niantic)",  summary:"Pokémon GO collects precise, continuous GPS location data by design. In March 2025, Niantic sold its games business to Scopely for $3.5B; Scopely is owned by Saudi Arabia's Public Investment Fund. Scopely states player data stays on US servers and is not sold to third parties. However, years of location history and 3D visual scans of public spaces collected by Niantic remain with Niantic Spatial.", sources:["TechPolicy.Press Analysis March 2025","Animation Magazine Scopely Acquisition 2025","IBTimes UK: Pokémon GO AI Mapping Data March 2026","Niantic Privacy Policy"], communityFlags:1103, communityVerified:true, knownIncidents:["March 2025: Game sold to Scopely — owned by Saudi Arabia's sovereign wealth fund","Years of precise player location history retained by Niantic Spatial post-sale","Opt-in visual scanning of public spaces builds real-world 3D map","Original 2016 launch accidentally requested full Google account access (since fixed)"] },
+  { id:33, name:"Block Blast!",             category:"Puzzle Game",             icon:"🟦", score:46, privacyGrade:"C",  playStoreId:"com.block.juggle",                  dataTypes:["Device ID","Advertising ID","Usage Data","Gameplay Data","App Interactions"], sellsData:false, misleadingAds:true,  thirdParties:5,  founded:"2022", headquarters:"China (Hungry Studio)",                         summary:"Block Blast! is the most downloaded mobile game in both 2024 and 2025 with 793 million total downloads, developed by Chinese studio Hungry Studio. Data collection is relatively minimal. No account required. Chinese studio ownership means data handling is subject to Chinese law, which can compel government disclosure.", sources:["MAF.ad Block Blast Analysis March 2026","Google Play Data Safety Disclosure","AppBrain App Profile 2025"], communityFlags:287, communityVerified:true, knownIncidents:["Developer is a Chinese studio subject to Chinese data disclosure law","Aggressive interstitial ads reported by users","Puzzle difficulty reportedly tuned to drive in-app purchases"] },
+  { id:34, name:"Disney Solitaire",         category:"Mobile Game",             icon:"🏰", score:35, privacyGrade:"D",  playStoreId:"com.superplaystudios.disneysolitairedreams", dataTypes:["Device ID","Advertising ID","Purchase History","Gameplay Data","Usage Data","Email (optional)","Behavioral Data"], sellsData:true,  misleadingAds:true,  thirdParties:9,  founded:"2022", headquarters:"Tel Aviv, Israel (Superplay Studios)",         summary:"Disney Solitaire is developed by Superplay Studios and licensed from Disney. Despite the Disney family branding, the game collects advertising IDs, purchase history, and behavioral data shared with third-party advertising partners. The game contains loot box mechanics — purchases of 'random items'. Disney branding may give parents a false sense of privacy safety.", sources:["Disney Solitaire Google Play Data Safety","Google Play Store Listing 2025","Superplay Studios Privacy Policy"], communityFlags:412, communityVerified:true, knownIncidents:["Loot box mechanics: 'random item' purchases sold to players and families","Advertising data shared with third parties despite Disney family branding","No transparency on which specific third parties receive advertising data"] },
+  { id:35, name:"Clash Royale",             category:"Mobile Game",             icon:"⚔️", score:48, privacyGrade:"C",  playStoreId:"com.supercell.clashroyale",         dataTypes:["Device ID","Advertising ID","Gameplay Data","Purchase History","Chat Logs","IP Address","Usage Data","Voice Chat Data (if used)"], sellsData:false, misleadingAds:false, thirdParties:8,  founded:"2016", headquarters:"Helsinki, Finland (Supercell)",               summary:"Clash Royale is developed by Supercell, a Finnish studio majority-owned by Tencent (China) since 2016. Supercell's privacy policy is relatively transparent. Data is shared with service providers but Supercell states it does not sell personal data. Tencent's majority ownership creates indirect Chinese data access risk. Supercell disclosed to US investigators that Tencent has no access to international player data under their shareholder agreement.", sources:["Supercell Privacy Policy October 2025","Google Play Data Safety Disclosure","Bloomberg: Supercell Tencent Probe March 2026"], communityFlags:743, communityVerified:true, knownIncidents:["Developer Supercell majority-owned by Tencent (China) since 2016","US national security probe into Tencent's gaming investments ongoing 2026","Pay-to-win mechanics generate significant revenue pressure on players"] },
+  { id:36, name:"SLAM DUNK (DeNA)",         category:"Sports Game",             icon:"🏀", score:39, privacyGrade:"D",  playStoreId:"com.denachina.g63002013.android",   dataTypes:["Device ID","Advertising ID","Gameplay Data","Purchase History","Usage Data","IP Address","Account Info"], sellsData:false, misleadingAds:true,  thirdParties:9,  founded:"2022", headquarters:"Hong Kong (DeNA Hong Kong Limited)",            summary:"SLAM DUNK is a licensed basketball game adapted from the classic Takehiko Inoue manga, distributed by DeNA Hong Kong Limited. The app requests 32 permissions — high for a sports game. Data is shared with third parties for advertising and analytics. The 32-permission request warrants scrutiny from privacy-conscious users.", sources:["Aptoide App Listing: 32 permissions disclosed","Google Play Data Safety Disclosure","DeNA Privacy Statement"], communityFlags:198, communityVerified:true, knownIncidents:["App requests 32 Android permissions — unusually high for a sports game","Third-party advertising data sharing without granular user controls","In-app purchases for virtual items"] },
+  { id:37, name:"Pixel Flow!",              category:"Puzzle Game",             icon:"🎨", score:43, privacyGrade:"C",  playStoreId:"com.loomgames.pixelflow",           dataTypes:["Device ID","Advertising ID","Usage Data","Identifiers"], sellsData:false, misleadingAds:true,  thirdParties:4,  founded:"2025", headquarters:"Istanbul, Turkey (Loom Games A.Ş.)",            summary:"Pixel Flow! is a casual puzzle game by Turkish developer Loom Games, released in October 2025. Per the Apple App Store disclosure, identifiers and usage data are used to track users across apps and websites owned by other companies. Users widely report the game is designed to force in-app purchases by making levels artificially difficult.", sources:["Apple App Store Privacy Label 2025","Google Play Data Safety Disclosure","AppBrain Profile: Loom Games"], communityFlags:94, communityVerified:true, knownIncidents:["Cross-app user tracking confirmed via Apple App Store privacy label","User reviews widely report hard paywalls disguised as optional purchases","Puzzle difficulty tuned to frustrate free players into spending"] },
+
+  // ── BATCH 4: STREAMING, GAMING & AUTOMOTIVE ───────────────────────────────
+  { id:38, name:"Tubi",                     category:"Streaming",               icon:"📡", score:28, privacyGrade:"D",  playStoreId:"com.tubitv",                        dataTypes:["Email","Device ID","IP Address","Viewing History","Advertising ID","Behavioral Data","Inferred Interests","Usage Data"], sellsData:true,  misleadingAds:true,  thirdParties:16, founded:"2014", headquarters:"Los Angeles, USA (Fox Corporation)",           summary:"Tubi is a free, ad-supported streaming service owned by Fox Corporation. In 2024 Tubi settled a $19.9M class action lawsuit (Gregory v. Tubi) after users alleged it shared their video viewing histories with third-party advertisers using 'sophisticated tracking technology' without consent, violating the Video Privacy Protection Act. Tubi acknowledged sharing some personal information in connection with advertising which may qualify as a 'sale' under California law.", sources:["Gregory v. Tubi Class Action Settlement 2024","Tubi CCPA Transparency Report 2024","Common Sense Privacy Evaluation","Tubi Privacy Policy"], communityFlags:1284, communityVerified:true, knownIncidents:["2024: $19.9M class action settlement for sharing viewing history with advertisers without consent","Confirmed sharing of personal data for advertising — qualifies as 'sale' under California law","437 opt-out requests received in 2024 alone — many denied","Owned by Fox Corporation, a major media conglomerate with broad data interests"] },
+  { id:39, name:"Clash of Clans",           category:"Mobile Game",             icon:"🏰", score:47, privacyGrade:"C",  playStoreId:"com.supercell.clashofclans",        dataTypes:["Device ID","Advertising ID","Gameplay Data","Purchase History","Chat Logs","IP Address","Usage Data"], sellsData:false, misleadingAds:false, thirdParties:8,  founded:"2012", headquarters:"Helsinki, Finland (Supercell)",               summary:"Clash of Clans is Supercell's flagship title and one of the highest-grossing mobile games ever ($5.8B+ lifetime revenue). Like Clash Royale, it shares the same Supercell privacy policy. Supercell has disclosed to US investigators that Tencent — its majority owner — has no access to international player data under their shareholder agreement. Privacy policy is relatively transparent for a mobile game.", sources:["Supercell Privacy Policy October 2025","Common Sense Privacy Report","Bloomberg: Supercell Tencent Probe March 2026"], communityFlags:612, communityVerified:true, knownIncidents:["Developer Supercell majority-owned by Tencent (China) since 2016","US national security probe into Tencent's gaming investments ongoing 2026","Lifetime IAP revenue exceeds $5.8B — heavy monetization pressure on players"] },
+  { id:40, name:"Tetris®",                  category:"Puzzle Game",             icon:"🧩", score:40, privacyGrade:"D",  playStoreId:"com.n3twork.tetris",               dataTypes:["Device ID","Advertising ID","Purchase History","Location","Contact Info","Usage Data","Identifiers"], sellsData:false, misleadingAds:true,  thirdParties:12, founded:"1984", headquarters:"San Francisco, USA (PLAYSTUDIOS / Tetris Holding)", summary:"The official Tetris app is sub-licensed to PLAYSTUDIOS. Per Apple App Store disclosures for related Tetris apps, the game tracks users across other companies' apps and websites using purchases, location, and identifiers. Integrates advertising SDKs including Facebook SDK. Collects purchase history, location, contact info, and identifiers linked to user identity for advertising purposes.", sources:["Apple App Store Privacy Label: Tetris Block Party","Common Sense Privacy Report","PLAYSTUDIOS Privacy Policy","Google Play Data Safety Disclosure"], communityFlags:318, communityVerified:true, knownIncidents:["Cross-app tracking confirmed via Apple App Store privacy label","6 advertising or attribution SDKs embedded","Purchase and location data linked to user identity for advertising","EA's original Tetris app was retired in 2020 — only PLAYSTUDIOS version remains official"] },
+  { id:41, name:"AutoTrader Canada",        category:"Automotive Marketplace",  icon:"🚗", score:50, privacyGrade:"C",  playStoreId:"ca.autotrader.userapp",             dataTypes:["Full Name","Email","Phone Number","Location","Device ID","Search History","Vehicle Interest Data","Usage Data","Advertising ID"], sellsData:true,  misleadingAds:false, thirdParties:11, founded:"1996", headquarters:"Toronto, Canada (Trader Corporation)",         summary:"AutoTrader Canada (Trader Corporation) shares personal information with lenders, dealers, manufacturers, and third-party service providers. The app tracks users across apps and websites using identifiers. The US equivalent Autotrader faced a CIPA lawsuit in 2025 for allegedly using third-party tracking tools including pen registers to collect user data without consent. Data shared with vehicle dealers without granular user controls.", sources:["AutoTrader Canada Privacy Statement","Apple App Store Privacy Label","Rodriguez v. Autotrader.com CIPA Lawsuit 2025","Trader Corporation Privacy Policy"], communityFlags:267, communityVerified:true, knownIncidents:["Personal information shared with lenders, dealers and manufacturers per privacy policy","US equivalent Autotrader faced CIPA lawsuit for third-party tracking tools 2025","Cross-app tracking confirmed via App Store privacy label"] },
+  { id:42, name:"Kijiji Canada",            category:"Classifieds Marketplace", icon:"🏷️", score:44, privacyGrade:"D",  playStoreId:"com.ebay.kijiji.ca",               dataTypes:["Full Name","Email","Phone Number","Location (IP-derived)","Device ID","Browsing History","Ad Interaction Data","Third-Party Demographic Data","Advertising ID"], sellsData:true,  misleadingAds:true,  thirdParties:13, founded:"2005", headquarters:"Amsterdam, Netherlands (Marktplaats BV / Adevinta)", summary:"Kijiji Canada is owned by Marktplaats BV, a subsidiary of Adevinta (Norway). Kijiji collects demographic data, navigation data, and additional personal information from third-party sources and adds it to user profiles. It adheres to the Digital Advertising Alliance of Canada's AdChoices program, meaning data is used for behavioral ad targeting. Data from third parties is merged with your Kijiji account data. Users report overwhelming ad density in the app.", sources:["Kijiji Canada Privacy Policy December 2024","Kijiji Cookie Policy","Google Play Data Safety Disclosure"], communityFlags:389, communityVerified:true, knownIncidents:["Collects demographic and navigation data from third-party sources and adds to user profiles","Data shared with Adevinta corporate family for advertising","Users report excessive advertising density in the app interface"] },
+  { id:43, name:"CARFAX Canada",            category:"Automotive Research",     icon:"🔎", score:57, privacyGrade:"C",  playStoreId:"com.carfax.android",               dataTypes:["Full Name","Email","Phone Number","Location (GPS, if permitted)","Device ID","Vehicle Search History","IP Address","Usage Data"], sellsData:false, misleadingAds:false, thirdParties:7,  founded:"1984", headquarters:"Centreville, USA (S&P Global Mobility)",        summary:"CARFAX Canada collects personal information to provide vehicle history reports and commits to not selling or renting personal data to third parties for marketing. GPS location is collected if permitted by the user. CARFAX shares data with service providers under contractual limits. The US CARFAX parent shares data broadly with third parties. CARFAX Canada operates under Canadian PIPEDA privacy law which provides stronger protections.", sources:["CARFAX Canada Privacy Policy","CARFAX US Privacy Statement","Google Play Data Safety Disclosure","CARFAX Android Terms of Use"], communityFlags:143, communityVerified:true, knownIncidents:["US parent CARFAX reserves right to share information with third parties 'as CARFAX deems fit'","GPS location collected via app if permission granted","Service provider data sharing without user-visible controls"] },
+  { id:44, name:"CarGurus",                 category:"Automotive Marketplace",  icon:"🚙", score:32, privacyGrade:"D",  playStoreId:"com.cargurus.app",                  dataTypes:["Full Name","Email","Phone Number","Location","Device ID","Driver's License (if selling)","Vehicle Listing Data","Advertising ID","Browsing History","Purchase History"], sellsData:true,  misleadingAds:true,  thirdParties:17, founded:"2006", headquarters:"Cambridge, USA",                                summary:"CarGurus explicitly sells and shares personal information with data analytics providers, advertising technology vendors, third-party advertising networks, and social media platforms. In 2025, a CIPA class action lawsuit was filed alleging CarGurus installed third-party tracking software — including web pixels and mobile app SDKs qualifying as 'pen registers' — to collect user data including IP address and device info without consent. If you list a vehicle, a photo of your driver's license may be collected.", sources:["CarGurus Privacy Policy February 2025","CIPA Lawsuit: Labaton Keller Sucharow 2025","Common Sense Privacy Evaluation","Captain Compliance Analysis 2025"], communityFlags:521, communityVerified:true, knownIncidents:["Explicitly sells personal information to advertising networks and data analytics providers","2025 CIPA class action: alleged use of pen registers (web pixels, SDKs) without user consent","Driver's license photo collected if selling a vehicle","CarGurus was included in the 2026 ShinyHunters breach affecting multiple major platforms"] },
 ];
 
-function LandingScreen({ onEnter }) {
+const GRADE_COLOR = { "A+":"#00e676","A":"#69f0ae","B":"#fff176","C":"#ffb74d","D":"#ff7043","F":"#ef5350" };
+function gradeColor(g) { return GRADE_COLOR[g] || "#fff"; }
+
+function getPlayStoreUrl(id) {
+  if (!id) return null;
+  return `https://play.google.com/store/apps/details?id=${id}&hl=en_CA`;
+}
+
+function ScoreRing({ score, size=80 }) {
+  const r=size*0.42, circ=2*Math.PI*r, dash=(score/100)*circ;
+  const color=score>=80?"#00e676":score>=50?"#ffd54f":score>=25?"#ff7043":"#ef5350";
+  const cx=size/2, cy=size/2;
   return (
-    <div style={{minHeight:"100vh",background:"#0A0A0A",color:"#FFF",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:20,padding:"20px",fontFamily:"'Syne', sans-serif",position:"relative",overflow:"hidden"}}>
-      <div style={{position:"absolute",width:"500px",height:"500px",background:"radial-gradient(circle, rgba(0,255,102,0.08) 0%, rgba(0,0,0,0) 70%)",top:"10%",left:"15%",zIndex:0}}/>
-      <div style={{position:"absolute",width:"600px",height:"600px",background:"radial-gradient(circle, rgba(0,102,255,0.05) 0%, rgba(0,0,0,0) 70%)",bottom:"5%",right:"10%",zIndex:0}}/>
-      <div style={{zIndex:1,textAlign:"center",maxWidth:"800px",animation:"fadeUp 1s ease forwards"}}>
-        <div style={{display:"inline-flex",alignItems:"center",gap:"10px",background:"rgba(0,255,102,0.06)",border:"1px solid rgba(0,255,102,0.2)",padding:"8px 16px",borderRadius:"100px",color:"#00FF66",fontSize:"14px",fontWeight:"700",textTransform:"uppercase",letterSpacing:"1px",marginBottom:"32px",fontFamily:"'DM Mono', monospace"}}>
-          <span style={{width:"8px",height:"8px",background:"#00FF66",borderRadius:"50%",boxShadow:"0 0 12px #00FF66"}}/>🛡️ NEXT-GEN DATA INTELLIGENCE
-        </div>
-        <h1 style={{fontSize:"clamp(44px, 7vw, 92px)",fontWeight:"800",lineHeight:"0.95",letterSpacing:"-3px",marginBottom:"24px",textTransform:"uppercase"}}>
-          DATAGUARD <span style={{color:"#00FF66"}}>[X]</span>
-        </h1>
-        <p style={{fontSize:"clamp(16px, 2.5vw, 22px)",color:"rgba(255,255,255,0.6)",maxWidth:"620px",margin:"0 auto 48px auto",lineHeight:"1.4",fontWeight:"400"}}>
-          We audit, expose, and benchmark the hidden data practices of mainstream mobile applications. Total privacy autonomy starts here.
-        </p>
-        <button onClick={onEnter} style={{background:"#FFFFFF",color:"#000000",border:"none",padding:"20px 48px",fontSize:"18px",fontWeight:"800",borderRadius:"14px",cursor:"pointer",boxShadow:"0 8px 32px rgba(255,255,255,0.1)",transition:"transform 0.2s, box-shadow 0.2s",fontFamily:"'Syne', sans-serif",textTransform:"uppercase",letterSpacing:"-0.5px"}} onMouseEnter={(e)=>{e.currentTarget.style.transform="scale(1.03)";e.currentTarget.style.boxShadow="0 12px 40px rgba(0,255,102,0.2)"}} onMouseLeave={(e)=>{e.currentTarget.style.transform="scale(1)";e.currentTarget.style.boxShadow="0 8px 32px rgba(255,255,255,0.1)"}}>
-          Launch Dashboard →
-        </button>
-      </div>
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{display:"block"}}>
+      <circle cx={cx} cy={cy} r={r} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth={size*0.1}/>
+      <circle cx={cx} cy={cy} r={r} fill="none" stroke={color} strokeWidth={size*0.1} strokeDasharray={`${dash} ${circ-dash}`} strokeDashoffset={circ/4} strokeLinecap="round" style={{transition:"stroke-dasharray 1.2s cubic-bezier(.4,0,.2,1)"}}/>
+      <text x={cx} y={cy+5} textAnchor="middle" fill="white" fontSize={size*0.22} fontWeight="700" fontFamily="'DM Mono', monospace">{score}</text>
+    </svg>
+  );
+}
+
+function Tag({label, color}) {
+  return <span style={{background:`${color}1a`,color,border:`1px solid ${color}44`,fontSize:"10px",padding:"3px 9px",borderRadius:"20px",fontWeight:"700",letterSpacing:"0.6px",textTransform:"uppercase",fontFamily:"'DM Mono', monospace"}}>{label}</span>;
+}
+
+function Field({label, placeholder, value, onChange, type="text"}) {
+  return (
+    <div>
+      <label style={{color:"rgba(255,255,255,0.5)",fontSize:"11px",fontWeight:"700",letterSpacing:"0.8px",textTransform:"uppercase",fontFamily:"'DM Mono', monospace",display:"block",marginBottom:"6px"}}>{label}</label>
+      <input type={type} value={value} onChange={onChange} placeholder={placeholder} style={{width:"100%",background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"12px",color:"white",padding:"13px 16px",fontSize:"15px",fontFamily:"'DM Mono', monospace",outline:"none",boxSizing:"border-box",transition:"border-color 0.2s"}} onFocus={e=>e.target.style.borderColor="rgba(239,83,80,0.5)"} onBlur={e=>e.target.style.borderColor="rgba(255,255,255,0.1)"}/>
     </div>
   );
 }
 
-function MainDashboard({ onGoToSubmitReview }) {
+function SectionLabel({children, color="rgba(255,255,255,0.35)"}) {
+  return <div style={{color,fontSize:"11px",fontWeight:"700",textTransform:"uppercase",letterSpacing:"1px",fontFamily:"'DM Mono', monospace",marginBottom:"12px"}}>{children}</div>;
+}
+
+function MetricBox({label, value, bad}) {
+  const c=bad?"#ef5350":"#00e676";
+  return (
+    <div style={{background:`${c}08`,border:`1px solid ${c}20`,borderRadius:"14px",padding:"16px",textAlign:"center"}}>
+      <div style={{color:c,fontWeight:"900",fontSize:"clamp(18px,3vw,24px)",fontFamily:"'DM Mono', monospace"}}>{value}</div>
+      <div style={{color:"rgba(255,255,255,0.35)",fontSize:"10px",textTransform:"uppercase",letterSpacing:"0.5px",marginTop:"5px"}}>{label}</div>
+    </div>
+  );
+}
+
+function LandingScreen({onPurchase}) {
+  const [hov, setHov] = useState(false);
+  const features = [
+    {icon:"🔍",title:"Deep App Analysis",desc:"Privacy scores built from real data: app store labels, policy audits, known incidents, and third-party research."},
+    {icon:"👥",title:"Community-Powered",desc:"Real users flag new findings. Every report is reviewed and scored transparently. You can contribute too."},
+    {icon:"📊",title:"Data Broker Map",desc:"See exactly which third parties an app shares your data with — not just how many, but who they are."},
+    {icon:"🚨",title:"Incident History",desc:"Every known fine, breach, or scandal listed with sources. No greenwashing, no PR spin."},
+    {icon:"🔔",title:"Watchlist Alerts",desc:"Follow apps you use. Get notified when their privacy score changes or a new incident is reported."},
+    {icon:"🌍",title:"100% Open Source",desc:"Every line of code is public. No hidden trackers, no analytics, no ads. Ever. Auditable by anyone."},
+  ];
+  return (
+    <div style={{minHeight:"100vh",background:"#060610",color:"white",fontFamily:"'Syne', sans-serif",overflowX:"hidden"}}>
+      <div style={{position:"relative",minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"40px 24px",textAlign:"center",overflow:"hidden"}}>
+        <div style={{position:"absolute",inset:0,pointerEvents:"none"}}>
+          <div style={{position:"absolute",top:"20%",left:"50%",transform:"translateX(-50%)",width:"700px",height:"700px",background:"radial-gradient(ellipse, rgba(239,83,80,0.09) 0%, transparent 70%)",borderRadius:"50%"}}/>
+          <svg width="100%" height="100%" style={{position:"absolute",opacity:0.04}}><defs><pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse"><path d="M 60 0 L 0 0 0 60" fill="none" stroke="white" strokeWidth="0.5"/></pattern></defs><rect width="100%" height="100%" fill="url(#grid)"/></svg>
+        </div>
+        <div style={{position:"relative",zIndex:1,maxWidth:"680px"}}>
+          <div style={{display:"inline-flex",alignItems:"center",gap:"8px",background:"rgba(239,83,80,0.12)",border:"1px solid rgba(239,83,80,0.3)",borderRadius:"20px",padding:"6px 16px",marginBottom:"32px"}}>
+            <span style={{width:"6px",height:"6px",borderRadius:"50%",background:"#ef5350",display:"inline-block",animation:"blink 1.5s ease infinite"}}/>
+            <span style={{fontSize:"11px",color:"#ef5350",fontWeight:"700",letterSpacing:"1.5px",fontFamily:"'DM Mono', monospace"}}>OPEN SOURCE · COMMUNITY DRIVEN · NO ADS</span>
+          </div>
+          <div style={{fontSize:"80px",marginBottom:"16px",lineHeight:1}}>🛡️</div>
+          <h1 style={{margin:"0 0 20px",fontSize:"clamp(40px,8vw,72px)",fontWeight:"800",lineHeight:1.05,letterSpacing:"-2px",background:"linear-gradient(135deg, #ffffff 0%, #ffffff 50%, #ef5350 100%)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>DataGuard</h1>
+          <p style={{fontSize:"clamp(16px,2.5vw,20px)",color:"rgba(255,255,255,0.55)",lineHeight:1.7,margin:"0 auto 48px",maxWidth:"520px"}}>The app that watches the apps watching you. Built to expose data harvesting, deceptive advertising, and the hidden economy of selling your personal information.</p>
+          <div style={{background:"rgba(0,230,118,0.06)",border:"1px solid rgba(0,230,118,0.2)",borderRadius:"20px",padding:"24px 32px",marginBottom:"40px",display:"inline-block",maxWidth:"480px"}}>
+            <div style={{color:"#00e676",fontWeight:"800",fontFamily:"'DM Mono', monospace",fontSize:"12px",letterSpacing:"1px",marginBottom:"16px"}}>OUR PRIVACY PLEDGE</div>
+            <div style={{display:"flex",flexDirection:"column",gap:"10px"}}>
+              {["We collect zero user data. None. Not even analytics.","No advertising. No sponsored results. Ever.","One-time $3 purchase. No subscriptions. No hidden fees.","Full source code is public and auditable on GitHub."].map((p,i)=>(
+                <div key={i} style={{display:"flex",gap:"12px",alignItems:"flex-start",textAlign:"left"}}>
+                  <span style={{color:"#00e676",fontSize:"14px",flexShrink:0,marginTop:"1px"}}>✓</span>
+                  <span style={{color:"rgba(255,255,255,0.75)",fontSize:"14px",lineHeight:1.5}}>{p}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:"12px"}}>
+            <button onClick={onPurchase} onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)} style={{background:hov?"#ff6b6b":"#ef5350",border:"none",borderRadius:"16px",color:"white",fontWeight:"800",fontSize:"18px",padding:"18px 48px",cursor:"pointer",fontFamily:"'Syne', sans-serif",boxShadow:hov?"0 0 40px rgba(239,83,80,0.5)":"0 0 20px rgba(239,83,80,0.3)",transition:"all 0.2s ease",transform:hov?"translateY(-2px)":"translateY(0)"}}>Get DataGuard — $3 one-time</button>
+            <span style={{color:"rgba(255,255,255,0.3)",fontSize:"12px"}}>One-time payment · No subscription · Instant access</span>
+          </div>
+        </div>
+      </div>
+      <div style={{maxWidth:"900px",margin:"0 auto",padding:"0 24px 80px"}}>
+        <div style={{textAlign:"center",marginBottom:"56px"}}>
+          <h2 style={{fontSize:"clamp(28px,5vw,44px)",fontWeight:"800",letterSpacing:"-1px",margin:"0 0 12px"}}>Everything you need to take back control</h2>
+          <p style={{color:"rgba(255,255,255,0.4)",fontSize:"16px"}}>One app. No nonsense. No irony in how it collects your data.</p>
+        </div>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:"20px",marginBottom:"80px"}}>
+          {features.map((f,i)=>(
+            <div key={i} style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:"18px",padding:"24px",transition:"all 0.2s ease"}} onMouseEnter={e=>{e.currentTarget.style.background="rgba(255,255,255,0.06)";e.currentTarget.style.borderColor="rgba(255,255,255,0.14)";}} onMouseLeave={e=>{e.currentTarget.style.background="rgba(255,255,255,0.03)";e.currentTarget.style.borderColor="rgba(255,255,255,0.07)";}}>
+              <div style={{fontSize:"28px",marginBottom:"12px"}}>{f.icon}</div>
+              <div style={{fontWeight:"700",fontSize:"15px",marginBottom:"8px"}}>{f.title}</div>
+              <div style={{color:"rgba(255,255,255,0.45)",fontSize:"13px",lineHeight:1.6}}>{f.desc}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:"24px",padding:"40px",display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:"32px",textAlign:"center",marginBottom:"64px"}}>
+          {[["44+","apps in database"],["18,000+","community reports"],["$0","ad revenue"],["100%","open source"],["0","data points collected about you"]].map(([n,l],i)=>(
+            <div key={i}><div style={{fontSize:"clamp(28px,5vw,40px)",fontWeight:"800",letterSpacing:"-1px",fontFamily:"'DM Mono', monospace",color:"#ef5350"}}>{n}</div><div style={{color:"rgba(255,255,255,0.4)",fontSize:"12px",marginTop:"4px"}}>{l}</div></div>
+          ))}
+        </div>
+        <div style={{textAlign:"center"}}>
+          <div style={{color:"rgba(255,255,255,0.3)",fontSize:"13px",marginBottom:"24px"}}>Every dollar goes directly to maintaining the database and funding community research. No investors. No VCs. Just you.</div>
+          <button onClick={onPurchase} style={{background:"#ef5350",border:"none",borderRadius:"14px",color:"white",fontWeight:"800",fontSize:"17px",padding:"16px 42px",cursor:"pointer",fontFamily:"'Syne', sans-serif",boxShadow:"0 0 24px rgba(239,83,80,0.35)",transition:"all 0.2s ease"}} onMouseEnter={e=>{e.currentTarget.style.background="#ff6b6b";e.currentTarget.style.transform="translateY(-2px)";}} onMouseLeave={e=>{e.currentTarget.style.background="#ef5350";e.currentTarget.style.transform="translateY(0)";}}>Get DataGuard for $3</button>
+        </div>
+      </div>
+      <style>{`@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}`}</style>
+    </div>
+  );
+}
+
+function MainApp() {
+  const [view, setView] = useState("browse");
+  const [selected, setSelected] = useState(null);
   const [search, setSearch] = useState("");
-  const [selectedCat, setSelectedCat] = useState("All");
-  const [sortMethod, setSortMethod] = useState("worst"); // 'worst', 'best', 'alphabetical'
-  const [selectedApp, setSelectedApp] = useState(null);
-  const [reports, setReports] = useState([]);
-  const [repApp, setRepApp] = useState("");
-  const [repType, setRepType] = useState("Data Breach");
-  const [repDesc, setRepDesc] = useState("");
-  const [repMsg, setRepMsg] = useState("");
+  const [filter, setFilter] = useState("all");
+  const [sort, setSort] = useState("worst");
+  const [watchlist, setWatchlist] = useState([3,6]);
+  const [notifications, setNotifications] = useState([
+    {id:1,app:"WeChat",msg:"Research confirms WeChat functions as active Chinese government policing tool",time:"1h ago",read:false},
+    {id:2,app:"QQ",msg:"2025 forensic study found identity card images stored in plain text",time:"2h ago",read:false},
+    {id:3,app:"Telegram",msg:"Q1 2025: Telegram handed data on 22,777 users to authorities",time:"1d ago",read:false},
+    {id:4,app:"Discord",msg:"October 2025: Vendor breach exposed government IDs and billing data",time:"2d ago",read:false},
+    {id:5,app:"LinkedIn",msg:"BrowserGate 2026: Alleged undisclosed browser extension scanning",time:"3d ago",read:false},
+    {id:6,app:"Roblox",msg:"April 2025: Class action for illegal harvesting of children's data via hidden scripts",time:"4d ago",read:false},
+    {id:7,app:"Tubi",msg:"2024: $19.9M settlement for sharing viewing history with advertisers without consent",time:"5d ago",read:false},
+    {id:8,app:"CarGurus",msg:"2025 CIPA lawsuit: alleged use of pen registers on users without consent",time:"6d ago",read:false},
+  ]);
+  const [showNotifs, setShowNotifs] = useState(false);
+  const [showAbout, setShowAbout] = useState(false);
 
-  const categories = ["All", ...new Set(APP_DB.map(a => a.category))];
+  const filtered = APP_DB.filter(app=>{
+    const q=search.toLowerCase();
+    const m=app.name.toLowerCase().includes(q)||app.category.toLowerCase().includes(q);
+    if(filter==="sellers") return m&&app.sellsData;
+    if(filter==="deceptive") return m&&app.misleadingAds;
+    if(filter==="safe") return m&&app.score>=80;
+    if(filter==="watchlist") return m&&watchlist.includes(app.id);
+    return m;
+  }).sort((a,b)=>sort==="worst"?a.score-b.score:sort==="best"?b.score-a.score:a.name.localeCompare(b.name));
 
-  const filteredAndSorted = APP_DB.filter(a => {
-    const matchS = a.name.toLowerCase().includes(search.toLowerCase());
-    const matchC = selectedCat === "All" || a.category === selectedCat;
-    return matchS && matchC;
-  }).sort((a, b) => {
-    if (sortMethod === "worst") {
-      return a.score - b.score;
-    } else if (sortMethod === "best") {
-      return b.score - a.score;
-    } else if (sortMethod === "alphabetical") {
-      return a.name.localeCompare(b.name);
-    }
-    return 0;
-  });
-
-  const getScoreColor = (s) => {
-    if(s >= 80) return "#00FF66";
-    if(s >= 50) return "#FFAA00";
-    return "#FF3333";
-  };
-
-  const getGradeBg = (g) => {
-    if(g.startsWith("A")) return "rgba(0,255,102,0.1)";
-    if(g.startsWith("B")) return "rgba(0,255,102,0.05)";
-    if(g.startsWith("C")) return "rgba(255,170,0,0.08)";
-    if(g.startsWith("D")) return "rgba(255,170,0,0.04)";
-    return "rgba(255,51,51,0.1)";
-  };
-
-  const handleReportSubmit = async (e) => {
-    e.preventDefault();
-    if(!repApp || !repDesc) { setRepMsg("Please fill all fields."); return; }
-    const pl = { app_name: repApp, report_type: repType, description: repDesc, created_at: new Date().toISOString() };
-    const ok = await submitToSupabase("safety_reports", pl);
-    if(ok) {
-      setReports([pl, ...reports]);
-      setRepApp(""); setRepDesc("");
-      setRepMsg("Report filed successfully to database ecosystem.");
-    } else {
-      setRepMsg("Supabase connection error. Logged locally instead.");
-      setReports([pl, ...reports]);
-    }
-  };
+  const unread=notifications.filter(n=>!n.read).length;
+  function openApp(app){setSelected(app);setView("detail");}
+  function toggleWatch(id){setWatchlist(w=>w.includes(id)?w.filter(x=>x!==id):[...w,id]);}
 
   return (
-    <div style={{background:"#070708",color:"#FFF",minHeight:"100vh",fontFamily:"'Syne', sans-serif",padding:"40px 20px"}}>
-      <div style={{maxWidth:"1400px",margin:"0 auto"}}>
-        <div style={{display:"flex",justifyContent:"between",alignItems:"center",borderBottom:"1px solid rgba(255,255,255,0.06)",paddingBottom:"32px",marginBottom:"40px",flexWrap:"wrap",gap:"20px"}}>
-          <div>
-            <h2 style={{fontSize:"32px",fontWeight:"800",letterSpacing:"-1px"}}>DATAGUARD APP DIRECTORY</h2>
-            <p style={{color:\"rgba(255,255,255,0.5)\",fontFamily:\"'DM Mono', monospace\",fontSize:\"14px\",marginTop:\"4px\"}}>INDEXED SYSTEM STACK // CORE AUDITS</p>
-          </div>
-          <button onClick={onGoToSubmitReview} style={{background:"#00FF66",color:"#000",border:"none",padding:"14px 28px",borderRadius:"12px",fontWeight:"800",cursor:"pointer",fontFamily:"'Syne', sans-serif",textTransform:"uppercase",letterSpacing:"-0.5px"}}>
-            + Add New App Review
-          </button>
+    <div style={{minHeight:"100vh",background:"#060610",color:"white",fontFamily:"'Syne', sans-serif",display:"flex",flexDirection:"column"}}>
+      <nav style={{background:"rgba(6,6,16,0.95)",borderBottom:"1px solid rgba(255,255,255,0.07)",padding:"0 20px",display:"flex",alignItems:"center",gap:"16px",height:"58px",position:"sticky",top:0,zIndex:50,backdropFilter:"blur(12px)"}}>
+        <div style={{display:"flex",alignItems:"center",gap:"8px",marginRight:"auto"}}>
+          <span style={{fontSize:"22px"}}>🛡️</span>
+          <span style={{fontWeight:"800",fontSize:"17px",letterSpacing:"-0.3px"}}>DataGuard</span>
+          <span style={{background:"rgba(0,230,118,0.12)",color:"#00e676",fontSize:"9px",fontWeight:"700",padding:"2px 7px",borderRadius:"10px",border:"1px solid rgba(0,230,118,0.25)",fontFamily:"'DM Mono', monospace",letterSpacing:"1px"}}>OPEN SOURCE</span>
         </div>
+        <button onClick={()=>setShowNotifs(v=>!v)} style={{background:"none",border:"none",cursor:"pointer",position:"relative",padding:"4px"}}>
+          <span style={{fontSize:"20px"}}>🔔</span>
+          {unread>0&&<span style={{position:"absolute",top:0,right:0,background:"#ef5350",borderRadius:"50%",width:"14px",height:"14px",fontSize:"9px",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:"700",fontFamily:"'DM Mono', monospace"}}>{unread}</span>}
+        </button>
+        <button onClick={()=>setShowAbout(true)} style={{background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"20px",color:"rgba(255,255,255,0.6)",fontSize:"12px",padding:"6px 14px",cursor:"pointer",fontWeight:"600"}}>About</button>
+      </nav>
 
-        <div style={{display:"grid",gridTemplateColumns:"1fr",gap:"40px",alignItems:"start"}}>
-          <div>
-            <div style={{display:"flex",gap:"16px",marginBottom:"24px",flexWrap:"wrap",alignItems:"center"}}>
-              <input type="text" placeholder="Search target application..." value={search} onChange={(e)=>setSearch(e.target.value)} style={{flex:1,minWidth:"280px",background:"#121214",border:"1px solid rgba(255,255,255,0.08)",borderRadius:"12px",padding:"16px 20px",color:"#FFF",fontFamily:"'Syne', sans-serif",fontSize:"16px"}}/>
-              
-              {/* Refactored Engine Interface Supporting Dynamic Sorting Architecture */}
-              <div style={{display:"flex",background:"#121214",border:"1px solid rgba(255,255,255,0.08)",padding:"4px",borderRadius:"12px",gap:"4px"}}>
-                <button onClick={()=>setSortMethod("worst")} style={{background:sortMethod==="worst"?"#FF3333":"transparent",color:sortMethod==="worst"?"#000":'rgba(255,255,255,0.6)',border:"none",padding:"10px 16px",borderRadius:"8px",fontSize:"13px",fontWeight:"700",cursor:"pointer",fontFamily:"'Syne', sans-serif"}}>Worst First</button>
-                <button onClick={()=>setSortMethod("best")} style={{background:sortMethod==="best"?"#00FF66":"transparent",color:sortMethod==="best"?"#000":'rgba(255,255,255,0.6)',border:"none",padding:"10px 16px",borderRadius:"8px",fontSize:"13px",fontWeight:"700",cursor:"pointer",fontFamily:"'Syne', sans-serif"}}>Best First</button>
-                <button onClick={()=>setSortMethod("alphabetical")} style={{background:sortMethod==="alphabetical"?"#FFFFFF":"transparent",color:sortMethod==="alphabetical"?"#000":'rgba(255,255,255,0.6)',border:"none",padding:"10px 16px",borderRadius:"8px",fontSize:"13px",fontWeight:"700",cursor:"pointer",fontFamily:"'Syne', sans-serif"}}>Alphabetical</button>
+      {showNotifs&&(
+        <div style={{position:"fixed",top:"66px",right:"16px",width:"320px",background:"#0f0f20",border:"1px solid rgba(255,255,255,0.12)",borderRadius:"16px",zIndex:200,overflow:"hidden",boxShadow:"0 20px 60px rgba(0,0,0,0.6)"}}>
+          <div style={{padding:"14px 18px",borderBottom:"1px solid rgba(255,255,255,0.07)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+            <span style={{fontWeight:"700",fontSize:"14px"}}>Alerts</span>
+            <button onClick={()=>{setNotifications(n=>n.map(x=>({...x,read:true})));setShowNotifs(false);}} style={{background:"none",border:"none",color:"rgba(255,255,255,0.4)",cursor:"pointer",fontSize:"12px"}}>Mark all read</button>
+          </div>
+          {notifications.map(n=>(
+            <div key={n.id} style={{padding:"14px 18px",borderBottom:"1px solid rgba(255,255,255,0.05)",background:n.read?"transparent":"rgba(239,83,80,0.05)"}}>
+              <div style={{display:"flex",justifyContent:"space-between",marginBottom:"4px"}}>
+                <span style={{fontWeight:"700",fontSize:"13px"}}>{n.app}</span>
+                <span style={{color:"rgba(255,255,255,0.3)",fontSize:"11px"}}>{n.time}</span>
               </div>
-
-              <div style={{display:"flex",gap:"8px",overflowX:"auto",paddingBottom:"4px"}}>
-                {categories.map(c => (
-                  <button key={c} onClick={()=>setSelectedCat(c)} style={{background:selectedCat===c?"#FFF":"#121214",color:selectedCat===c?"#000":"rgba(255,255,255,0.6)",border:"1px solid rgba(255,255,255,0.08)",padding:"0 20px",height:"48px",borderRadius:"12px",fontWeight:"700",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"'Syne', sans-serif"}}>
-                    {c}
-                  </button>
-                ))}
-              </div>
+              <div style={{color:"rgba(255,255,255,0.55)",fontSize:"12px"}}>{n.msg}</div>
             </div>
+          ))}
+        </div>
+      )}
 
-            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(300px, 1fr))",gap:"20px"}}>
-              {filteredAndSorted.map(a => (
-                <div key={a.id} onClick={()=>setSelectedApp(a)} style={{background:"#121214",border:"1px solid rgba(255,255,255,0.06)",borderRadius:"16px",padding:"24px",cursor:"pointer",position:"relative",transition:"transform 0.2s, border-color 0.2s"}} onMouseEnter={(e)=>{e.currentTarget.style.borderColor="rgba(255,255,255,0.15)";e.currentTarget.style.transform="translateY(-2px)"}} onMouseLeave={(e)=>{e.currentTarget.style.borderColor="rgba(255,255,255,0.06)";e.currentTarget.style.transform="translateY(0)"}}>
-                  <div style={{display:"flex",justifyContent:"between",alignItems:"start",marginBottom:"16px"}}>
-                    <div style={{display:"flex",gap:"16px",alignItems:"center"}}>
-                      <div style={{fontSize:"32px",background:"rgba(255,255,255,0.04)\",width:\"64px\",height:\"64px\",borderRadius:\"14px\",display:\"flex\",alignItems:\"center\",justifyContent:\"center\"}}>{a.icon||\"📱\"}</div>
-                      <div>
-                        <h3 style={{fontSize:"20px",fontWeight:"800"}}>{a.name}</h3>
-                        <span style={{fontFamily:"'DM Mono', monospace\",fontSize:\"12px\",color:\"rgba(255,255,255,0.4)\",background:\"rgba(255,255,255,0.04)\",padding:\"4px 8px\",borderRadius:\"6px\",marginTop:\"4px\",display:\"inline-block\"}}>{a.category}</span>
-                      </div>
-                    </div>
-                    <div style={{background:getGradeBg(a.privacyGrade),border:`1px solid ${getScoreColor(a.score)}33`,borderRadius:"12px",width:"50px",height:"50px",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:"800",fontSize:"18px",color:getScoreColor(a.score),fontFamily:"'DM Mono', monospace"}}>
-                      {a.privacyGrade}
-                    </div>
-                  </div>
-                  <div style={{marginTop:"24px"}}>
-                    <div style={{display:"flex",justifyContent:"between",fontSize:"12px",fontFamily:"'DM Mono', monospace\",color:\"rgba(255,255,255,0.4)\",marginBottom:\"8px\"}}>
-                      <span>PRIVACY VERDICT SCORE</span>
-                      <span style={{color:getScoreColor(a.score),fontWeight:"700"}}>{a.score}/100</span>
-                    </div>
-                    <div style={{width:"100%",height:"6px",background:"rgba(255,255,255,0.04)\",borderRadius:\"100px\",overflow:\"hidden\"}}>
-                      <div style={{width:`${a.score}%`,height:"100%",background:getScoreColor(a.score),borderRadius:"100px"}}/>
-                    </div>
-                  </div>
+      {showAbout&&(
+        <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.8)",zIndex:300,display:"flex",alignItems:"center",justifyContent:"center",padding:"24px",backdropFilter:"blur(8px)"}} onClick={()=>setShowAbout(false)}>
+          <div onClick={e=>e.stopPropagation()} style={{background:"#0f0f20",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"24px",padding:"36px",maxWidth:"500px",width:"100%",position:"relative"}}>
+            <button onClick={()=>setShowAbout(false)} style={{position:"absolute",top:"16px",right:"16px",background:"rgba(255,255,255,0.08)",border:"none",color:"white",borderRadius:"50%",width:"32px",height:"32px",cursor:"pointer",fontSize:"16px"}}>×</button>
+            <div style={{fontSize:"40px",marginBottom:"16px"}}>🛡️</div>
+            <h3 style={{color:"white",fontFamily:"'DM Mono', monospace",margin:"0 0 12px",fontSize:"18px"}}>About DataGuard</h3>
+            <p style={{color:"rgba(255,255,255,0.55)",fontSize:"14px",lineHeight:1.8,marginBottom:"20px"}}>DataGuard was built because the app economy has a fundamental problem: most apps exist not to provide value, but to harvest and monetize user data. We believe people deserve to know exactly what they are signing up for.</p>
+            <div style={{background:"rgba(0,230,118,0.06)",border:"1px solid rgba(0,230,118,0.2)",borderRadius:"14px",padding:"20px",marginBottom:"20px"}}>
+              <div style={{color:"#00e676",fontWeight:"700",fontFamily:"'DM Mono', monospace",fontSize:"11px",letterSpacing:"1px",marginBottom:"12px"}}>OUR PROMISES</div>
+              {["We collect zero user data — no analytics, no logs, no telemetry.","No advertising or sponsored content of any kind.","Your $3 purchase directly funds research and development.","Source code is fully public and auditable on GitHub.","Community contributions are welcome and credited."].map((p,i)=>(
+                <div key={i} style={{display:"flex",gap:"10px",alignItems:"flex-start",marginBottom:"8px"}}>
+                  <span style={{color:"#00e676",flexShrink:0}}>✓</span>
+                  <span style={{color:"rgba(255,255,255,0.65)",fontSize:"13px",lineHeight:1.5}}>{p}</span>
                 </div>
               ))}
             </div>
           </div>
         </div>
+      )}
 
-        <div style={{marginTop:"
+      <div style={{flex:1,maxWidth:"800px",margin:"0 auto",width:"100%",padding:"24px 16px"}}>
+        {view==="browse"&&(
+          <>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:"12px",marginBottom:"24px"}}>
+              <SummaryTile icon="💀" label="Sell your data" value={`${APP_DB.filter(a=>a.sellsData).length}/${APP_DB.length}`} color="#ef5350" onClick={()=>setFilter("sellers")} active={filter==="sellers"}/>
+              <SummaryTile icon="🎭" label="Deceptive ads" value={`${APP_DB.filter(a=>a.misleadingAds).length}/${APP_DB.length}`} color="#ff7043" onClick={()=>setFilter("deceptive")} active={filter==="deceptive"}/>
+              <SummaryTile icon="✅" label="Privacy safe" value={`${APP_DB.filter(a=>a.score>=80).length}/${APP_DB.length}`} color="#00e676" onClick={()=>setFilter("safe")} active={filter==="safe"}/>
+            </div>
+            <div style={{position:"relative",marginBottom:"14px"}}>
+              <span style={{position:"absolute",left:"16px",top:"50%",transform:"translateY(-50%)",fontSize:"16px",pointerEvents:"none"}}>🔍</span>
+              <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search apps by name or category…" style={{width:"100%",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.09)",borderRadius:"14px",color:"white",padding:"13px 16px 13px 44px",fontSize:"15px",outline:"none",fontFamily:"'Syne', sans-serif",boxSizing:"border-box",transition:"border-color 0.2s"}} onFocus={e=>e.target.style.borderColor="rgba(239,83,80,0.4)"} onBlur={e=>e.target.style.borderColor="rgba(255,255,255,0.09)"}/>
+            </div>
+            <div style={{display:"flex",gap:"8px",marginBottom:"20px",alignItems:"center",overflowX:"auto",paddingBottom:"4px"}}>
+              {[["all","All"],["sellers","Sells Data"],["deceptive","Deceptive"],["safe","Safe"],["watchlist","Watchlist"]].map(([k,l])=>(
+                <button key={k} onClick={()=>setFilter(k)} style={{background:filter===k?"rgba(239,83,80,0.18)":"rgba(255,255,255,0.04)",border:filter===k?"1px solid rgba(239,83,80,0.45)":"1px solid rgba(255,255,255,0.07)",color:filter===k?"#ff8a80":"rgba(255,255,255,0.5)",padding:"7px 15px",borderRadius:"20px",cursor:"pointer",fontSize:"12px",fontWeight:"700",textTransform:"uppercase",letterSpacing:"0.5px",whiteSpace:"nowrap",transition:"all 0.15s"}}>{l}{k==="watchlist"?` (${watchlist.length})`:""}</button>
+              ))}
+              <div style={{marginLeft:"auto",flexShrink:0}}>
+                <select value={sort} onChange={e=>setSort(e.target.value)} style={{background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.08)",color:"rgba(255,255,255,0.5)",padding:"7px 12px",borderRadius:"20px",cursor:"pointer",fontSize:"12px",outline:"none"}}>
+                  <option value="worst">Worst first</option>
+                  <option value="best">Best first</option>
+                  <option value="az">A → Z</option>
+                </select>
+              </div>
+            </div>
+            <div style={{display:"flex",flexDirection:"column",gap:"10px"}}>
+              {filtered.length===0?(
+                <div style={{textAlign:"center",padding:"64px 24px",color:"rgba(255,255,255,0.25)"}}>
+                  <div style={{fontSize:"40px",marginBottom:"12px"}}>🔍</div>
+                  <div style={{fontSize:"15px",marginBottom:"16px"}}>No apps found</div>
+                  <button onClick={()=>setView("submit")} style={{background:"rgba(239,83,80,0.12)",border:"1px solid rgba(239,83,80,0.3)",color:"#ef5350",padding:"10px 20px",borderRadius:"20px",cursor:"pointer",fontSize:"13px",fontWeight:"700"}}>Submit an app for review</button>
+                </div>
+              ):filtered.map(app=>(
+                <AppRow key={app.id} app={app} onOpen={()=>openApp(app)} watched={watchlist.includes(app.id)} onToggleWatch={()=>toggleWatch(app.id)}/>
+              ))}
+            </div>
+            <div style={{marginTop:"32px",background:"rgba(239,83,80,0.05)",border:"1px solid rgba(239,83,80,0.15)",borderRadius:"18px",padding:"28px",textAlign:"center"}}>
+              <div style={{fontSize:"28px",marginBottom:"10px"}}>🕵️</div>
+              <div style={{fontWeight:"800",fontSize:"16px",marginBottom:"6px"}}>Know a data-hungry app we are missing?</div>
+              <div style={{color:"rgba(255,255,255,0.4)",fontSize:"13px",marginBottom:"18px"}}>Submit it for community review. Our researchers will analyze and score it within 72 hours.</div>
+              <button onClick={()=>setView("submit")} style={{background:"#ef5350",border:"none",borderRadius:"12px",color:"white",padding:"12px 28px",cursor:"pointer",fontWeight:"800",fontFamily:"'Syne', sans-serif",fontSize:"14px"}}>Submit an App</button>
+            </div>
+          </>
+        )}
+        {view==="detail"&&selected&&<DetailView app={selected} watched={watchlist.includes(selected.id)} onToggleWatch={()=>toggleWatch(selected.id)} onBack={()=>setView("browse")}/>}
+        {view==="submit"&&<SubmitView onBack={()=>setView("browse")}/>}
+      </div>
+    </div>
+  );
+}
+
+function SummaryTile({icon,label,value,color,onClick,active}) {
+  return (
+    <button onClick={onClick} style={{background:active?`${color}18`:"rgba(255,255,255,0.03)",border:`1px solid ${active?color+"44":"rgba(255,255,255,0.07)"}`,borderRadius:"16px",padding:"16px 12px",textAlign:"center",cursor:"pointer",transition:"all 0.2s",width:"100%"}} onMouseEnter={e=>e.currentTarget.style.background=`${color}10`} onMouseLeave={e=>e.currentTarget.style.background=active?`${color}18`:"rgba(255,255,255,0.03)"}>
+      <div style={{fontSize:"22px",marginBottom:"6px"}}>{icon}</div>
+      <div style={{color,fontWeight:"900",fontSize:"clamp(16px,3vw,22px)",fontFamily:"'DM Mono', monospace"}}>{value}</div>
+      <div style={{color:"rgba(255,255,255,0.35)",fontSize:"10px",textTransform:"uppercase",letterSpacing:"0.5px",marginTop:"3px"}}>{label}</div>
+    </button>
+  );
+}
+
+function AppRow({app, onOpen, watched, onToggleWatch}) {
+  const [hov, setHov] = useState(false);
+  return (
+    <div style={{background:hov?"rgba(255,255,255,0.06)":"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:"16px",padding:"16px",display:"flex",alignItems:"center",gap:"14px",cursor:"pointer",transition:"all 0.18s",userSelect:"none"}} onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)} onClick={onOpen}>
+      <div style={{fontSize:"32px",flexShrink:0}}>{app.icon}</div>
+      <div style={{flex:1,minWidth:0}}>
+        <div style={{display:"flex",alignItems:"center",gap:"8px",flexWrap:"wrap",marginBottom:"4px"}}>
+          <span style={{color:"white",fontWeight:"700",fontSize:"15px"}}>{app.name}</span>
+          {app.communityVerified&&<span style={{background:"rgba(0,230,118,0.1)",color:"#00e676",fontSize:"9px",padding:"2px 7px",borderRadius:"10px",border:"1px solid rgba(0,230,118,0.25)",fontFamily:"'DM Mono', monospace",fontWeight:"700",letterSpacing:"0.5px"}}>VERIFIED</span>}
+        </div>
+        <div style={{color:"rgba(255,255,255,0.35)",fontSize:"11px",marginBottom:"8px"}}>{app.category} · 🚩 {app.communityFlags.toLocaleString()} reports</div>
+        <div style={{display:"flex",gap:"6px",flexWrap:"wrap"}}>
+          {app.sellsData&&<Tag label="Sells Data" color="#ef5350"/>}
+          {app.misleadingAds&&<Tag label="Deceptive Ads" color="#ff7043"/>}
+          <Tag label={`${app.thirdParties} 3rd parties`} color="#607d8b"/>
+        </div>
+      </div>
+      <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:"2px",flexShrink:0}}>
+        <ScoreRing score={app.score} size={72}/>
+        <span style={{color:gradeColor(app.privacyGrade),fontWeight:"900",fontSize:"18px",fontFamily:"'DM Mono', monospace"}}>{app.privacyGrade}</span>
+      </div>
+      <button onClick={e=>{e.stopPropagation();onToggleWatch();}} style={{background:watched?"rgba(239,83,80,0.15)":"rgba(255,255,255,0.05)",border:watched?"1px solid rgba(239,83,80,0.4)":"1px solid rgba(255,255,255,0.08)",borderRadius:"50%",width:"34px",height:"34px",cursor:"pointer",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"15px",transition:"all 0.15s"}}>
+        {watched?"🔔":"🔕"}
+      </button>
+    </div>
+  );
+}
+
+function DetailView({app, watched, onToggleWatch, onBack}) {
+  const [feedbackType, setFeedbackType] = useState("correction");
+  const [feedbackText, setFeedbackText] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const playStoreUrl = getPlayStoreUrl(app.playStoreId);
+
+  const handleFeedback = async () => {
+    if(!feedbackText.trim()) return;
+    setSubmitting(true);
+    const ok = await submitToSupabase("community_reports",{app_name:app.name,report_type:feedbackType,content:feedbackText});
+    setSubmitting(false);
+    if(ok) setSubmitted(true);
+  };
+
+  return (
+    <div style={{animation:"fadeUp 0.3s ease"}}>
+      <button onClick={onBack} style={{background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"20px",color:"rgba(255,255,255,0.6)",padding:"8px 18px",cursor:"pointer",fontSize:"13px",fontWeight:"600",marginBottom:"24px",display:"flex",alignItems:"center",gap:"8px"}}>← Back</button>
+      <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:"20px",padding:"24px",marginBottom:"16px"}}>
+        <div style={{display:"flex",alignItems:"flex-start",gap:"16px"}}>
+          <div style={{fontSize:"52px"}}>{app.icon}</div>
+          <div style={{flex:1}}>
+            <div style={{display:"flex",alignItems:"center",gap:"10px",flexWrap:"wrap",marginBottom:"4px"}}>
+              <h2 style={{color:"white",margin:0,fontSize:"24px",fontWeight:"800",letterSpacing:"-0.5px"}}>{app.name}</h2>
+              {app.communityVerified&&<span style={{background:"rgba(0,230,118,0.1)",color:"#00e676",fontSize:"10px",padding:"3px 9px",borderRadius:"10px",border:"1px solid rgba(0,230,118,0.25)",fontFamily:"'DM Mono', monospace",fontWeight:"700"}}>COMMUNITY VERIFIED</span>}
+            </div>
+            <div style={{color:"rgba(255,255,255,0.4)",fontSize:"13px",marginBottom:"12px"}}>{app.category} · Founded {app.founded} · {app.headquarters}</div>
+            <div style={{display:"flex",gap:"8px",flexWrap:"wrap",alignItems:"center"}}>
+              {app.sellsData&&<Tag label="Sells Data" color="#ef5350"/>}
+              {app.misleadingAds&&<Tag label="Deceptive Ads" color="#ff7043"/>}
+              <Tag label={`${app.thirdParties} 3rd-party recipients`} color="#607d8b"/>
+              {playStoreUrl&&(
+                <a href={playStoreUrl} target="_blank" rel="noopener noreferrer" onClick={e=>e.stopPropagation()} style={{display:"inline-flex",alignItems:"center",gap:"5px",background:"rgba(0,150,136,0.12)",color:"#4db6ac",border:"1px solid rgba(0,150,136,0.3)",fontSize:"10px",padding:"3px 9px",borderRadius:"20px",fontWeight:"700",letterSpacing:"0.6px",textTransform:"uppercase",fontFamily:"'DM Mono', monospace",textDecoration:"none",transition:"all 0.15s"}} onMouseEnter={e=>e.currentTarget.style.background="rgba(0,150,136,0.22)"} onMouseLeave={e=>e.currentTarget.style.background="rgba(0,150,136,0.12)"}>
+                  ▶ Google Play
+                </a>
+              )}
+            </div>
+          </div>
+          <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:"4px"}}>
+            <ScoreRing score={app.score} size={90}/>
+            <span style={{color:gradeColor(app.privacyGrade),fontWeight:"900",fontSize:"26px",fontFamily:"'DM Mono', monospace"}}>{app.privacyGrade}</span>
+            <span style={{color:"rgba(255,255,255,0.3)",fontSize:"10px",textTransform:"uppercase",letterSpacing:"0.5px"}}>Privacy grade</span>
+          </div>
+        </div>
+      </div>
+
+      {playStoreUrl&&(
+        <a href={playStoreUrl} target="_blank" rel="noopener noreferrer" style={{display:"flex",alignItems:"center",gap:"14px",background:"rgba(0,150,136,0.07)",border:"1px solid rgba(0,150,136,0.2)",borderRadius:"14px",padding:"14px 18px",marginBottom:"14px",textDecoration:"none",transition:"all 0.2s"}} onMouseEnter={e=>e.currentTarget.style.background="rgba(0,150,136,0.14)"} onMouseLeave={e=>e.currentTarget.style.background="rgba(0,150,136,0.07)"}>
+          <span style={{fontSize:"24px"}}>🛒</span>
+          <div style={{flex:1}}>
+            <div style={{color:"#4db6ac",fontWeight:"700",fontSize:"13px",marginBottom:"2px"}}>Official Google Play Store Listing</div>
+            <div style={{color:"rgba(255,255,255,0.4)",fontSize:"11px"}}>Tap to download the correct official app — avoid look-alike imposters</div>
+          </div>
+          <span style={{color:"#4db6ac",fontSize:"18px"}}>→</span>
+        </a>
+      )}
+
+      <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:"16px",padding:"20px",marginBottom:"14px"}}>
+        <SectionLabel>Summary</SectionLabel>
+        <p style={{color:"rgba(255,255,255,0.7)",margin:0,lineHeight:1.75,fontSize:"14px"}}>{app.summary}</p>
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:"12px",marginBottom:"14px"}}>
+        <MetricBox label="Sells Data" value={app.sellsData?"YES":"NO"} bad={app.sellsData}/>
+        <MetricBox label="Deceptive Ads" value={app.misleadingAds?"YES":"NO"} bad={app.misleadingAds}/>
+        <MetricBox label="3rd Parties" value={app.thirdParties} bad={app.thirdParties>10}/>
+      </div>
+      <div style={{background:"rgba(239,83,80,0.04)",border:"1px solid rgba(239,83,80,0.12)",borderRadius:"16px",padding:"20px",marginBottom:"14px"}}>
+        <SectionLabel color="#ff8a80">Data Collected ({app.dataTypes.length} types)</SectionLabel>
+        <div style={{display:"flex",flexWrap:"wrap",gap:"8px"}}>
+          {app.dataTypes.map(d=><span key={d} style={{background:"rgba(239,83,80,0.1)",color:"#ff8a80",border:"1px solid rgba(239,83,80,0.2)",padding:"5px 12px",borderRadius:"20px",fontSize:"12px",fontWeight:"600"}}>{d}</span>)}
+        </div>
+      </div>
+      {app.knownIncidents.length>0&&(
+        <div style={{background:"rgba(255,193,7,0.04)",border:"1px solid rgba(255,193,7,0.15)",borderRadius:"16px",padding:"20px",marginBottom:"14px"}}>
+          <SectionLabel color="#ffd54f">Known Incidents and Fines</SectionLabel>
+          <div style={{display:"flex",flexDirection:"column",gap:"8px"}}>
+            {app.knownIncidents.map((inc,i)=>(
+              <div key={i} style={{display:"flex",gap:"10px",alignItems:"flex-start"}}>
+                <span style={{color:"#ffd54f",flexShrink:0}}>⚠</span>
+                <span style={{color:"rgba(255,255,255,0.65)",fontSize:"13px",lineHeight:1.5}}>{inc}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:"16px",padding:"20px",marginBottom:"14px"}}>
+        <SectionLabel>Sources</SectionLabel>
+        <div style={{display:"flex",flexWrap:"wrap",gap:"8px"}}>
+          {app.sources.map(s=><span key={s} style={{background:"rgba(255,255,255,0.06)",color:"rgba(255,255,255,0.55)",border:"1px solid rgba(255,255,255,0.09)",padding:"5px 12px",borderRadius:"20px",fontSize:"12px"}}>📄 {s}</span>)}
+        </div>
+      </div>
+      <div style={{background:"rgba(255,193,7,0.05)",border:"1px solid rgba(255,193,7,0.15)",borderRadius:"16px",padding:"20px",marginBottom:"14px",display:"flex",alignItems:"center",gap:"14px"}}>
+        <span style={{fontSize:"28px"}}>🚩</span>
+        <div>
+          <div style={{color:"#ffd54f",fontWeight:"800",fontSize:"16px",fontFamily:"'DM Mono', monospace"}}>{app.communityFlags.toLocaleString()} community reports</div>
+          <div style={{color:"rgba(255,255,255,0.4)",fontSize:"12px",marginTop:"3px"}}>People have flagged this app's privacy practices</div>
+        </div>
+        <button onClick={onToggleWatch} style={{marginLeft:"auto",background:watched?"rgba(239,83,80,0.15)":"rgba(255,255,255,0.05)",border:watched?"1px solid rgba(239,83,80,0.4)":"1px solid rgba(255,255,255,0.1)",borderRadius:"12px",color:watched?"#ff8a80":"rgba(255,255,255,0.5)",padding:"8px 14px",cursor:"pointer",fontSize:"12px",fontWeight:"700",flexShrink:0}}>
+          {watched?"🔔 Watching":"🔕 Watch"}
+        </button>
+      </div>
+      <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:"16px",padding:"24px"}}>
+        <SectionLabel>📣 Submit Community Feedback</SectionLabel>
+        <p style={{color:"rgba(255,255,255,0.4)",fontSize:"13px",margin:"0 0 14px"}}>Spotted something we missed? Found a new source? Disagree with our score? Tell us.</p>
+        <div style={{display:"flex",gap:"8px",marginBottom:"14px",flexWrap:"wrap"}}>
+          {[["correction","Correction"],["new-finding","New Finding"],["false-positive","False Positive"],["praise","Praise"]].map(([k,l])=>(
+            <button key={k} onClick={()=>setFeedbackType(k)} style={{background:feedbackType===k?"rgba(0,188,212,0.15)":"rgba(255,255,255,0.05)",border:feedbackType===k?"1px solid rgba(0,188,212,0.45)":"1px solid rgba(255,255,255,0.09)",color:feedbackType===k?"#00bcd4":"rgba(255,255,255,0.4)",padding:"7px 14px",borderRadius:"20px",cursor:"pointer",fontSize:"11px",fontWeight:"700",textTransform:"uppercase",letterSpacing:"0.5px"}}>{l}</button>
+          ))}
+        </div>
+        {!submitted?(
+          <>
+            <textarea value={feedbackText} onChange={e=>setFeedbackText(e.target.value)} placeholder="Your feedback, source links, personal experience…" style={{width:"100%",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.09)",borderRadius:"12px",color:"white",padding:"14px",fontSize:"13px",resize:"vertical",minHeight:"90px",fontFamily:"'Syne', sans-serif",boxSizing:"border-box",outline:"none"}}/>
+            <button onClick={handleFeedback} disabled={submitting} style={{marginTop:"12px",background:submitting?"rgba(255,255,255,0.05)":"rgba(0,188,212,0.12)",border:"1px solid rgba(0,188,212,0.35)",color:"#00bcd4",padding:"11px 22px",borderRadius:"12px",cursor:submitting?"not-allowed":"pointer",fontWeight:"800",fontSize:"13px",fontFamily:"'Syne', sans-serif",transition:"all 0.2s"}}>
+              {submitting?"Submitting…":"Submit Feedback"}
+            </button>
+          </>
+        ):(
+          <div style={{textAlign:"center",padding:"24px",background:"rgba(0,230,118,0.06)",borderRadius:"12px",border:"1px solid rgba(0,230,118,0.15)"}}>
+            <div style={{fontSize:"32px",marginBottom:"8px"}}>✅</div>
+            <div style={{color:"#00e676",fontWeight:"700",fontFamily:"'DM Mono', monospace"}}>Thank you! Your report has been saved to our database.</div>
+          </div>
+        )}
+      </div>
+      <style>{`@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}`}</style>
+    </div>
+  );
+}
+
+function SubmitView({onBack}) {
+  const [name, setName] = useState("");
+  const [category, setCategory] = useState("");
+  const [details, setDetails] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async () => {
+    if(!name.trim()) return;
+    setSubmitting(true);
+    const ok = await submitToSupabase("app_submissions",{app_name:name,category,details});
+    setSubmitting(false);
+    if(ok) setSubmitted(true);
+  };
+
+  return (
+    <div style={{animation:"fadeUp 0.3s ease"}}>
+      <button onClick={onBack} style={{background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"20px",color:"rgba(255,255,255,0.6)",padding:"8px 18px",cursor:"pointer",fontSize:"13px",fontWeight:"600",marginBottom:"24px"}}>← Back</button>
+      <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:"20px",padding:"32px"}}>
+        {!submitted?(
+          <>
+            <div style={{fontSize:"36px",marginBottom:"16px"}}>🕵️</div>
+            <h3 style={{color:"white",fontFamily:"'DM Mono', monospace",fontSize:"20px",margin:"0 0 8px"}}>Submit an App for Review</h3>
+            <p style={{color:"rgba(255,255,255,0.4)",fontSize:"14px",margin:"0 0 28px",lineHeight:1.6}}>Our community researchers will analyze the app's privacy policy, data practices, and third-party relationships and publish a full score within 72 hours.</p>
+            <div style={{display:"flex",flexDirection:"column",gap:"16px"}}>
+              <Field label="App Name" placeholder="e.g. FaceApp" value={name} onChange={e=>setName(e.target.value)}/>
+              <Field label="Category" placeholder="e.g. Photo Editor, Shopping, Social Media" value={category} onChange={e=>setCategory(e.target.value)}/>
+              <div>
+                <label style={{color:"rgba(255,255,255,0.4)",fontSize:"11px",fontWeight:"700",letterSpacing:"0.8px",textTransform:"uppercase",fontFamily:"'DM Mono', monospace",display:"block",marginBottom:"8px"}}>What did you notice?</label>
+                <textarea value={details} onChange={e=>setDetails(e.target.value)} placeholder="Describe your concerns — suspicious permissions, data policy clauses, news articles, personal experience…" style={{width:"100%",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.09)",borderRadius:"12px",color:"white",padding:"14px",fontSize:"13px",resize:"vertical",minHeight:"120px",fontFamily:"'Syne', sans-serif",boxSizing:"border-box",outline:"none"}}/>
+              </div>
+              <div style={{background:"rgba(0,230,118,0.06)",border:"1px solid rgba(0,230,118,0.15)",borderRadius:"12px",padding:"14px 18px"}}>
+                <div style={{color:"rgba(255,255,255,0.5)",fontSize:"12px",lineHeight:1.6}}><strong style={{color:"#00e676"}}>Privacy note:</strong> Submitting this form sends only the text above. No metadata, no IP address, no account linking. Your submission is completely anonymous.</div>
+              </div>
+              <button onClick={handleSubmit} disabled={submitting} style={{background:submitting?"rgba(255,255,255,0.05)":"#ef5350",border:"none",borderRadius:"12px",color:"white",padding:"14px",cursor:submitting?"not-allowed":"pointer",fontWeight:"800",fontFamily:"'Syne', sans-serif",fontSize:"15px",transition:"all 0.2s"}}>
+                {submitting?"Submitting…":"Submit for Community Review"}
+              </button>
+            </div>
+          </>
+        ):(
+          <div style={{textAlign:"center",padding:"32px 0"}}>
+            <div style={{fontSize:"56px",marginBottom:"16px"}}>✅</div>
+            <div style={{color:"#00e676",fontWeight:"800",fontFamily:"'DM Mono', monospace",fontSize:"18px",marginBottom:"10px"}}>Submitted!</div>
+            <div style={{color:"rgba(255,255,255,0.5)",fontSize:"14px",lineHeight:1.7}}><strong style={{color:"white"}}>{name}</strong> has been saved to our database. Expect a full analysis within 72 hours. Thank you for helping the community.</div>
+            <button onClick={onBack} style={{marginTop:"24px",background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"12px",color:"rgba(255,255,255,0.7)",padding:"12px 24px",cursor:"pointer",fontWeight:"700",fontFamily:"'Syne', sans-serif"}}>← Back to Browse</button>
+          </div>
+        )}
+      </div>
+      <style>{`@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}`}</style>
+    </div>
+  );
+}
+
+export default function DataGuardApp() {
+  const params = new URLSearchParams(window.location.search);
+  const paid = params.get("success")==="true"||localStorage.getItem("dg_paid")==="true";
+  if(paid) localStorage.setItem("dg_paid","true");
+  const [screen, setScreen] = useState(paid?"app":"landing");
+  return (
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap');
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+        body{background:#060610;}
+        ::-webkit-scrollbar{width:4px;}
+        ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:2px;}
+        select option{background:#0f0f20;color:white;}
+      `}</style>
+      {screen==="landing"&&<LandingScreen onPurchase={()=>window.location.href="https://buy.stripe.com/eVqcN58Ww5rsf5w56j97G00"}/>}
+      {screen==="app"&&<MainApp/>}
+    </>
+  );
+}
