@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
 
-// ─── SUPABASE CONFIG ─────────────────────────────────────────────────────────
-
 const SUPABASE_URL = "https://pgwrfbbznklerwipakrw.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBnd3JmYmJ6bmtsZXJ3aXBha3J3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzMTY4NTcsImV4cCI6MjA5NDg5Mjg1N30.LZONSaRsh4TXyis-Zfbuu8oGZN5qy0MVcfU40ItmzP4";
 
@@ -23,8 +21,6 @@ async function submitToSupabase(table, data) {
     return false;
   }
 }
-
-// ─── DATA ────────────────────────────────────────────────────────────────────
 
 const APP_DB = [
   {
@@ -143,46 +139,55 @@ const APP_DB = [
     dataTypes: ["App Activity","App Info","Device ID","Performance Data"],
     sellsData: true, misleadingAds: true, thirdParties: 8,
     founded: "2023", headquarters: "Kalimantan Timur, Indonesia",
-    summary: "This is NOT the real Granola AI note-taking app. It is a fake guide app made by an unrelated Indonesian developer (CV. Binungan Jaya) deliberately named to impersonate the legitimate Granola AI product. It contains ads, shares app activity and device IDs with third parties, does not encrypt data, and does not allow data deletion. A textbook example of a deceptive app designed to mislead users searching for the real product.",
-    sources: ["Google Play Store listing","Google Play Data Safety disclosure","Developer contact: fansurfahim@gmail.com"],
+    summary: "This is NOT the real Granola AI note-taking app. It is a fake guide app made by an unrelated Indonesian developer deliberately named to impersonate the legitimate Granola AI product. It contains ads, shares app activity and device IDs with third parties, does not encrypt data, and does not allow data deletion.",
+    sources: ["Google Play Store listing","Google Play Data Safety disclosure"],
     communityFlags: 47, communityVerified: true,
     knownIncidents: ["Impersonates legitimate Granola AI product","Data not encrypted per Play Store disclosure","Data cannot be deleted per Play Store disclosure","Contains ads despite mimicking a trusted brand"],
+  },
+  {
+    id: 12, name: "Netflix", category: "Streaming", icon: "🎬",
+    score: 42, privacyGrade: "D",
+    dataTypes: ["Email Address","Payment Info","Viewing History","Device ID","IP Address","Browsing Behavior","Inferred Interests","Search History"],
+    sellsData: true, misleadingAds: true, thirdParties: 15,
+    founded: "1997", headquarters: "Los Gatos, USA",
+    summary: "Collects extensive viewing history, device data, and behavioral patterns to build detailed user profiles. Shares personal information with affiliates, advertising partners and third-party service providers. Cross-references your contact info with third-party databases to target you with ads on other platforms. Better than social media but far from privacy-respecting.",
+    sources: ["Netflix Privacy Statement 2024","Common Sense Privacy Report","OpenTermsArchive Netflix Policy"],
+    communityFlags: 412, communityVerified: true,
+    knownIncidents: ["Shares viewing data with advertising partners","Cross-platform ad targeting using contact matching","Personal information sold to third parties per Common Sense Privacy evaluation"],
+  },
+  {
+    id: 13, name: "Paramount+", category: "Streaming", icon: "⭐",
+    score: 35, privacyGrade: "D",
+    dataTypes: ["Precise Geolocation","Viewing History","Device ID","Payment Info","Behavioral Data","Inferred Interests","Demographics","Ad Interactions"],
+    sellsData: true, misleadingAds: true, thirdParties: 22,
+    founded: "2021", headquarters: "New York, USA",
+    summary: "Collects precise geolocation, viewing history, and inferred interests to build advertising profiles. Shares this data with advertising partners, measurement companies, and Paramount Global affiliates. Your streaming behavior is actively used to build an ad profile that may be sold to third parties. No specific data retention timelines — your data could be held indefinitely.",
+    sources: ["Paramount Privacy Policy 2024","ConductAtlas Data Retention Analysis","Common Sense Privacy Report"],
+    communityFlags: 287, communityVerified: true,
+    knownIncidents: ["Collects data from children under 13 in child-directed services","Viewing data shared with advertising measurement companies","No clear data retention limits — data held indefinitely"],
   },
 ];
 
 const GRADE_COLOR = { "A+":"#00e676","A":"#69f0ae","B":"#fff176","C":"#ffb74d","D":"#ff7043","F":"#ef5350" };
-
 function gradeColor(g) { return GRADE_COLOR[g] || "#fff"; }
 
 function ScoreRing({ score, size = 80 }) {
-  const r = size * 0.42;
-  const circ = 2 * Math.PI * r;
-  const dash = (score / 100) * circ;
+  const r = size * 0.42, circ = 2 * Math.PI * r, dash = (score / 100) * circ;
   const color = score >= 80 ? "#00e676" : score >= 50 ? "#ffd54f" : score >= 25 ? "#ff7043" : "#ef5350";
   const cx = size / 2, cy = size / 2;
   return (
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ display:"block" }}>
       <circle cx={cx} cy={cy} r={r} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth={size*0.1} />
       <circle cx={cx} cy={cy} r={r} fill="none" stroke={color} strokeWidth={size*0.1}
-        strokeDasharray={`${dash} ${circ - dash}`}
-        strokeDashoffset={circ / 4} strokeLinecap="round"
-        style={{ transition: "stroke-dasharray 1.2s cubic-bezier(.4,0,.2,1)" }}
-      />
-      <text x={cx} y={cy+5} textAnchor="middle" fill="white"
-        fontSize={size*0.22} fontWeight="700" fontFamily="'DM Mono', monospace">{score}</text>
+        strokeDasharray={`${dash} ${circ - dash}`} strokeDashoffset={circ / 4} strokeLinecap="round"
+        style={{ transition: "stroke-dasharray 1.2s cubic-bezier(.4,0,.2,1)" }} />
+      <text x={cx} y={cy+5} textAnchor="middle" fill="white" fontSize={size*0.22} fontWeight="700" fontFamily="'DM Mono', monospace">{score}</text>
     </svg>
   );
 }
 
 function Tag({ label, color }) {
-  return (
-    <span style={{
-      background:`${color}1a`, color, border:`1px solid ${color}44`,
-      fontSize:"10px", padding:"3px 9px", borderRadius:"20px",
-      fontWeight:"700", letterSpacing:"0.6px", textTransform:"uppercase",
-      fontFamily:"'DM Mono', monospace",
-    }}>{label}</span>
-  );
+  return <span style={{ background:`${color}1a`, color, border:`1px solid ${color}44`, fontSize:"10px", padding:"3px 9px", borderRadius:"20px", fontWeight:"700", letterSpacing:"0.6px", textTransform:"uppercase", fontFamily:"'DM Mono', monospace" }}>{label}</span>;
 }
 
 function Field({ label, placeholder, value, onChange, type="text" }) {
@@ -192,8 +197,7 @@ function Field({ label, placeholder, value, onChange, type="text" }) {
       <input type={type} value={value} onChange={onChange} placeholder={placeholder}
         style={{ width:"100%", background:"rgba(255,255,255,0.06)", border:"1px solid rgba(255,255,255,0.1)", borderRadius:"12px", color:"white", padding:"13px 16px", fontSize:"15px", fontFamily:"'DM Mono', monospace", outline:"none", boxSizing:"border-box", transition:"border-color 0.2s" }}
         onFocus={e => e.target.style.borderColor="rgba(239,83,80,0.5)"}
-        onBlur={e => e.target.style.borderColor="rgba(255,255,255,0.1)"}
-      />
+        onBlur={e => e.target.style.borderColor="rgba(255,255,255,0.1)"} />
     </div>
   );
 }
@@ -226,9 +230,7 @@ function LandingScreen({ onPurchase }) {
           </div>
           <div style={{ fontSize:"80px", marginBottom:"16px", lineHeight:1 }}>🛡️</div>
           <h1 style={{ margin:"0 0 20px", fontSize:"clamp(40px,8vw,72px)", fontWeight:"800", lineHeight:1.05, letterSpacing:"-2px", background:"linear-gradient(135deg, #ffffff 0%, #ffffff 50%, #ef5350 100%)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>DataGuard</h1>
-          <p style={{ fontSize:"clamp(16px,2.5vw,20px)", color:"rgba(255,255,255,0.55)", lineHeight:1.7, marginBottom:"48px", maxWidth:"520px", margin:"0 auto 48px" }}>
-            The app that watches the apps watching you. Built to expose data harvesting, deceptive advertising, and the hidden economy of selling your personal information.
-          </p>
+          <p style={{ fontSize:"clamp(16px,2.5vw,20px)", color:"rgba(255,255,255,0.55)", lineHeight:1.7, margin:"0 auto 48px", maxWidth:"520px" }}>The app that watches the apps watching you. Built to expose data harvesting, deceptive advertising, and the hidden economy of selling your personal information.</p>
           <div style={{ background:"rgba(0,230,118,0.06)", border:"1px solid rgba(0,230,118,0.2)", borderRadius:"20px", padding:"24px 32px", marginBottom:"40px", display:"inline-block", maxWidth:"480px" }}>
             <div style={{ color:"#00e676", fontWeight:"800", fontFamily:"'DM Mono', monospace", fontSize:"12px", letterSpacing:"1px", marginBottom:"16px" }}>OUR PRIVACY PLEDGE</div>
             <div style={{ display:"flex", flexDirection:"column", gap:"10px" }}>
@@ -242,8 +244,9 @@ function LandingScreen({ onPurchase }) {
           </div>
           <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:"12px" }}>
             <button onClick={onPurchase} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
-              style={{ background: hovered ? "#ff6b6b" : "#ef5350", border:"none", borderRadius:"16px", color:"white", fontWeight:"800", fontSize:"18px", padding:"18px 48px", cursor:"pointer", fontFamily:"'Syne', sans-serif", letterSpacing:"-0.3px", boxShadow: hovered ? "0 0 40px rgba(239,83,80,0.5)" : "0 0 20px rgba(239,83,80,0.3)", transition:"all 0.2s ease", transform: hovered ? "translateY(-2px)" : "translateY(0)" }}
-            >Get DataGuard — $3 one-time</button>
+              style={{ background: hovered ? "#ff6b6b" : "#ef5350", border:"none", borderRadius:"16px", color:"white", fontWeight:"800", fontSize:"18px", padding:"18px 48px", cursor:"pointer", fontFamily:"'Syne', sans-serif", letterSpacing:"-0.3px", boxShadow: hovered ? "0 0 40px rgba(239,83,80,0.5)" : "0 0 20px rgba(239,83,80,0.3)", transition:"all 0.2s ease", transform: hovered ? "translateY(-2px)" : "translateY(0)" }}>
+              Get DataGuard — $3 one-time
+            </button>
             <span style={{ color:"rgba(255,255,255,0.3)", fontSize:"12px" }}>One-time payment · No subscription · Instant access</span>
           </div>
         </div>
@@ -257,8 +260,7 @@ function LandingScreen({ onPurchase }) {
           {features.map((f, i) => (
             <div key={i} style={{ background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.07)", borderRadius:"18px", padding:"24px", transition:"all 0.2s ease" }}
               onMouseEnter={e => { e.currentTarget.style.background="rgba(255,255,255,0.06)"; e.currentTarget.style.borderColor="rgba(255,255,255,0.14)"; }}
-              onMouseLeave={e => { e.currentTarget.style.background="rgba(255,255,255,0.03)"; e.currentTarget.style.borderColor="rgba(255,255,255,0.07)"; }}
-            >
+              onMouseLeave={e => { e.currentTarget.style.background="rgba(255,255,255,0.03)"; e.currentTarget.style.borderColor="rgba(255,255,255,0.07)"; }}>
               <div style={{ fontSize:"28px", marginBottom:"12px" }}>{f.icon}</div>
               <div style={{ fontWeight:"700", fontSize:"15px", marginBottom:"8px" }}>{f.title}</div>
               <div style={{ color:"rgba(255,255,255,0.45)", fontSize:"13px", lineHeight:1.6 }}>{f.desc}</div>
@@ -266,7 +268,7 @@ function LandingScreen({ onPurchase }) {
           ))}
         </div>
         <div style={{ background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.07)", borderRadius:"24px", padding:"40px", display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))", gap:"32px", textAlign:"center", marginBottom:"64px" }}>
-          {[["11+","apps in database"],["18,000+","community reports"],["$0","ad revenue"],["100%","open source"],["0","data points collected about you"]].map(([n,l],i) => (
+          {[["13+","apps in database"],["18,000+","community reports"],["$0","ad revenue"],["100%","open source"],["0","data points collected about you"]].map(([n,l],i) => (
             <div key={i}>
               <div style={{ fontSize:"clamp(28px,5vw,40px)", fontWeight:"800", letterSpacing:"-1px", fontFamily:"'DM Mono', monospace", color:"#ef5350" }}>{n}</div>
               <div style={{ color:"rgba(255,255,255,0.4)", fontSize:"12px", marginTop:"4px" }}>{l}</div>
@@ -277,8 +279,9 @@ function LandingScreen({ onPurchase }) {
           <div style={{ color:"rgba(255,255,255,0.3)", fontSize:"13px", marginBottom:"24px" }}>Every dollar goes directly to maintaining the database and funding community research. No investors. No VCs. Just you.</div>
           <button onClick={onPurchase} style={{ background:"#ef5350", border:"none", borderRadius:"14px", color:"white", fontWeight:"800", fontSize:"17px", padding:"16px 42px", cursor:"pointer", fontFamily:"'Syne', sans-serif", boxShadow:"0 0 24px rgba(239,83,80,0.35)", transition:"all 0.2s ease" }}
             onMouseEnter={e => { e.currentTarget.style.background="#ff6b6b"; e.currentTarget.style.transform="translateY(-2px)"; }}
-            onMouseLeave={e => { e.currentTarget.style.background="#ef5350"; e.currentTarget.style.transform="translateY(0)"; }}
-          >Get DataGuard for $3</button>
+            onMouseLeave={e => { e.currentTarget.style.background="#ef5350"; e.currentTarget.style.transform="translateY(0)"; }}>
+            Get DataGuard for $3
+          </button>
         </div>
       </div>
       <style>{`@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }`}</style>
@@ -296,7 +299,9 @@ function MainApp() {
   const [notifications, setNotifications] = useState([
     { id:1, app:"Facebook", msg:"New incident: €1.2B GDPR fine upheld in appeal", time:"2h ago", read:false },
     { id:2, app:"TikTok", msg:"Community flag count passed 3,800", time:"1d ago", read:false },
-    { id:3, app:"Granola: AI App Advices", msg:"New deceptive app added: impersonates real Granola AI", time:"Just now", read:false },
+    { id:3, app:"Granola AI App Advices", msg:"New deceptive app added: impersonates real Granola AI", time:"2d ago", read:false },
+    { id:4, app:"Netflix", msg:"New app added: shares viewing data with ad partners", time:"Just now", read:false },
+    { id:5, app:"Paramount+", msg:"New app added: collects precise location and sells viewing data", time:"Just now", read:false },
   ]);
   const [showNotifs, setShowNotifs] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
@@ -390,8 +395,7 @@ function MainApp() {
               <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search apps by name or category…"
                 style={{ width:"100%", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.09)", borderRadius:"14px", color:"white", padding:"13px 16px 13px 44px", fontSize:"15px", outline:"none", fontFamily:"'Syne', sans-serif", boxSizing:"border-box", transition:"border-color 0.2s" }}
                 onFocus={e => e.target.style.borderColor="rgba(239,83,80,0.4)"}
-                onBlur={e => e.target.style.borderColor="rgba(255,255,255,0.09)"}
-              />
+                onBlur={e => e.target.style.borderColor="rgba(255,255,255,0.09)"} />
             </div>
             <div style={{ display:"flex", gap:"8px", marginBottom:"20px", alignItems:"center", overflowX:"auto", paddingBottom:"4px" }}>
               {[["all","All"],["sellers","Sells Data"],["deceptive","Deceptive"],["safe","Safe"],["watchlist","Watchlist"]].map(([k,l]) => (
@@ -423,12 +427,8 @@ function MainApp() {
             </div>
           </>
         )}
-        {view === "detail" && selected && (
-          <DetailView app={selected} watched={watchlist.includes(selected.id)} onToggleWatch={() => toggleWatch(selected.id)} onBack={() => setView("browse")} />
-        )}
-        {view === "submit" && (
-          <SubmitView onBack={() => setView("browse")} />
-        )}
+        {view === "detail" && selected && <DetailView app={selected} watched={watchlist.includes(selected.id)} onToggleWatch={() => toggleWatch(selected.id)} onBack={() => setView("browse")} />}
+        {view === "submit" && <SubmitView onBack={() => setView("browse")} />}
       </div>
     </div>
   );
@@ -437,9 +437,8 @@ function MainApp() {
 function SummaryTile({ icon, label, value, color, onClick, active }) {
   return (
     <button onClick={onClick} style={{ background: active ? `${color}18` : "rgba(255,255,255,0.03)", border: `1px solid ${active ? color+"44" : "rgba(255,255,255,0.07)"}`, borderRadius:"16px", padding:"16px 12px", textAlign:"center", cursor:"pointer", transition:"all 0.2s", width:"100%" }}
-      onMouseEnter={e => { e.currentTarget.style.background=`${color}10`; }}
-      onMouseLeave={e => { e.currentTarget.style.background=active?`${color}18`:"rgba(255,255,255,0.03)"; }}
-    >
+      onMouseEnter={e => e.currentTarget.style.background=`${color}10`}
+      onMouseLeave={e => e.currentTarget.style.background=active?`${color}18`:"rgba(255,255,255,0.03)"}>
       <div style={{ fontSize:"22px", marginBottom:"6px" }}>{icon}</div>
       <div style={{ color, fontWeight:"900", fontSize:"clamp(16px,3vw,22px)", fontFamily:"'DM Mono', monospace" }}>{value}</div>
       <div style={{ color:"rgba(255,255,255,0.35)", fontSize:"10px", textTransform:"uppercase", letterSpacing:"0.5px", marginTop:"3px" }}>{label}</div>
@@ -451,8 +450,7 @@ function AppRow({ app, onOpen, watched, onToggleWatch }) {
   const [hov, setHov] = useState(false);
   return (
     <div style={{ background: hov ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.07)", borderRadius:"16px", padding:"16px", display:"flex", alignItems:"center", gap:"14px", cursor:"pointer", transition:"all 0.18s", userSelect:"none" }}
-      onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)} onClick={onOpen}
-    >
+      onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)} onClick={onOpen}>
       <div style={{ fontSize:"32px", flexShrink:0 }}>{app.icon}</div>
       <div style={{ flex:1, minWidth:0 }}>
         <div style={{ display:"flex", alignItems:"center", gap:"8px", flexWrap:"wrap", marginBottom:"4px" }}>
@@ -486,11 +484,7 @@ function DetailView({ app, watched, onToggleWatch, onBack }) {
   const handleFeedback = async () => {
     if (!feedbackText.trim()) return;
     setSubmitting(true);
-    const ok = await submitToSupabase("community_reports", {
-      app_name: app.name,
-      report_type: feedbackType,
-      content: feedbackText,
-    });
+    const ok = await submitToSupabase("community_reports", { app_name: app.name, report_type: feedbackType, content: feedbackText });
     setSubmitting(false);
     if (ok) setSubmitted(true);
   };
@@ -532,9 +526,7 @@ function DetailView({ app, watched, onToggleWatch, onBack }) {
       <div style={{ background:"rgba(239,83,80,0.04)", border:"1px solid rgba(239,83,80,0.12)", borderRadius:"16px", padding:"20px", marginBottom:"14px" }}>
         <SectionLabel color="#ff8a80">Data Collected ({app.dataTypes.length} types)</SectionLabel>
         <div style={{ display:"flex", flexWrap:"wrap", gap:"8px" }}>
-          {app.dataTypes.map(d => (
-            <span key={d} style={{ background:"rgba(239,83,80,0.1)", color:"#ff8a80", border:"1px solid rgba(239,83,80,0.2)", padding:"5px 12px", borderRadius:"20px", fontSize:"12px", fontWeight:"600" }}>{d}</span>
-          ))}
+          {app.dataTypes.map(d => <span key={d} style={{ background:"rgba(239,83,80,0.1)", color:"#ff8a80", border:"1px solid rgba(239,83,80,0.2)", padding:"5px 12px", borderRadius:"20px", fontSize:"12px", fontWeight:"600" }}>{d}</span>)}
         </div>
       </div>
       {app.knownIncidents.length > 0 && (
@@ -553,9 +545,7 @@ function DetailView({ app, watched, onToggleWatch, onBack }) {
       <div style={{ background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.07)", borderRadius:"16px", padding:"20px", marginBottom:"14px" }}>
         <SectionLabel>Sources</SectionLabel>
         <div style={{ display:"flex", flexWrap:"wrap", gap:"8px" }}>
-          {app.sources.map(s => (
-            <span key={s} style={{ background:"rgba(255,255,255,0.06)", color:"rgba(255,255,255,0.55)", border:"1px solid rgba(255,255,255,0.09)", padding:"5px 12px", borderRadius:"20px", fontSize:"12px" }}>📄 {s}</span>
-          ))}
+          {app.sources.map(s => <span key={s} style={{ background:"rgba(255,255,255,0.06)", color:"rgba(255,255,255,0.55)", border:"1px solid rgba(255,255,255,0.09)", padding:"5px 12px", borderRadius:"20px", fontSize:"12px" }}>📄 {s}</span>)}
         </div>
       </div>
       <div style={{ background:"rgba(255,193,7,0.05)", border:"1px solid rgba(255,193,7,0.15)", borderRadius:"16px", padding:"20px", marginBottom:"14px", display:"flex", alignItems:"center", gap:"14px" }}>
@@ -578,10 +568,8 @@ function DetailView({ app, watched, onToggleWatch, onBack }) {
         </div>
         {!submitted ? (
           <>
-            <textarea value={feedbackText} onChange={e => setFeedbackText(e.target.value)}
-              placeholder="Your feedback, source links, personal experience…"
-              style={{ width:"100%", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.09)", borderRadius:"12px", color:"white", padding:"14px", fontSize:"13px", resize:"vertical", minHeight:"90px", fontFamily:"'Syne', sans-serif", boxSizing:"border-box", outline:"none" }}
-            />
+            <textarea value={feedbackText} onChange={e => setFeedbackText(e.target.value)} placeholder="Your feedback, source links, personal experience…"
+              style={{ width:"100%", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.09)", borderRadius:"12px", color:"white", padding:"14px", fontSize:"13px", resize:"vertical", minHeight:"90px", fontFamily:"'Syne', sans-serif", boxSizing:"border-box", outline:"none" }} />
             <button onClick={handleFeedback} disabled={submitting} style={{ marginTop:"12px", background: submitting ? "rgba(255,255,255,0.05)" : "rgba(0,188,212,0.12)", border:"1px solid rgba(0,188,212,0.35)", color:"#00bcd4", padding:"11px 22px", borderRadius:"12px", cursor: submitting ? "not-allowed" : "pointer", fontWeight:"800", fontSize:"13px", fontFamily:"'Syne', sans-serif", transition:"all 0.2s" }}>
               {submitting ? "Submitting…" : "Submit Feedback"}
             </button>
@@ -622,11 +610,7 @@ function SubmitView({ onBack }) {
   const handleSubmit = async () => {
     if (!name.trim()) return;
     setSubmitting(true);
-    const ok = await submitToSupabase("app_submissions", {
-      app_name: name,
-      category: category,
-      details: details,
-    });
+    const ok = await submitToSupabase("app_submissions", { app_name: name, category, details });
     setSubmitting(false);
     if (ok) setSubmitted(true);
   };
@@ -645,10 +629,8 @@ function SubmitView({ onBack }) {
               <Field label="Category" placeholder="e.g. Photo Editor, Shopping, Social Media" value={category} onChange={e => setCategory(e.target.value)} />
               <div>
                 <label style={{ color:"rgba(255,255,255,0.4)", fontSize:"11px", fontWeight:"700", letterSpacing:"0.8px", textTransform:"uppercase", fontFamily:"'DM Mono', monospace", display:"block", marginBottom:"8px" }}>What did you notice?</label>
-                <textarea value={details} onChange={e => setDetails(e.target.value)}
-                  placeholder="Describe your concerns — suspicious permissions, data policy clauses, news articles, personal experience…"
-                  style={{ width:"100%", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.09)", borderRadius:"12px", color:"white", padding:"14px", fontSize:"13px", resize:"vertical", minHeight:"120px", fontFamily:"'Syne', sans-serif", boxSizing:"border-box", outline:"none" }}
-                />
+                <textarea value={details} onChange={e => setDetails(e.target.value)} placeholder="Describe your concerns — suspicious permissions, data policy clauses, news articles, personal experience…"
+                  style={{ width:"100%", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.09)", borderRadius:"12px", color:"white", padding:"14px", fontSize:"13px", resize:"vertical", minHeight:"120px", fontFamily:"'Syne', sans-serif", boxSizing:"border-box", outline:"none" }} />
               </div>
               <div style={{ background:"rgba(0,230,118,0.06)", border:"1px solid rgba(0,230,118,0.15)", borderRadius:"12px", padding:"14px 18px" }}>
                 <div style={{ color:"rgba(255,255,255,0.5)", fontSize:"12px", lineHeight:1.6 }}>
