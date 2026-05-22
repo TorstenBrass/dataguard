@@ -234,10 +234,7 @@ function MainApp() {
                 </div>
               ))}
             </div>
-            <div style={{display:"flex",gap:"12px"}}>
-              <a href="https://github.com/TorstenBrass/dataguard" style={{flex:1,background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"12px",color:"rgba(255,255,255,0.7)",textDecoration:"none",padding:"12px",textAlign:"center",fontSize:"13px",fontWeight:"600"}}>View on GitHub</a>
-              <a href="https://github.com/TorstenBrass/dataguard/blob/main/CONTRIBUTING.md" style={{flex:1,background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"12px",color:"rgba(255,255,255,0.7)",textDecoration:"none",padding:"12px",textAlign:"center",fontSize:"13px",fontWeight:"600"}}>Contribute</a>
-            </div>
+
           </div>
         </div>
       )}
