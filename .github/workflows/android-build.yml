@@ -48,6 +48,52 @@ jobs:
       - name: Sync web assets to Android
         run: ./node_modules/.bin/cap sync android
 
+      - name: Decode keystore
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > /tmp/upload-keystore.p12
+
+      - name: Inject signing config into build.gradle
+        run: |
+          cat > android/app/build.gradle << 'GRADLE'
+          apply plugin: 'com.android.application'
+
+          android {
+              namespace 'com.dataguard.privacy'
+              compileSdk 34
+
+              defaultConfig {
+                  applicationId "com.dataguard.privacy"
+                  minSdk 22
+                  targetSdk 34
+                  versionCode 1
+                  versionName "1.0.0"
+              }
+
+              signingConfigs {
+                  release {
+                      storeFile file('/tmp/upload-keystore.p12')
+                      storePassword System.getenv('SIGNING_STORE_PASSWORD')
+                      keyAlias System.getenv('SIGNING_KEY_ALIAS')
+                      keyPassword System.getenv('SIGNING_KEY_PASSWORD')
+                  }
+              }
+
+              buildTypes {
+                  release {
+                      minifyEnabled false
+                      signingConfig signingConfigs.release
+                  }
+              }
+          }
+
+          repositories {
+              flatDir {
+                  dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
+              }
+          }
+
+          apply from: 'capacitor.build.gradle'
+          GRADLE
+
       - name: Make gradlew executable
         run: chmod +x android/gradlew
 
@@ -55,14 +101,10 @@ jobs:
         working-directory: android
         run: ./gradlew assembleDebug
 
-      - name: Decode keystore
-        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > /tmp/upload-keystore.p12
-
       - name: Build signed release AAB
         working-directory: android
         run: ./gradlew bundleRelease
         env:
-          SIGNING_STORE_FILE: /tmp/upload-keystore.p12
           SIGNING_STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           SIGNING_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           SIGNING_KEY_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
