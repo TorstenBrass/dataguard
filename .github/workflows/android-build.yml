@@ -8,6 +8,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      CI: true
     
     steps:
       - uses: actions/checkout@v4
@@ -25,6 +27,9 @@ jobs:
       
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
+
+      - name: Accept Android SDK licenses
+        run: yes | sdkmanager --licenses || true
       
       - name: Install dependencies
         run: npm install
@@ -34,12 +39,12 @@ jobs:
       
       - name: Verify dist exists
         run: ls -la dist/
-      
+
       - name: Add Capacitor Android platform
-        run: npx cap add android
+        run: ./node_modules/.bin/cap add android
       
       - name: Sync web assets to Android
-        run: npx cap sync android
+        run: ./node_modules/.bin/cap sync android
       
       - name: Make gradlew executable
         run: chmod +x android/gradlew
@@ -47,7 +52,7 @@ jobs:
       - name: Build debug APK
         working-directory: android
         run: ./gradlew assembleDebug
-      
+
       - name: Build release AAB (unsigned)
         working-directory: android
         run: ./gradlew bundleRelease
