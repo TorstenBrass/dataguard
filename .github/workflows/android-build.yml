@@ -51,52 +51,17 @@ jobs:
       - name: Decode keystore
         run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > /tmp/upload-keystore.p12
 
-      - name: Patch signing config into build.gradle
-        run: |
-          python3 - <<'PYEOF'
-          import re
-
-          with open('android/app/build.gradle', 'r') as f:
-              content = f.read()
-
-          signing_block = '''
-              signingConfigs {
-                  release {
-                      storeFile file('/tmp/upload-keystore.p12')
-                      storePassword System.getenv('SIGNING_STORE_PASSWORD')
-                      keyAlias System.getenv('SIGNING_KEY_ALIAS')
-                      keyPassword System.getenv('SIGNING_KEY_PASSWORD')
-                  }
-              }
-          '''
-
-          # Insert signingConfigs block before buildTypes
-          content = re.sub(r'(\s*buildTypes\s*\{)', signing_block + r'\1', content, count=1)
-
-          # Add signingConfig reference inside release buildType
-          content = re.sub(
-              r'(release\s*\{)',
-              r'\1\n                signingConfig signingConfigs.release',
-              content,
-              count=1
-          )
-
-          with open('android/app/build.gradle', 'w') as f:
-              f.write(content)
-
-          print('Signing config patched successfully')
-          PYEOF
-
       - name: Make gradlew executable
         run: chmod +x android/gradlew
 
       - name: Build signed release AAB
         working-directory: android
-        run: ./gradlew bundleRelease
-        env:
-          SIGNING_STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          SIGNING_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-          SIGNING_KEY_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+        run: |
+          ./gradlew bundleRelease \
+            -Pandroid.injected.signing.store.file=/tmp/upload-keystore.p12 \
+            -Pandroid.injected.signing.store.password=${{ secrets.KEYSTORE_PASSWORD }} \
+            -Pandroid.injected.signing.key.alias=${{ secrets.KEY_ALIAS }} \
+            -Pandroid.injected.signing.key.password=${{ secrets.KEYSTORE_PASSWORD }}
 
       - name: Upload release AAB
         uses: actions/upload-artifact@v4
