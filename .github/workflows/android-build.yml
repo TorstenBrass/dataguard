@@ -51,23 +51,15 @@ jobs:
       - name: Decode keystore
         run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > /tmp/upload-keystore.p12
 
-      - name: Inject signing config into build.gradle
+      - name: Patch signing config into build.gradle
         run: |
-          cat > android/app/build.gradle << 'GRADLE'
-          apply plugin: 'com.android.application'
+          python3 - <<'PYEOF'
+          import re
 
-          android {
-              namespace 'com.dataguard.privacy'
-              compileSdk 34
+          with open('android/app/build.gradle', 'r') as f:
+              content = f.read()
 
-              defaultConfig {
-                  applicationId "com.dataguard.privacy"
-                  minSdk 22
-                  targetSdk 34
-                  versionCode 1
-                  versionName "1.0.0"
-              }
-
+          signing_block = '''
               signingConfigs {
                   release {
                       storeFile file('/tmp/upload-keystore.p12')
@@ -76,30 +68,27 @@ jobs:
                       keyPassword System.getenv('SIGNING_KEY_PASSWORD')
                   }
               }
+          '''
 
-              buildTypes {
-                  release {
-                      minifyEnabled false
-                      signingConfig signingConfigs.release
-                  }
-              }
-          }
+          # Insert signingConfigs block before buildTypes
+          content = re.sub(r'(\s*buildTypes\s*\{)', signing_block + r'\1', content, count=1)
 
-          repositories {
-              flatDir {
-                  dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
-              }
-          }
+          # Add signingConfig reference inside release buildType
+          content = re.sub(
+              r'(release\s*\{)',
+              r'\1\n                signingConfig signingConfigs.release',
+              content,
+              count=1
+          )
 
-          apply from: 'capacitor.build.gradle'
-          GRADLE
+          with open('android/app/build.gradle', 'w') as f:
+              f.write(content)
+
+          print('Signing config patched successfully')
+          PYEOF
 
       - name: Make gradlew executable
         run: chmod +x android/gradlew
-
-      - name: Build debug APK
-        working-directory: android
-        run: ./gradlew assembleDebug
 
       - name: Build signed release AAB
         working-directory: android
@@ -108,12 +97,6 @@ jobs:
           SIGNING_STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           SIGNING_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           SIGNING_KEY_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-
-      - name: Upload debug APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: dataguard-debug-apk
-          path: android/app/build/outputs/apk/debug/app-debug.apk
 
       - name: Upload release AAB
         uses: actions/upload-artifact@v4
