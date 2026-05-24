@@ -30,15 +30,15 @@ jobs:
         run: npm install
       
       - name: Build web app
-        run: npm run build
+        run: npx vite build
       
-      - name: Initialize Capacitor Android
-        run: |
-          if [ ! -d "android" ]; then
-            npx cap add android
-          fi
+      - name: Verify dist exists
+        run: ls -la dist/
       
-      - name: Sync Capacitor
+      - name: Add Capacitor Android platform
+        run: npx cap add android
+      
+      - name: Sync web assets to Android
         run: npx cap sync android
       
       - name: Make gradlew executable
@@ -48,7 +48,7 @@ jobs:
         working-directory: android
         run: ./gradlew assembleDebug
       
-      - name: Build release AAB
+      - name: Build release AAB (unsigned)
         working-directory: android
         run: ./gradlew bundleRelease
       
