@@ -55,9 +55,17 @@ jobs:
         working-directory: android
         run: ./gradlew assembleDebug
 
-      - name: Build release AAB (unsigned)
+      - name: Decode keystore
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > /tmp/upload-keystore.p12
+
+      - name: Build signed release AAB
         working-directory: android
         run: ./gradlew bundleRelease
+        env:
+          SIGNING_STORE_FILE: /tmp/upload-keystore.p12
+          SIGNING_STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          SIGNING_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
 
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
