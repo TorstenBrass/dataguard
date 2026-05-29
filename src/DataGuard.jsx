@@ -32,6 +32,7 @@ const CATEGORY_GROUPS = [
   { label: "News & Music",  icon: "📰", match: ["News / Media", "News / Finance", "Radio / Podcasts", "Radio / Music Streaming", "Music", "Music Streaming", "Music / Local Player"] },
   { label: "Gambling",      icon: "🎰", match: ["Online Gambling / Casino", "Online Gambling / Sports Betting"] },
   { label: "Privacy+",      icon: "✅", match: ["Browser", "Browser / Search", "Email", "Productivity / Office", "Utility"] },
+  { label: "Health & Fitness", icon: "🏃", match: ["Health & Fitness"] },
   { label: "Other",         icon: "⚙️", match: ["AI / Productivity", "Dating", "Job Search", "Professional Network", "Network Tools", "Video Editing", "Deceptive Guide App", "Security Cameras / IoT", "Smart Home / IoT", "Audio / IoT", "Weather", "Navigation / Maps", "Ride Sharing"] },
 ];
 const APP_DB = [
