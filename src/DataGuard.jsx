@@ -711,4 +711,129 @@ function DetailView({app, watched, onToggleWatch, onBack}) {
       {app.knownIncidents.length>0&&(
         <div style={{background:"rgba(255,193,7,0.04)",border:"1px solid rgba(255,193,7,0.15)",borderRadius:"16px",padding:"20px",marginBottom:"14px"}}>
           <SectionLabel color="#ffd54f">Known Incidents and Fines</SectionLabel>
-          <div s
+          <div style={{display:"flex",flexDirection:"column",gap:"8px"}}>
+            {app.knownIncidents.map((inc,i)=>(
+              <div key={i} style={{display:"flex",gap:"10px",alignItems:"flex-start"}}>
+                <span style={{color:"#ffd54f",flexShrink:0}}>⚠</span>
+                <span style={{color:"rgba(255,255,255,0.65)",fontSize:"13px",lineHeight:1.5}}>{inc}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:"16px",padding:"20px",marginBottom:"14px"}}>
+        <SectionLabel>Sources</SectionLabel>
+        <div style={{display:"flex",flexWrap:"wrap",gap:"8px"}}>
+          {app.sources.map(s=><span key={s} style={{background:"rgba(255,255,255,0.06)",color:"rgba(255,255,255,0.55)",border:"1px solid rgba(255,255,255,0.09)",padding:"5px 12px",borderRadius:"20px",fontSize:"12px"}}>📄 {s}</span>)}
+        </div>
+      </div>
+      <div style={{background:"rgba(255,193,7,0.05)",border:"1px solid rgba(255,193,7,0.15)",borderRadius:"16px",padding:"20px",marginBottom:"14px",display:"flex",alignItems:"center",gap:"14px"}}>
+        <span style={{fontSize:"28px"}}>🚩</span>
+        <div>
+          <div style={{color:"#ffd54f",fontWeight:"800",fontSize:"16px",fontFamily:"'DM Mono', monospace"}}>{app.communityFlags.toLocaleString()} community reports</div>
+          <div style={{color:"rgba(255,255,255,0.4)",fontSize:"12px",marginTop:"3px"}}>People have flagged this app's privacy practices</div>
+        </div>
+        <button onClick={onToggleWatch} style={{marginLeft:"auto",background:watched?"rgba(239,83,80,0.15)":"rgba(255,255,255,0.05)",border:watched?"1px solid rgba(239,83,80,0.4)":"1px solid rgba(255,255,255,0.1)",borderRadius:"12px",color:watched?"#ff8a80":"rgba(255,255,255,0.5)",padding:"8px 14px",cursor:"pointer",fontSize:"12px",fontWeight:"700",flexShrink:0}}>
+          {watched?"🔔 Watching":"🔕 Watch"}
+        </button>
+      </div>
+      <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:"16px",padding:"24px"}}>
+        <SectionLabel>📣 Submit Community Feedback</SectionLabel>
+        <p style={{color:"rgba(255,255,255,0.4)",fontSize:"13px",margin:"0 0 14px"}}>Spotted something we missed? Found a new source? Disagree with our score? Tell us.</p>
+        <div style={{display:"flex",gap:"8px",marginBottom:"14px",flexWrap:"wrap"}}>
+          {[["correction","Correction"],["new-finding","New Finding"],["false-positive","False Positive"],["praise","Praise"]].map(([k,l])=>(
+            <button key={k} onClick={()=>setFeedbackType(k)} style={{background:feedbackType===k?"rgba(0,188,212,0.15)":"rgba(255,255,255,0.05)",border:feedbackType===k?"1px solid rgba(0,188,212,0.45)":"1px solid rgba(255,255,255,0.09)",color:feedbackType===k?"#00bcd4":"rgba(255,255,255,0.4)",padding:"7px 14px",borderRadius:"20px",cursor:"pointer",fontSize:"11px",fontWeight:"700",textTransform:"uppercase",letterSpacing:"0.5px"}}>{l}</button>
+          ))}
+        </div>
+        {!submitted?(
+          <>
+            <textarea value={feedbackText} onChange={e=>setFeedbackText(e.target.value)} placeholder="Your feedback, source links, personal experience…" style={{width:"100%",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.09)",borderRadius:"12px",color:"white",padding:"14px",fontSize:"13px",resize:"vertical",minHeight:"90px",fontFamily:"'Syne', sans-serif",boxSizing:"border-box",outline:"none"}}/>
+            <button onClick={handleFeedback} disabled={submitting} style={{marginTop:"12px",background:submitting?"rgba(255,255,255,0.05)":"rgba(0,188,212,0.12)",border:"1px solid rgba(0,188,212,0.35)",color:"#00bcd4",padding:"11px 22px",borderRadius:"12px",cursor:submitting?"not-allowed":"pointer",fontWeight:"800",fontSize:"13px",fontFamily:"'Syne', sans-serif",transition:"all 0.2s"}}>
+              {submitting?"Submitting…":"Submit Feedback"}
+            </button>
+          </>
+        ):(
+          <div style={{textAlign:"center",padding:"24px",background:"rgba(0,230,118,0.06)",borderRadius:"12px",border:"1px solid rgba(0,230,118,0.15)"}}>
+            <div style={{fontSize:"32px",marginBottom:"8px"}}>✅</div>
+            <div style={{color:"#00e676",fontWeight:"700",fontFamily:"'DM Mono', monospace"}}>Thank you! Your report has been saved to our database.</div>
+          </div>
+        )}
+      </div>
+      <style>{`@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}`}</style>
+    </div>
+  );
+}
+
+function SubmitView({onBack}) {
+  const [name, setName] = useState("");
+  const [category, setCategory] = useState("");
+  const [details, setDetails] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async () => {
+    if(!name.trim()) return;
+    setSubmitting(true);
+    const ok = await submitToSupabase("app_submissions",{app_name:name,category,details});
+    setSubmitting(false);
+    if(ok) setSubmitted(true);
+  };
+
+  return (
+    <div style={{animation:"fadeUp 0.3s ease"}}>
+      <button onClick={onBack} style={{background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"20px",color:"rgba(255,255,255,0.6)",padding:"8px 18px",cursor:"pointer",fontSize:"13px",fontWeight:"600",marginBottom:"24px"}}>← Back</button>
+      <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:"20px",padding:"32px"}}>
+        {!submitted?(
+          <>
+            <div style={{fontSize:"36px",marginBottom:"16px"}}>🕵️</div>
+            <h3 style={{color:"white",fontFamily:"'DM Mono', monospace",fontSize:"20px",margin:"0 0 8px"}}>Submit an App for Review</h3>
+            <p style={{color:"rgba(255,255,255,0.4)",fontSize:"14px",margin:"0 0 28px",lineHeight:1.6}}>Our community researchers will analyze the app's privacy policy, data practices, and third-party relationships and publish a full score within 72 hours.</p>
+            <div style={{display:"flex",flexDirection:"column",gap:"16px"}}>
+              <Field label="App Name" placeholder="e.g. FaceApp" value={name} onChange={e=>setName(e.target.value)}/>
+              <Field label="Category" placeholder="e.g. Photo Editor, Shopping, Social Media" value={category} onChange={e=>setCategory(e.target.value)}/>
+              <div>
+                <label style={{color:"rgba(255,255,255,0.4)",fontSize:"11px",fontWeight:"700",letterSpacing:"0.8px",textTransform:"uppercase",fontFamily:"'DM Mono', monospace",display:"block",marginBottom:"8px"}}>What did you notice?</label>
+                <textarea value={details} onChange={e=>setDetails(e.target.value)} placeholder="Describe your concerns — suspicious permissions, data policy clauses, news articles, personal experience…" style={{width:"100%",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.09)",borderRadius:"12px",color:"white",padding:"14px",fontSize:"13px",resize:"vertical",minHeight:"120px",fontFamily:"'Syne', sans-serif",boxSizing:"border-box",outline:"none"}}/>
+              </div>
+              <div style={{background:"rgba(0,230,118,0.06)",border:"1px solid rgba(0,230,118,0.15)",borderRadius:"12px",padding:"14px 18px"}}>
+                <div style={{color:"rgba(255,255,255,0.5)",fontSize:"12px",lineHeight:1.6}}><strong style={{color:"#00e676"}}>Privacy note:</strong> Submitting this form sends only the text above. No metadata, no IP address, no account linking. Your submission is completely anonymous.</div>
+              </div>
+              <button onClick={handleSubmit} disabled={submitting} style={{background:submitting?"rgba(255,255,255,0.05)":"#ef5350",border:"none",borderRadius:"12px",color:"white",padding:"14px",cursor:submitting?"not-allowed":"pointer",fontWeight:"800",fontFamily:"'Syne', sans-serif",fontSize:"15px",transition:"all 0.2s"}}>
+                {submitting?"Submitting…":"Submit for Community Review"}
+              </button>
+            </div>
+          </>
+        ):(
+          <div style={{textAlign:"center",padding:"32px 0"}}>
+            <div style={{fontSize:"56px",marginBottom:"16px"}}>✅</div>
+            <div style={{color:"#00e676",fontWeight:"800",fontFamily:"'DM Mono', monospace",fontSize:"18px",marginBottom:"10px"}}>Submitted!</div>
+            <div style={{color:"rgba(255,255,255,0.5)",fontSize:"14px",lineHeight:1.7}}><strong style={{color:"white"}}>{name}</strong> has been saved to our database. Expect a full analysis within 72 hours. Thank you for helping the community.</div>
+            <button onClick={onBack} style={{marginTop:"24px",background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"12px",color:"rgba(255,255,255,0.7)",padding:"12px 24px",cursor:"pointer",fontWeight:"700",fontFamily:"'Syne', sans-serif"}}>← Back to Browse</button>
+          </div>
+        )}
+      </div>
+      <style>{`@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}`}</style>
+    </div>
+  );
+}
+
+export default function DataGuardApp() {
+  const params = new URLSearchParams(window.location.search);
+  const paid = params.get("success")==="true"||localStorage.getItem("dg_paid")==="true";
+  if(paid) localStorage.setItem("dg_paid","true");
+  const [screen, setScreen] = useState(paid?"app":"landing");
+  return (
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap');
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+        body{background:#060610;}
+        ::-webkit-scrollbar{width:4px;}
+        ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:2px;}
+        select option{background:#0f0f20;color:white;}
+      `}</style>
+      {screen==="landing"&&<LandingScreen onPurchase={()=>window.location.href="https://buy.stripe.com/3cI4gza0AdXY4qScyL97G01"}/>}
+      {screen==="app"&&<MainApp/>}
+    </>
+  );
+}
