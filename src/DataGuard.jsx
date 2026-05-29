@@ -34,7 +34,6 @@ const CATEGORY_GROUPS = [
   { label: "Privacy+",      icon: "✅", match: ["Browser", "Browser / Search", "Email", "Productivity / Office", "Utility"] },
   { label: "Other",         icon: "⚙️", match: ["AI / Productivity", "Dating", "Job Search", "Professional Network", "Network Tools", "Video Editing", "Deceptive Guide App", "Security Cameras / IoT", "Smart Home / IoT", "Audio / IoT", "Weather", "Navigation / Maps", "Ride Sharing"] },
 ];
-
 const APP_DB = [
   // ── ORIGINAL 23 ──────────────────────────────────────────────────────────────
   { id:1,  name:"TikTok",                   category:"Social Media",            icon:"🎵", score:8,  privacyGrade:"F",  playStoreId:"com.zhiliaoapp.musically",          dataTypes:["Precise Location","Contacts","Biometrics","Face Data","Browsing History","Keystrokes","Device ID","Financial Info","Clipboard Contents","App Usage"], sellsData:true,  misleadingAds:true,  thirdParties:47, founded:"2016", headquarters:"Beijing, China",                          summary:"One of the most aggressive data collectors on any platform. Harvests biometrics, clipboard contents, and keystroke patterns. Parent company ByteDance is legally required to share data with the Chinese government upon request. Cross-tracks users even after app is closed.", sources:["WSJ Investigation 2021","FTC Report 2023","Irish DPC Ruling 2023"], communityFlags:3842, communityVerified:true, knownIncidents:["$5.4M GDPR fine (2023)","US Congress testimony on data practices","Banned on US government devices"] },
