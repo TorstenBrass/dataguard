@@ -80,6 +80,7 @@ export function CategoryDropdown({ selectedCategory, onCategoryChange }) {
 }
 
 const APP_DB = [
+  {
   { id:1,  name:"TikTok",                   category:"Social Media",            icon:"🎵", score:8,  privacyGrade:"F",  playStoreId:"com.zhiliaoapp.musically",          dataTypes:["Precise Location","Contacts","Biometrics","Face Data","Browsing History","Keystrokes","Device ID","Financial Info","Clipboard Contents","App Usage"], sellsData:true,  misleadingAds:true,  thirdParties:47, founded:"2016", headquarters:"Beijing, China",                          summary:"One of the most aggressive data collectors on any platform. Harvests biometrics, clipboard contents, and keystroke patterns. Parent company ByteDance is legally required to share data with the Chinese government upon request. Cross-tracks users even after app is closed.", sources:["WSJ Investigation 2021","FTC Report 2023","Irish DPC Ruling 2023"], communityFlags:3842, communityVerified:true, knownIncidents:["$5.4M GDPR fine (2023)","US Congress testimony on data practices","Banned on US government devices"] },
   { id:2,  name:"Instagram",                category:"Social Media",            icon:"📸", score:14, privacyGrade:"F",  playStoreId:"com.instagram.android",             dataTypes:["Location","Contacts","Browsing History","Purchase History","Financial Info","Health Data","Device ID","Face Recognition","Ad Interactions"], sellsData:true,  misleadingAds:true,  thirdParties:39, founded:"2010", headquarters:"Menlo Park, USA",                          summary:"Builds shadow profiles on non-users using uploaded contact lists. Tracks browsing across the web via invisible pixels. Ad targeting uses off-app behavior. Part of Meta's data empire that operates across Facebook, WhatsApp, and Messenger.", sources:["Meta Privacy Policy 2024","EFF Analysis","Norwegian DPA Report"], communityFlags:2841, communityVerified:true, knownIncidents:["$1.3B GDPR fine for EU data transfers","FTC settlement for COPPA violations","Cambridge Analytica connection"] },
   { id:3,  name:"Signal",                   category:"Messaging",               icon:"🔒", score:97, privacyGrade:"A+", playStoreId:"org.thoughtcrime.securesms",         dataTypes:["Phone Number (only)"], sellsData:false, misleadingAds:false, thirdParties:0,  founded:"2013", headquarters:"Mountain View, USA",                        summary:"The gold standard for private communication. Open source, end-to-end encrypted by default, collects virtually no metadata. Run by a non-profit with no investors to answer to. Has repeatedly refused government requests and proven they have nothing to hand over.", sources:["Signal Source Code (GitHub)","EFF Secure Messaging Scorecard","Court-proven data minimalism"], communityFlags:11, communityVerified:true, knownIncidents:[] },
@@ -478,30 +479,36 @@ const APP_DB = [
 
 ];
 
-const GRADE_COLOR = { "A+":"#00e676","A":"#69f0ae","B":"#fff176","C":"#ffb74d","D":"#ff7043","F":"#ef5350" };
-function gradeColor(g) { return GRADE_COLOR[g] || "#fff"; }
+const GRADE_COLOR = { 
+  "A+": "#00e676", 
+  "A": "#69f0ae", 
+  "B": "#fff176", 
+  "C": "#ffb74d", 
+  "D": "#ff7043", 
+  "F": "#ef5350" 
+};
 
-function getPlayStoreUrl(id) {
+export function gradeColor(g) { 
+  return GRADE_COLOR[g] || "#fff"; 
+}
+
+export function getPlayStoreUrl(id) {
   if (!id) return null;
   return `https://play.google.com/store/apps/details?id=${id}&hl=en_CA`;
 }
 
-// ── EXPORT MAIN COMPONENT MANUALLY TO FIX EXPORT GAP IF NEEDED ───────────────
-export default MainApp;
-
-function ScoreRing({ score, size=80 }) {
-  const r=size*0.42, circ=2*Math.PI*r, dash=(score/100)*circ;
-  const color=score>=80?"#00e676":score>=50?"#ffd54f":score>=25?"#ff7043":"#ef5350";
-  const cx=size/2, cy=size/2;
+export function ScoreRing({ score, size = 80 }) {
+  const r = size * 0.42, circ = 2 * Math.PI * r, dash = (score / 100) * circ;
+  const color = score >= 80 ? "#00e676" : score >= 50 ? "#ffd54f" : score >= 25 ? "#ff7043" : "#ef5350";
+  const cx = size / 2, cy = size / 2;
   return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{display:"block"}}>
-      <circle cx={cx} cy={cy} r={r} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth={size*0.1}/>
-      <circle cx={cx} cy={cy} r={r} fill="none" stroke={color} strokeWidth={size*0.1} strokeDasharray={`${dash} ${circ-dash}`} strokeDashoffset={circ/4} strokeLinecap="round" style={{transition:"stroke-dasharray 1.2s cubic-bezier(.4,0,.2,1)"}}/>
-      <text x={cx} y={cy+5} textAnchor="middle" fill="white" fontSize={size*0.22} fontWeight="700" fontFamily="'DM Mono', monospace">{score}</text>
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ display: "block" }}>
+      <circle cx={cx} cy={cy} r={r} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth={size * 0.1} />
+      <circle cx={cx} cy={cy} r={r} fill="none" stroke={color} strokeWidth={size * 0.1} strokeDasharray={`${dash} ${circ - dash}`} strokeDashoffset={circ / 4} strokeLinecap="round" style={{ transition: "stroke-dasharray 1.2s cubic-bezier(.4,0,.2,1)" }} />
+      <text x={cx} y={cy + 5} textAnchor="middle" fill="white" fontSize={size * 0.22} fontWeight="700" fontFamily="'DM Mono', monospace">{score}</text>
     </svg>
   );
 }
-
 function Tag({label, color}) {
   return <span style={{background:`${color}1a`,color,border:`1px solid ${color}44`,fontSize:"10px",padding:"3px 9px",borderRadius:"20px",fontWeight:"700",letterSpacing:"0.6px",textTransform:"uppercase",fontFamily:"'DM Mono', monospace"}}>{label}</span>;
 }
