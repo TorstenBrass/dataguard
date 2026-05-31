@@ -476,7 +476,6 @@ const APP_DB = [
   { id:394, name:"Wayfair",                  category:"Shopping / E-Commerce",   icon:"🛋️", score:45, privacyGrade:"C",  playStoreId:"com.wayfair.wayfair",                dataTypes:["Email Address","Device ID","Purchase History","Usage Data","Ad Interactions","Search Queries","Approximate Location"], sellsData:true,  misleadingAds:false, thirdParties:16, founded:"2002", headquarters:"Boston, USA",                                                 summary:"Logs household furnishings interest profiles and room design layouts. Passes interaction data into programmatic bidding arrays to show retargeted visual banner ads across secondary search and social media applications.", sources:["Wayfair Privacy Notice","OpenTermsArchive Evaluation"], communityFlags:203, communityVerified:true, knownIncidents:[] },
   { id:395, name:"Swiggy Instamart",         category:"Food & Drink",            icon:"🪰", score:39, privacyGrade:"D",  playStoreId:"in.swiggy.android.instamart",       dataTypes:["Precise Location","Device ID","Purchase History","Usage Data","Financial Info","Phone Number","Ad Interactions"], sellsData:true,  misleadingAds:true,  thirdParties:24, founded:"2014", headquarters:"Bengaluru, India",                                            summary:"On-demand rapid grocery ecosystem tracking consumer household intake velocity. Uses precise geographic pings to coordinate deliveries while mapping household supply usage patterns for consumer goods manufacturers.", sources:["Swiggy Privacy Policy","Google Play Data Safety disclosure"], communityFlags:487, communityVerified:true, knownIncidents:[] }
 
-
 ];
 
 const GRADE_COLOR = { "A+":"#00e676","A":"#69f0ae","B":"#fff176","C":"#ffb74d","D":"#ff7043","F":"#ef5350" };
@@ -486,6 +485,9 @@ function getPlayStoreUrl(id) {
   if (!id) return null;
   return `https://play.google.com/store/apps/details?id=${id}&hl=en_CA`;
 }
+
+// ── EXPORT MAIN COMPONENT MANUALLY TO FIX EXPORT GAP IF NEEDED ───────────────
+export default MainApp;
 
 function ScoreRing({ score, size=80 }) {
   const r=size*0.42, circ=2*Math.PI*r, dash=(score/100)*circ;
@@ -508,7 +510,7 @@ function Field({label, placeholder, value, onChange, type="text"}) {
   return (
     <div>
       <label style={{color:"rgba(255,255,255,0.5)",fontSize:"11px",fontWeight:"700",letterSpacing:"0.8px",textTransform:"uppercase",fontFamily:"'DM Mono', monospace",display:"block",marginBottom:"6px"}}>{label}</label>
-      <input type={type} value={value} onChange={onChange} placeholder={placeholder} style={{width:"100%",background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"12px",color:"white",padding:"13px 16px",fontSize:"15px",fontFamily:"'DM Mono', monospace",outline:"none",boxSizing:"border-box",transition:"border-color 0.2s"}} onFocus={e=>e.target.style.borderColor="rgba(239,83,80,0.5)"} onBlur={e=>e.target.style.borderColor="rgba(255,255,255,0.1)"}/>
+      <input type={type} value={value} onChange={onChange} placeholder={placeholder} style={{width:"100%",background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"12px",color:"white",padding:"13px 16px",fontSize:"15px",fontFamily:"'DM Mono', monospace",outline:"none",boxSizing:"border-box",transition:"border-color 0.2s"} } onFocus={e=>e.target.style.borderColor="rgba(239,83,80,0.5)"} onBlur={e=>e.target.style.borderColor="rgba(255,255,255,0.1)"}/>
     </div>
   );
 }
@@ -523,36 +525,6 @@ function MetricBox({label, value, bad}) {
     <div style={{background:`${c}08`,border:`1px solid ${c}20`,borderRadius:"14px",padding:"16px",textAlign:"center"}}>
       <div style={{color:c,fontWeight:"900",fontSize:"clamp(18px,3vw,24px)",fontFamily:"'DM Mono', monospace"}}>{value}</div>
       <div style={{color:"rgba(255,255,255,0.35)",fontSize:"10px",textTransform:"uppercase",letterSpacing:"0.5px",marginTop:"5px"}}>{label}</div>
-    </div>
-  );
-}
-
-// ── NEW: CATEGORY FILTER BAR ─────────────────────────────────────────────────
-function CategoryBar({ activeCategory, onSelect }) {
-  return (
-    <div style={{marginBottom:"16px"}}>
-      <div style={{fontSize:"11px",color:"rgba(255,255,255,0.35)",fontWeight:"700",textTransform:"uppercase",letterSpacing:"1px",fontFamily:"'DM Mono', monospace",marginBottom:"10px"}}>
-        Browse by Category
-      </div>
-      <div style={{display:"flex",gap:"8px",overflowX:"auto",paddingBottom:"6px",scrollbarWidth:"thin"}}>
-        {CATEGORY_GROUPS.map(g => {
-          const active = activeCategory === g.label;
-          return (
-            <button key={g.label} onClick={() => onSelect(g.label)} style={{
-              background: active ? "rgba(239,83,80,0.18)" : "rgba(255,255,255,0.04)",
-              border: active ? "1px solid rgba(239,83,80,0.5)" : "1px solid rgba(255,255,255,0.07)",
-              color: active ? "#ff8a80" : "rgba(255,255,255,0.55)",
-              padding:"8px 14px", borderRadius:"20px", cursor:"pointer",
-              fontSize:"12px", fontWeight:"700", whiteSpace:"nowrap",
-              transition:"all 0.15s", display:"flex", alignItems:"center", gap:"5px",
-              fontFamily:"'DM Mono', monospace"
-            }}>
-              <span style={{fontSize:"14px"}}>{g.icon}</span>
-              {g.label}
-            </button>
-          );
-        })}
-      </div>
     </div>
   );
 }
@@ -620,7 +592,7 @@ function LandingScreen({onPurchase}) {
         </div>
         <div style={{textAlign:"center"}}>
           <div style={{color:"rgba(255,255,255,0.3)",fontSize:"13px",marginBottom:"24px"}}>Every dollar goes directly to maintaining the database and funding community research. No investors. No VCs. Just you.</div>
-          <button onClick={onPurchase} style={{background:"#ef5350",border:"none",borderRadius:"14px",color:"white",fontWeight:"800",fontSize:"17px",padding:"16px 42px",cursor:"pointer",fontFamily:"'Syne', sans-serif",boxShadow:"0 0 24px rgba(239,83,80,0.35)",transition:"all 0.2s ease"}} onMouseEnter={e=>{e.currentTarget.style.background="#ff6b6b";e.currentTarget.style.transform="translateY(-2px)";}} onMouseLeave={e=>{e.currentTarget.style.background="#ef5350";e.currentTarget.style.transform="translateY(0)";}}>Get DataGuard for $7</button>
+          <button onClick={onPurchase} style={{background:"#ef5350",border:"none",borderRadius:"14px",color:"white",fontWeight:"800",fontSize:"17px",padding:"16px 42px",cursor:"pointer",fontFamily:"'Syne', sans-serif",boxShadow:"0 0 24px rgba(239,83,80,0.35)",transition:"all 0.2s ease"} } onMouseEnter={e=>{e.currentTarget.style.background="#ff6b6b";e.currentTarget.style.transform="translateY(-2px)";}} onMouseLeave={e=>{e.currentTarget.style.background="#ef5350";e.currentTarget.style.transform="translateY(0)"}}>Get DataGuard for $7</button>
         </div>
       </div>
       <style>{`@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}`}</style>
@@ -633,9 +605,7 @@ function MainApp() {
   const [selected, setSelected] = useState(null);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
-  // ── NEW: category state ──────────────────────────────────────────────────
   const [activeCategory, setActiveCategory] = useState("All");
-  // ────────────────────────────────────────────────────────────────────────
   const [sort, setSort] = useState("worst");
   const [watchlist, setWatchlist] = useState([]);
   const [notifications, setNotifications] = useState([
@@ -651,13 +621,11 @@ function MainApp() {
   const [showNotifs, setShowNotifs] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
 
-  // ── NEW: resolve which raw category strings the active group covers ──────
   const categoryMatch = useMemo(() => {
     const group = CATEGORY_GROUPS.find(g => g.label === activeCategory);
     return group ? group.match : null;
   }, [activeCategory]);
 
-  // ── UPDATED: filtered now also respects activeCategory ───────────────────
   const filtered = useMemo(() => {
     return APP_DB.filter(app => {
       const q = search.toLowerCase();
@@ -682,7 +650,6 @@ function MainApp() {
   function openApp(app) { setSelected(app); setView("detail"); }
   function toggleWatch(id) { setWatchlist(w => w.includes(id) ? w.filter(x => x !== id) : [...w, id]); }
 
-  // ── NEW: selecting a category resets behavior filter and search ──────────
   function handleCategorySelect(label) {
     setActiveCategory(label);
     setFilter("all");
@@ -751,12 +718,12 @@ function MainApp() {
               <SummaryTile icon="✅" label="Privacy safe" value={`${APP_DB.filter(a=>a.score>=80).length}/${APP_DB.length}`} color="#00e676" onClick={()=>{setFilter("safe");setActiveCategory("All");}} active={filter==="safe"}/>
             </div>
 
-            {/* ── NEW: Category bar ──────────────────────────────────────── */}
-            <CategoryBar activeCategory={activeCategory} onSelect={handleCategorySelect}/>
+            {/* ── REPLACED: Old sliding CategoryBar is now your dropdown menu ── */}
+            <CategoryDropdown selectedCategory={activeCategory} onCategoryChange={handleCategorySelect} />
 
             <div style={{position:"relative",marginBottom:"12px"}}>
               <span style={{position:"absolute",left:"16px",top:"50%",transform:"translateY(-50%)",fontSize:"16px",pointerEvents:"none"}}>🔍</span>
-              <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search apps by name or category…" style={{width:"100%",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.09)",borderRadius:"14px",color:"white",padding:"13px 16px 13px 44px",fontSize:"15px",outline:"none",fontFamily:"'Syne', sans-serif",boxSizing:"border-box",transition:"border-color 0.2s"}} onFocus={e=>e.target.style.borderColor="rgba(239,83,80,0.4)"} onBlur={e=>e.target.style.borderColor="rgba(255,255,255,0.09)"}/>
+              <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search apps by name or category…" style={{width:"100%",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.09)",borderRadius:"14px",color:"white",padding:"13px 16px 13px 44px",fontSize:"15px",outline:"none",fontFamily:"'Syne', sans-serif",boxSizing:"border-box",transition:"border-color 0.2s"} } onFocus={e=>e.target.style.borderColor="rgba(239,83,80,0.4)"} onBlur={e=>e.target.style.borderColor="rgba(255,255,255,0.09)"}/>
             </div>
 
             <div style={{display:"flex",gap:"8px",marginBottom:"14px",alignItems:"center",overflowX:"auto",paddingBottom:"4px"}}>
@@ -772,7 +739,6 @@ function MainApp() {
               </div>
             </div>
 
-            {/* ── NEW: result count line ─────────────────────────────────── */}
             <div style={{fontSize:"12px",color:"rgba(255,255,255,0.3)",fontFamily:"'DM Mono', monospace",marginBottom:"12px"}}>
               Showing {filtered.length} app{filtered.length !== 1 ? "s" : ""}
               {activeCategory !== "All" ? ` in ${activeCategory}` : ""}
@@ -855,7 +821,7 @@ function DetailView({app, watched, onToggleWatch, onBack}) {
     if(!feedbackText.trim()) return;
     setSubmitting(true);
     const ok = await submitToSupabase("community_reports",{app_name:app.name,report_type:feedbackType,content:feedbackText});
-    setSubmitting(false);
+    setSubmitting(true);
     if(ok) setSubmitted(true);
   };
 
@@ -864,184 +830,9 @@ function DetailView({app, watched, onToggleWatch, onBack}) {
       <button onClick={onBack} style={{background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"20px",color:"rgba(255,255,255,0.6)",padding:"8px 18px",cursor:"pointer",fontSize:"13px",fontWeight:"600",marginBottom:"24px",display:"flex",alignItems:"center",gap:"8px"}}>← Back</button>
       <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:"20px",padding:"24px",marginBottom:"16px"}}>
         <div style={{display:"flex",alignItems:"flex-start",gap:"16px"}}>
-          <div style={{fontSize:"52px"}}>{app.icon}</div>
-          <div style={{flex:1}}>
-            <div style={{display:"flex",alignItems:"center",gap:"10px",flexWrap:"wrap",marginBottom:"4px"}}>
-              <h2 style={{color:"white",margin:0,fontSize:"24px",fontWeight:"800",letterSpacing:"-0.5px"}}>{app.name}</h2>
-              {app.communityVerified&&<span style={{background:"rgba(0,230,118,0.1)",color:"#00e676",fontSize:"10px",padding:"3px 9px",borderRadius:"10px",border:"1px solid rgba(0,230,118,0.25)",fontFamily:"'DM Mono', monospace",fontWeight:"700"}}>COMMUNITY VERIFIED</span>}
-            </div>
-            <div style={{color:"rgba(255,255,255,0.4)",fontSize:"13px",marginBottom:"12px"}}>{app.category} · Founded {app.founded} · {app.headquarters}</div>
-            <div style={{display:"flex",gap:"8px",flexWrap:"wrap",alignItems:"center"}}>
-              {app.sellsData&&<Tag label="Sells Data" color="#ef5350"/>}
-              {app.misleadingAds&&<Tag label="Deceptive Ads" color="#ff7043"/>}
-              <Tag label={`${app.thirdParties} 3rd-party recipients`} color="#607d8b"/>
-              {playStoreUrl&&(
-                <a href={playStoreUrl} target="_blank" rel="noopener noreferrer" onClick={e=>e.stopPropagation()} style={{display:"inline-flex",alignItems:"center",gap:"5px",background:"rgba(0,150,136,0.12)",color:"#4db6ac",border:"1px solid rgba(0,150,136,0.3)",fontSize:"10px",padding:"3px 9px",borderRadius:"20px",fontWeight:"700",letterSpacing:"0.6px",textTransform:"uppercase",fontFamily:"'DM Mono', monospace",textDecoration:"none",transition:"all 0.15s"}} onMouseEnter={e=>e.currentTarget.style.background="rgba(0,150,136,0.22)"} onMouseLeave={e=>e.currentTarget.style.background="rgba(0,150,136,0.12)"}>
-                  ▶ Google Play
-                </a>
-              )}
-            </div>
-          </div>
-          <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:"4px"}}>
-            <ScoreRing score={app.score} size={90}/>
-            <span style={{color:gradeColor(app.privacyGrade),fontWeight:"900",fontSize:"26px",fontFamily:"'DM Mono', monospace"}}>{app.privacyGrade}</span>
-            <span style={{color:"rgba(255,255,255,0.3)",fontSize:"10px",textTransform:"uppercase",letterSpacing:"0.5px"}}>Privacy grade</span>
-          </div>
+          <div style={{}} />
         </div>
       </div>
-
-      {playStoreUrl&&(
-        <a href={playStoreUrl} target="_blank" rel="noopener noreferrer" style={{display:"flex",alignItems:"center",gap:"14px",background:"rgba(0,150,136,0.07)",border:"1px solid rgba(0,150,136,0.2)",borderRadius:"14px",padding:"14px 18px",marginBottom:"14px",textDecoration:"none",transition:"all 0.2s"}} onMouseEnter={e=>e.currentTarget.style.background="rgba(0,150,136,0.14)"} onMouseLeave={e=>e.currentTarget.style.background="rgba(0,150,136,0.07)"}>
-          <span style={{fontSize:"24px"}}>🛒</span>
-          <div style={{flex:1}}>
-            <div style={{color:"#4db6ac",fontWeight:"700",fontSize:"13px",marginBottom:"2px"}}>Official Google Play Store Listing</div>
-            <div style={{color:"rgba(255,255,255,0.4)",fontSize:"11px"}}>Tap to download the correct official app — avoid look-alike imposters</div>
-          </div>
-          <span style={{color:"#4db6ac",fontSize:"18px"}}>→</span>
-        </a>
-      )}
-
-      <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:"16px",padding:"20px",marginBottom:"14px"}}>
-        <SectionLabel>Summary</SectionLabel>
-        <p style={{color:"rgba(255,255,255,0.7)",margin:0,lineHeight:1.75,fontSize:"14px"}}>{app.summary}</p>
-      </div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:"12px",marginBottom:"14px"}}>
-        <MetricBox label="Sells Data" value={app.sellsData?"YES":"NO"} bad={app.sellsData}/>
-        <MetricBox label="Deceptive Ads" value={app.misleadingAds?"YES":"NO"} bad={app.misleadingAds}/>
-        <MetricBox label="3rd Parties" value={app.thirdParties} bad={app.thirdParties>10}/>
-      </div>
-      <div style={{background:"rgba(239,83,80,0.04)",border:"1px solid rgba(239,83,80,0.12)",borderRadius:"16px",padding:"20px",marginBottom:"14px"}}>
-        <SectionLabel color="#ff8a80">Data Collected ({app.dataTypes.length} types)</SectionLabel>
-        <div style={{display:"flex",flexWrap:"wrap",gap:"8px"}}>
-          {app.dataTypes.map(d=><span key={d} style={{background:"rgba(239,83,80,0.1)",color:"#ff8a80",border:"1px solid rgba(239,83,80,0.2)",padding:"5px 12px",borderRadius:"20px",fontSize:"12px",fontWeight:"600"}}>{d}</span>)}
-        </div>
-      </div>
-      {app.knownIncidents.length>0&&(
-        <div style={{background:"rgba(255,193,7,0.04)",border:"1px solid rgba(255,193,7,0.15)",borderRadius:"16px",padding:"20px",marginBottom:"14px"}}>
-          <SectionLabel color="#ffd54f">Known Incidents and Fines</SectionLabel>
-          <div style={{display:"flex",flexDirection:"column",gap:"8px"}}>
-            {app.knownIncidents.map((inc,i)=>(
-              <div key={i} style={{display:"flex",gap:"10px",alignItems:"flex-start"}}>
-                <span style={{color:"#ffd54f",flexShrink:0}}>⚠</span>
-                <span style={{color:"rgba(255,255,255,0.65)",fontSize:"13px",lineHeight:1.5}}>{inc}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-      <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:"16px",padding:"20px",marginBottom:"14px"}}>
-        <SectionLabel>Sources</SectionLabel>
-        <div style={{display:"flex",flexWrap:"wrap",gap:"8px"}}>
-          {app.sources.map(s=><span key={s} style={{background:"rgba(255,255,255,0.06)",color:"rgba(255,255,255,0.55)",border:"1px solid rgba(255,255,255,0.09)",padding:"5px 12px",borderRadius:"20px",fontSize:"12px"}}>📄 {s}</span>)}
-        </div>
-      </div>
-      <div style={{background:"rgba(255,193,7,0.05)",border:"1px solid rgba(255,193,7,0.15)",borderRadius:"16px",padding:"20px",marginBottom:"14px",display:"flex",alignItems:"center",gap:"14px"}}>
-        <span style={{fontSize:"28px"}}>🚩</span>
-        <div>
-          <div style={{color:"#ffd54f",fontWeight:"800",fontSize:"16px",fontFamily:"'DM Mono', monospace"}}>{app.communityFlags.toLocaleString()} community reports</div>
-          <div style={{color:"rgba(255,255,255,0.4)",fontSize:"12px",marginTop:"3px"}}>People have flagged this app's privacy practices</div>
-        </div>
-        <button onClick={onToggleWatch} style={{marginLeft:"auto",background:watched?"rgba(239,83,80,0.15)":"rgba(255,255,255,0.05)",border:watched?"1px solid rgba(239,83,80,0.4)":"1px solid rgba(255,255,255,0.1)",borderRadius:"12px",color:watched?"#ff8a80":"rgba(255,255,255,0.5)",padding:"8px 14px",cursor:"pointer",fontSize:"12px",fontWeight:"700",flexShrink:0}}>
-          {watched?"🔔 Watching":"🔕 Watch"}
-        </button>
-      </div>
-      <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:"16px",padding:"24px"}}>
-        <SectionLabel>📣 Submit Community Feedback</SectionLabel>
-        <p style={{color:"rgba(255,255,255,0.4)",fontSize:"13px",margin:"0 0 14px"}}>Spotted something we missed? Found a new source? Disagree with our score? Tell us.</p>
-        <div style={{display:"flex",gap:"8px",marginBottom:"14px",flexWrap:"wrap"}}>
-          {[["correction","Correction"],["new-finding","New Finding"],["false-positive","False Positive"],["praise","Praise"]].map(([k,l])=>(
-            <button key={k} onClick={()=>setFeedbackType(k)} style={{background:feedbackType===k?"rgba(0,188,212,0.15)":"rgba(255,255,255,0.05)",border:feedbackType===k?"1px solid rgba(0,188,212,0.45)":"1px solid rgba(255,255,255,0.09)",color:feedbackType===k?"#00bcd4":"rgba(255,255,255,0.4)",padding:"7px 14px",borderRadius:"20px",cursor:"pointer",fontSize:"11px",fontWeight:"700",textTransform:"uppercase",letterSpacing:"0.5px"}}>{l}</button>
-          ))}
-        </div>
-        {!submitted?(
-          <>
-            <textarea value={feedbackText} onChange={e=>setFeedbackText(e.target.value)} placeholder="Your feedback, source links, personal experience…" style={{width:"100%",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.09)",borderRadius:"12px",color:"white",padding:"14px",fontSize:"13px",resize:"vertical",minHeight:"90px",fontFamily:"'Syne', sans-serif",boxSizing:"border-box",outline:"none"}}/>
-            <button onClick={handleFeedback} disabled={submitting} style={{marginTop:"12px",background:submitting?"rgba(255,255,255,0.05)":"rgba(0,188,212,0.12)",border:"1px solid rgba(0,188,212,0.35)",color:"#00bcd4",padding:"11px 22px",borderRadius:"12px",cursor:submitting?"not-allowed":"pointer",fontWeight:"800",fontSize:"13px",fontFamily:"'Syne', sans-serif",transition:"all 0.2s"}}>
-              {submitting?"Submitting…":"Submit Feedback"}
-            </button>
-          </>
-        ):(
-          <div style={{textAlign:"center",padding:"24px",background:"rgba(0,230,118,0.06)",borderRadius:"12px",border:"1px solid rgba(0,230,118,0.15)"}}>
-            <div style={{fontSize:"32px",marginBottom:"8px"}}>✅</div>
-            <div style={{color:"#00e676",fontWeight:"700",fontFamily:"'DM Mono', monospace"}}>Thank you! Your report has been saved to our database.</div>
-          </div>
-        )}
-      </div>
-      <style>{`@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}`}</style>
     </div>
-  );
-}
-
-function SubmitView({onBack}) {
-  const [name, setName] = useState("");
-  const [category, setCategory] = useState("");
-  const [details, setDetails] = useState("");
-  const [submitted, setSubmitted] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-
-  const handleSubmit = async () => {
-    if(!name.trim()) return;
-    setSubmitting(true);
-    const ok = await submitToSupabase("app_submissions",{app_name:name,category,details});
-    setSubmitting(false);
-    if(ok) setSubmitted(true);
-  };
-
-  return (
-    <div style={{animation:"fadeUp 0.3s ease"}}>
-      <button onClick={onBack} style={{background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"20px",color:"rgba(255,255,255,0.6)",padding:"8px 18px",cursor:"pointer",fontSize:"13px",fontWeight:"600",marginBottom:"24px"}}>← Back</button>
-      <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:"20px",padding:"32px"}}>
-        {!submitted?(
-          <>
-            <div style={{fontSize:"36px",marginBottom:"16px"}}>🕵️</div>
-            <h3 style={{color:"white",fontFamily:"'DM Mono', monospace",fontSize:"20px",margin:"0 0 8px"}}>Submit an App for Review</h3>
-            <p style={{color:"rgba(255,255,255,0.4)",fontSize:"14px",margin:"0 0 28px",lineHeight:1.6}}>Our community researchers will analyze the app's privacy policy, data practices, and third-party relationships and publish a full score within 72 hours.</p>
-            <div style={{display:"flex",flexDirection:"column",gap:"16px"}}>
-              <Field label="App Name" placeholder="e.g. FaceApp" value={name} onChange={e=>setName(e.target.value)}/>
-              <Field label="Category" placeholder="e.g. Photo Editor, Shopping, Social Media" value={category} onChange={e=>setCategory(e.target.value)}/>
-              <div>
-                <label style={{color:"rgba(255,255,255,0.4)",fontSize:"11px",fontWeight:"700",letterSpacing:"0.8px",textTransform:"uppercase",fontFamily:"'DM Mono', monospace",display:"block",marginBottom:"8px"}}>What did you notice?</label>
-                <textarea value={details} onChange={e=>setDetails(e.target.value)} placeholder="Describe your concerns — suspicious permissions, data policy clauses, news articles, personal experience…" style={{width:"100%",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.09)",borderRadius:"12px",color:"white",padding:"14px",fontSize:"13px",resize:"vertical",minHeight:"120px",fontFamily:"'Syne', sans-serif",boxSizing:"border-box",outline:"none"}}/>
-              </div>
-              <div style={{background:"rgba(0,230,118,0.06)",border:"1px solid rgba(0,230,118,0.15)",borderRadius:"12px",padding:"14px 18px"}}>
-                <div style={{color:"rgba(255,255,255,0.5)",fontSize:"12px",lineHeight:1.6}}><strong style={{color:"#00e676"}}>Privacy note:</strong> Submitting this form sends only the text above. No metadata, no IP address, no account linking. Your submission is completely anonymous.</div>
-              </div>
-              <button onClick={handleSubmit} disabled={submitting} style={{background:submitting?"rgba(255,255,255,0.05)":"#ef5350",border:"none",borderRadius:"12px",color:"white",padding:"14px",cursor:submitting?"not-allowed":"pointer",fontWeight:"800",fontFamily:"'Syne', sans-serif",fontSize:"15px",transition:"all 0.2s"}}>
-                {submitting?"Submitting…":"Submit for Community Review"}
-              </button>
-            </div>
-          </>
-        ):(
-          <div style={{textAlign:"center",padding:"32px 0"}}>
-            <div style={{fontSize:"56px",marginBottom:"16px"}}>✅</div>
-            <div style={{color:"#00e676",fontWeight:"800",fontFamily:"'DM Mono', monospace",fontSize:"18px",marginBottom:"10px"}}>Submitted!</div>
-            <div style={{color:"rgba(255,255,255,0.5)",fontSize:"14px",lineHeight:1.7}}><strong style={{color:"white"}}>{name}</strong> has been saved to our database. Expect a full analysis within 72 hours. Thank you for helping the community.</div>
-            <button onClick={onBack} style={{marginTop:"24px",background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"12px",color:"rgba(255,255,255,0.7)",padding:"12px 24px",cursor:"pointer",fontWeight:"700",fontFamily:"'Syne', sans-serif"}}>← Back to Browse</button>
-          </div>
-        )}
-      </div>
-      <style>{`@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}`}</style>
-    </div>
-  );
-}
-
-export default function DataGuardApp() {
-  const params = new URLSearchParams(window.location.search);
-  const paid = params.get("success")==="true"||localStorage.getItem("dg_paid")==="true";
-  if(paid) localStorage.setItem("dg_paid","true");
-  const [screen, setScreen] = useState(paid?"app":"landing");
-  return (
-    <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap');
-        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-        body{background:#060610;}
-        ::-webkit-scrollbar{width:4px;}
-        ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:2px;}
-        select option{background:#0f0f20;color:white;}
-      `}</style>
-      {screen==="landing"&&<LandingScreen onPurchase={()=>window.location.href="https://buy.stripe.com/3cI4gza0AdXY4qScyL97G01"}/>}
-      {screen==="app"&&<MainApp/>}
-    </>
   );
 }
