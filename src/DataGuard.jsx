@@ -38,47 +38,46 @@ export const CATEGORY_GROUPS = [
   { label: "Other",         icon: "⚙️", match: ["AI / Productivity", "Dating", "Job Search", "Professional Network", "Network Tools", "Video Editing", "Deceptive Guide App", "Security Cameras / IoT", "Smart Home / IoT", "Audio / IoT", "Weather", "Navigation / Maps", "Ride Sharing"] },
 ];
 
+// ── STYLISH CATEGORY ROLLDOWN MENU ───────────────────────────────────────────
 export function CategoryDropdown({ selectedCategory, onCategoryChange }) {
   return (
-{/* ── STYLISH CATEGORY ROLLDOWN MENU ── */}
-  <div style={{ padding: "12px 0", width: "100%", maxWidth: "420px", margin: "0 auto" }}>
-    <select
-      value={activeCategory}
-      onChange={(e) => setActiveCategory(e.target.value)}
-      style={{
-        width: "100%",
-        padding: "12px 16px",
-        fontSize: "16px",
-        fontWeight: "500",
-        color: "#ffffff",
-        backgroundColor: "#1a1f2c", // Matches your beautiful dark theme background
-        border: "1px solid #2d3748",
-        borderRadius: "10px",
-        cursor: "pointer",
-        outline: "none",
-        appearance: "none",
-        WebkitAppearance: "none",
-        MozAppearance: "none",
-        backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a0aec0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
-        backgroundRepeat: "no-repeat",
-        backgroundPosition: "right 16px center",
-        backgroundSize: "16px"
-      }}
-    >
-      {CATEGORY_GROUPS.map((group) => (
-        <option 
-          key={group.label} 
-          value={group.label} 
-          style={{ backgroundColor: "#1a1f2c", color: "#ffffff" }}
-        >
-          {group.icon} &nbsp;&nbsp; {group.label}
-        </option>
-      ))}
-    </select>
-  </div> 
-    );
-}
-const APP_DB = [
+    <div style={{ padding: "12px 0", width: "100%", maxWidth: "420px", margin: "0 auto" }}>
+      <select
+        value={selectedCategory}
+        onChange={(e) => onCategoryChange(e.target.value)}
+        style={{
+          width: "100%",
+          padding: "12px 16px",
+          fontSize: "16px",
+          fontWeight: "500",
+          color: "#ffffff",
+          backgroundColor: "#1a1f2c", // Matches your beautiful dark theme background
+          border: "1px solid #2d3748",
+          borderRadius: "10px",
+          cursor: "pointer",
+          outline: "none",
+          appearance: "none",
+          WebkitAppearance: "none",
+          MozAppearance: "none",
+          backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a0aec0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "right 16px center",
+          backgroundSize: "16px"
+        }}
+      >
+        {CATEGORY_GROUPS.map((group) => (
+          <option 
+            key={group.label} 
+            value={group.label} 
+            style={{ backgroundColor: "#1a1f2c", color: "#ffffff" }}
+          >
+            {group.icon} &nbsp;&nbsp; {group.label}
+          </option>
+        ))}
+      </select>
+    </div> 
+  );
+}const APP_DB = [
   { id:1,  name:"TikTok",                   category:"Social Media",            icon:"🎵", score:8,  privacyGrade:"F",  playStoreId:"com.zhiliaoapp.musically",          dataTypes:["Precise Location","Contacts","Biometrics","Face Data","Browsing History","Keystrokes","Device ID","Financial Info","Clipboard Contents","App Usage"], sellsData:true,  misleadingAds:true,  thirdParties:47, founded:"2016", headquarters:"Beijing, China",                          summary:"One of the most aggressive data collectors on any platform. Harvests biometrics, clipboard contents, and keystroke patterns. Parent company ByteDance is legally required to share data with the Chinese government upon request. Cross-tracks users even after app is closed.", sources:["WSJ Investigation 2021","FTC Report 2023","Irish DPC Ruling 2023"], communityFlags:3842, communityVerified:true, knownIncidents:["$5.4M GDPR fine (2023)","US Congress testimony on data practices","Banned on US government devices"] },
   { id:2,  name:"Instagram",                category:"Social Media",            icon:"📸", score:14, privacyGrade:"F",  playStoreId:"com.instagram.android",             dataTypes:["Location","Contacts","Browsing History","Purchase History","Financial Info","Health Data","Device ID","Face Recognition","Ad Interactions"], sellsData:true,  misleadingAds:true,  thirdParties:39, founded:"2010", headquarters:"Menlo Park, USA",                          summary:"Builds shadow profiles on non-users using uploaded contact lists. Tracks browsing across the web via invisible pixels. Ad targeting uses off-app behavior. Part of Meta's data empire that operates across Facebook, WhatsApp, and Messenger.", sources:["Meta Privacy Policy 2024","EFF Analysis","Norwegian DPA Report"], communityFlags:2841, communityVerified:true, knownIncidents:["$1.3B GDPR fine for EU data transfers","FTC settlement for COPPA violations","Cambridge Analytica connection"] },
   { id:3,  name:"Signal",                   category:"Messaging",               icon:"🔒", score:97, privacyGrade:"A+", playStoreId:"org.thoughtcrime.securesms",         dataTypes:["Phone Number (only)"], sellsData:false, misleadingAds:false, thirdParties:0,  founded:"2013", headquarters:"Mountain View, USA",                        summary:"The gold standard for private communication. Open source, end-to-end encrypted by default, collects virtually no metadata. Run by a non-profit with no investors to answer to. Has repeatedly refused government requests and proven they have nothing to hand over.", sources:["Signal Source Code (GitHub)","EFF Secure Messaging Scorecard","Court-proven data minimalism"], communityFlags:11, communityVerified:true, knownIncidents:[] },
