@@ -18,7 +18,7 @@ async function submitToSupabase(table, data) {
 // ── CATEGORY GROUPS ───────────────────────────────────────────────────────────
 // Each group maps a display label to the raw category strings used in APP_DB.
 // match: null means "show all". Add new groups here as you expand the database.
-const CATEGORY_GROUPS = [
+export const CATEGORY_GROUPS = [
   { label: "All",           icon: "🌐", match: null },
   { label: "Social Media",  icon: "📱", match: ["Social Media", "Messaging / Super App", "Messaging / Social"] },
   { label: "Messaging",     icon: "💬", match: ["Messaging"] },
@@ -37,6 +37,45 @@ const CATEGORY_GROUPS = [
   { label: "Education",     icon: "🎓", match: ["Education / EdTech"] },
   { label: "Other",         icon: "⚙️", match: ["AI / Productivity", "Dating", "Job Search", "Professional Network", "Network Tools", "Video Editing", "Deceptive Guide App", "Security Cameras / IoT", "Smart Home / IoT", "Audio / IoT", "Weather", "Navigation / Maps", "Ride Sharing"] },
 ];
+
+export function CategoryDropdown({ selectedCategory, onCategoryChange }) {
+  return (
+    <div style={{ padding: "12px", width: "100%", maxWidth: "420px", margin: "0 auto" }}>
+      <label htmlFor="category-select" style={{ display: "block", fontSize: "14px", fontWeight: "600", color: "#4a5568", marginBottom: "6px" }}>
+        Filter by Category
+      </label>
+      <select
+        id="category-select"
+        value={selectedCategory}
+        onChange={(e) => onCategoryChange(e.target.value)}
+        style={{
+          width: "100%",
+          padding: "12px 16px",
+          fontSize: "16px",
+          fontWeight: "500",
+          color: "#2d3748",
+          backgroundColor: "#ffffff",
+          border: "1px solid #cbd5e0",
+          borderRadius: "10px",
+          boxShadow: "0 2px 4px rgba(0,0,0,0.04)",
+          cursor: "pointer",
+          outline: "none",
+          appearance: "none",
+          backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234a5568' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "right 16px center",
+          backgroundSize: "16px"
+        }}
+      >
+        {CATEGORY_GROUPS.map((group) => (
+          <option key={group.label} value={group.label}>
+            {group.icon}  {group.label}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
 const APP_DB = [
   { id:1,  name:"TikTok",                   category:"Social Media",            icon:"🎵", score:8,  privacyGrade:"F",  playStoreId:"com.zhiliaoapp.musically",          dataTypes:["Precise Location","Contacts","Biometrics","Face Data","Browsing History","Keystrokes","Device ID","Financial Info","Clipboard Contents","App Usage"], sellsData:true,  misleadingAds:true,  thirdParties:47, founded:"2016", headquarters:"Beijing, China",                          summary:"One of the most aggressive data collectors on any platform. Harvests biometrics, clipboard contents, and keystroke patterns. Parent company ByteDance is legally required to share data with the Chinese government upon request. Cross-tracks users even after app is closed.", sources:["WSJ Investigation 2021","FTC Report 2023","Irish DPC Ruling 2023"], communityFlags:3842, communityVerified:true, knownIncidents:["$5.4M GDPR fine (2023)","US Congress testimony on data practices","Banned on US government devices"] },
   { id:2,  name:"Instagram",                category:"Social Media",            icon:"📸", score:14, privacyGrade:"F",  playStoreId:"com.instagram.android",             dataTypes:["Location","Contacts","Browsing History","Purchase History","Financial Info","Health Data","Device ID","Face Recognition","Ad Interactions"], sellsData:true,  misleadingAds:true,  thirdParties:39, founded:"2010", headquarters:"Menlo Park, USA",                          summary:"Builds shadow profiles on non-users using uploaded contact lists. Tracks browsing across the web via invisible pixels. Ad targeting uses off-app behavior. Part of Meta's data empire that operates across Facebook, WhatsApp, and Messenger.", sources:["Meta Privacy Policy 2024","EFF Analysis","Norwegian DPA Report"], communityFlags:2841, communityVerified:true, knownIncidents:["$1.3B GDPR fine for EU data transfers","FTC settlement for COPPA violations","Cambridge Analytica connection"] },
