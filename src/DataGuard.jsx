@@ -40,40 +40,42 @@ export const CATEGORY_GROUPS = [
 
 export function CategoryDropdown({ selectedCategory, onCategoryChange }) {
   return (
-    <div style={{ padding: "12px", width: "100%", maxWidth: "420px", margin: "0 auto" }}>
-      <label htmlFor="category-select" style={{ display: "block", fontSize: "14px", fontWeight: "600", color: "#4a5568", marginBottom: "6px" }}>
-        Filter by Category
-      </label>
-      <select
-        id="category-select"
-        value={selectedCategory}
-        onChange={(e) => onCategoryChange(e.target.value)}
-        style={{
-          width: "100%",
-          padding: "12px 16px",
-          fontSize: "16px",
-          fontWeight: "500",
-          color: "#2d3748",
-          backgroundColor: "#ffffff",
-          border: "1px solid #cbd5e0",
-          borderRadius: "10px",
-          boxShadow: "0 2px 4px rgba(0,0,0,0.04)",
-          cursor: "pointer",
-          outline: "none",
-          appearance: "none",
-          backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234a5568' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
-          backgroundRepeat: "no-repeat",
-          backgroundPosition: "right 16px center",
-          backgroundSize: "16px"
-        }}
+{/* ── REPLACE YOUR OLD HORIZONTAL PILLS CONTAINER WITH THIS ── */}
+<div style={{ padding: "12px 0", width: "100%", maxWidth: "420px" }}>
+  <select
+    value={activeCategory} 
+    onChange={(e) => setActiveCategory(e.target.value)}
+    style={{
+      width: "100%",
+      padding: "12px 16px",
+      fontSize: "16px",
+      fontWeight: "500",
+      color: "#ffffff",
+      backgroundColor: "#1a1f2c", // Matches your beautiful dark theme background
+      border: "1px solid #2d3748",
+      borderRadius: "10px",
+      cursor: "pointer",
+      outline: "none",
+      appearance: "none",
+      WebkitAppearance: "none",
+      MozAppearance: "none",
+      backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a0aec0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
+      backgroundRepeat: "no-repeat",
+      backgroundPosition: "right 16px center",
+      backgroundSize: "16px"
+    }}
+  >
+    {CATEGORY_GROUPS.map((group) => (
+      <option 
+        key={group.label} 
+        value={group.label} 
+        style={{ backgroundColor: "#1a1f2c", color: "#ffffff" }}
       >
-        {CATEGORY_GROUPS.map((group) => (
-          <option key={group.label} value={group.label}>
-            {group.icon}  {group.label}
-          </option>
-        ))}
-      </select>
-    </div>
+        {group.icon} &nbsp; {group.label}
+      </option>
+    ))}
+  </select>
+</div>
   );
 }
 const APP_DB = [
