@@ -509,6 +509,16 @@ export function ScoreRing({ score, size = 80 }) {
     </svg>
   );
 }
+
+export function KeyValue({ label, value, color }) {
+  return (
+    <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+      <span style={{ color: "rgba(255,255,255,0.6)", fontSize: "14px" }}>{label}</span>
+      <span style={{ color: color || "#fff", fontWeight: "600", fontSize: "14px" }}>{value}</span>
+    </div>
+  );
+}
+
 function Tag({label, color}) {
   return <span style={{background:`${color}1a`,color,border:`1px solid ${color}44`,fontSize:"10px",padding:"3px 9px",borderRadius:"20px",fontWeight:"700",letterSpacing:"0.6px",textTransform:"uppercase",fontFamily:"'DM Mono', monospace"}}>{label}</span>;
 }
@@ -606,7 +616,6 @@ function LandingScreen({onPurchase}) {
     </div>
   );
 }
-
 function MainApp() {
   const [view, setView] = useState("browse");
   const [selected, setSelected] = useState(null);
