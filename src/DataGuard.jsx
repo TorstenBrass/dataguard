@@ -63,19 +63,19 @@ export function CategoryDropdown({ selectedCategory, onCategoryChange }) {
           backgroundRepeat: "no-repeat",
           backgroundPosition: "right 16px center",
           backgroundSize: "16px"
-   }}
-    >
-      {CATEGORY_GROUPS.map((group) => (
-        <option 
-          key={group.label} 
-          value={group.label} 
-          style={{ backgroundColor: "#1a1f2c", color: "#ffffff" }}
-        >
-          {group.icon} &nbsp;&nbsp; {group.label}
-        </option>
-      ))}
-    </select>
-  </div> 
+        }}
+      >
+        {CATEGORY_GROUPS.map((group) => (
+          <option 
+            key={group.label} 
+            value={group.label} 
+            style={{ backgroundColor: "#1a1f2c", color: "#ffffff" }}
+          >
+            {group.icon} &nbsp;&nbsp; {group.label}
+          </option>
+        ))}
+      </select>
+    </div> 
   );
 }
 
