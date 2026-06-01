@@ -38,7 +38,7 @@ export const CATEGORY_GROUPS = [
   { label: "Health & Fitness", icon: "🏃", match: ["Health & Fitness"] },
   { label: "Dating",           icon: "💕", match: ["Dating"] },
   { label: "Education",        icon: "🎓", match: ["Education / EdTech"] },
-  { label: "Other",            icon: "⚙️", match: ["AI / Productivity", "Dating", "Job Search", "Professional Network", "Network Tools", "Video Editing", "Deceptive Guide App", "Security Cameras / IoT", "Smart Home / IoT", "Audio / IoT", "Weather", "Navigation / Maps", "Ride Sharing"] },
+  { label: "Other",            icon: "⚙️", match: ["AI / Productivity", "Job Search", "Professional Network", "Network Tools", "Video Editing", "Deceptive Guide App", "Security Cameras / IoT", "Smart Home / IoT", "Audio / IoT", "Weather", "Navigation / Maps", "Ride Sharing"] },
 ];
 
 // ── CATEGORY DROPDOWN ─────────────────────────────────────────────────────────
