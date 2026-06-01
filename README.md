@@ -38,9 +38,9 @@ DataGuard closes that gap. We synthesize research, regulatory findings, communit
 
 DataGuard was built on a simple principle: a privacy app that collects your data is a fraud.
 
-- **Zero data collection.** No analytics, no telemetry, no logs, no crash reports that phone home. Nothing.
+- **No tracking, ever.** We don't track you, profile you, or collect personal data — no analytics, no telemetry, no crash reports that phone home. Community submissions (app reports and requests) are anonymous and voluntary.
 - **No advertising.** No sponsored results, no affiliate links, no promoted apps. Ever.
-- **$3 one-time purchase.** No subscription. No freemium upsell. No dark patterns.
+- **$7 one-time purchase.** No subscription. No freemium upsell. No dark patterns.
 - **Fully open source.** Every line of code is in this repository. Audit it yourself.
 - **Community-funded.** Every dollar goes to maintaining the database and funding research. No investors, no VCs.
 
