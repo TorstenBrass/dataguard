@@ -6,7 +6,7 @@ DataGuard is an open-source privacy watchdog that scores apps based on how aggre
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Community Reports](https://img.shields.io/badge/Community%20Reports-18%2C000%2B-red)](https://dataguard.app/reports)
-[![Apps Reviewed](https://img.shields.io/badge/Apps%20Reviewed-10%2B-blue)](https://dataguard.app/browse)
+[![Apps Reviewed](https://img.shields.io/badge/Apps%20Reviewed-100's%2B-blue)](https://dataguard.app/browse)
 [![Price](https://img.shields.io/badge/Price-%243%20one--time-brightgreen)](https://dataguard.app)
 
 ---
