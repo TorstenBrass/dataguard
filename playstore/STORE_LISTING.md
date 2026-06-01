@@ -4,7 +4,7 @@
 DataGuard — Privacy Watchdog
 
 ## Short Description (80 chars max)
-Find out which apps are selling your data. Privacy scores for 52+ apps.
+Find out which apps are selling your data. Privacy scores for hundrets of apps.
 
 ## Full Description (4000 chars max)
 
@@ -16,7 +16,7 @@ DataGuard is an independent privacy watchdog that scores apps on how they handle
 
 🔍 WHAT YOU GET
 
-• Privacy scores for 52+ popular apps (and growing weekly)
+• Privacy scores for hundrets of popular apps (and growing weekly)
 • Letter grades from A+ to F — instantly see who's trustworthy
 • Detailed breakdowns of what data each app collects
 • Which third parties receive your information
@@ -50,7 +50,7 @@ Health & Fitness (Strava, MyFitnessPal, Fitbit)
 
 📈 BY THE NUMBERS
 
-• 52+ apps analyzed
+• hundrets of apps analyzed
 • 847 data brokers identified
 • 42,000+ privacy flags documented
 • 0 data points collected about our users
@@ -88,7 +88,7 @@ privacy, data protection, app privacy, data broker, GDPR, security, privacy audi
 Everyone (no objectionable content)
 
 ## Contact Email
-torstenbrass@gmail.com
+admin@landoflivingskies.art
 
 ## Privacy Policy URL
 https://dataguard-six.vercel.app (inline on main page)
