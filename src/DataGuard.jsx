@@ -798,7 +798,7 @@ function MainApp() {
             </div>
           </>
         )}
-        {view==="detail"&&selected&&<DetailView key={selected.id} app={selected} allApps={APP_DB} onViewApp={(a)=>setSelected(a)} watched={watchlist.includes(selected.id)} onToggleWatch={()=>toggleWatch(selected.id)} onBack={()=>setView("browse")}/>}
+        {view==="detail"&&selected&&<DetailView key={selected.id} app={selected} allApps={APP_DB} watched={watchlist.includes(selected.id)} onToggleWatch={()=>toggleWatch(selected.id)} onBack={()=>setView("browse")}/>}
         {view==="submit"&&<SubmitView onBack={()=>setView("browse")}/>}
       </div>
     </div>
@@ -843,41 +843,14 @@ function AppRow({app, onOpen, watched, onToggleWatch}) {
   );
 }
 
-function AlternativesSection({alternatives, allApps, onViewApp}) {
-  const altApps = alternatives.map(id => allApps.find(a => a.id === id)).filter(Boolean);
-  if(!altApps.length) return null;
-  return (
-    <div style={{background:"rgba(0,230,118,0.04)",border:"1px solid rgba(0,230,118,0.15)",borderRadius:"16px",padding:"20px",marginBottom:"14px"}}>
-      <SectionLabel color="#00e676">✅ Privacy-Respecting Alternatives</SectionLabel>
-      <p style={{color:"rgba(255,255,255,0.4)",fontSize:"13px",margin:"0 0 16px"}}>These apps cover similar needs and score significantly better in our database.</p>
-      <div style={{display:"flex",flexDirection:"column",gap:"10px"}}>
-        {altApps.map(alt=>(
-          <button key={alt.id} onClick={()=>onViewApp(alt)}
-            style={{display:"flex",alignItems:"center",gap:"14px",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(0,230,118,0.2)",borderRadius:"12px",padding:"12px 16px",cursor:"pointer",textAlign:"left",width:"100%",boxSizing:"border-box"}}
-            onMouseEnter={e=>e.currentTarget.style.background="rgba(0,230,118,0.08)"}
-            onMouseLeave={e=>e.currentTarget.style.background="rgba(255,255,255,0.04)"}>
-            <span style={{fontSize:"28px",flexShrink:0}}>{alt.icon}</span>
-            <div style={{flex:1,minWidth:0}}>
-              <div style={{color:"white",fontWeight:"800",fontSize:"14px",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{alt.name}</div>
-              <div style={{color:"rgba(255,255,255,0.4)",fontSize:"12px",marginTop:"2px"}}>{alt.category}</div>
-            </div>
-            <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:"1px",flexShrink:0}}>
-              <span style={{color:gradeColor(alt.privacyGrade),fontWeight:"900",fontSize:"22px",fontFamily:"'DM Mono', monospace"}}>{alt.privacyGrade}</span>
-              <span style={{color:"rgba(255,255,255,0.3)",fontSize:"10px"}}>grade</span>
-            </div>
-            <span style={{color:"rgba(0,230,118,0.7)",fontSize:"16px",flexShrink:0}}>→</span>
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
-function DetailView({app, allApps, onViewApp, watched, onToggleWatch, onBack}) {
+function DetailView({app, allApps, watched, onToggleWatch, onBack}) {
   const [feedbackType, setFeedbackType] = useState("correction");
   const [feedbackText, setFeedbackText] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const playStoreUrl = getPlayStoreUrl(app.playStoreId);
+  const bestAlt = app.alternatives&&app.alternatives.length>0&&allApps ? allApps.filter(a=>app.alternatives.includes(a.id)).sort((a,b)=>b.score-a.score)[0]||null : null;
+  const altPlayStoreUrl = bestAlt ? getPlayStoreUrl(bestAlt.playStoreId) : null;
 
   const handleFeedback = async () => {
     if(!feedbackText.trim()) return;
@@ -891,36 +864,32 @@ function DetailView({app, allApps, onViewApp, watched, onToggleWatch, onBack}) {
     <div style={{animation:"fadeUp 0.3s ease"}}>
       <button onClick={onBack} style={{background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"20px",color:"rgba(255,255,255,0.6)",padding:"8px 18px",cursor:"pointer",fontSize:"13px",fontWeight:"600",marginBottom:"24px",display:"flex",alignItems:"center",gap:"8px"}}>← Back</button>
       <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:"20px",padding:"24px",marginBottom:"16px"}}>
-        <div style={{display:"flex",alignItems:"flex-start",gap:"16px"}}>
-          <div style={{fontSize:"52px"}}>{app.icon}</div>
-          <div style={{flex:1,minWidth:0}}>
-            <div style={{display:"flex",alignItems:"center",gap:"10px",flexWrap:"wrap",marginBottom:"4px"}}>
-              <h2 style={{color:"white",margin:0,fontSize:"24px",fontWeight:"800",letterSpacing:"-0.5px",wordBreak:"break-word"}}>{app.name}</h2>
-              {app.communityVerified&&<span style={{background:"rgba(0,230,118,0.1)",color:"#00e676",fontSize:"10px",padding:"3px 9px",borderRadius:"10px",border:"1px solid rgba(0,230,118,0.25)",fontFamily:"'DM Mono', monospace",fontWeight:"700"}}>COMMUNITY VERIFIED</span>}
-            </div>
-            <div style={{color:"rgba(255,255,255,0.4)",fontSize:"13px",marginBottom:"12px"}}>{app.category} · Founded {app.founded} · {app.headquarters}</div>
-            <div style={{display:"flex",gap:"8px",flexWrap:"wrap",alignItems:"center"}}>
-              {app.sellsData&&<Tag label="Sells Data" color="#ef5350"/>}
-              {app.misleadingAds&&<Tag label="Deceptive Ads" color="#ff7043"/>}
-              <Tag label={`${app.thirdParties} 3rd-party recipients`} color="#607d8b"/>
-              {playStoreUrl&&(
-                <a href={playStoreUrl} target="_blank" rel="noopener noreferrer" onClick={e=>e.stopPropagation()} style={{display:"inline-flex",alignItems:"center",gap:"5px",background:"rgba(0,150,136,0.12)",color:"#4db6ac",border:"1px solid rgba(0,150,136,0.3)",fontSize:"10px",padding:"3px 9px",borderRadius:"20px",fontWeight:"700",letterSpacing:"0.6px",textTransform:"uppercase",fontFamily:"'DM Mono', monospace",textDecoration:"none",transition:"all 0.15s"}} onMouseEnter={e=>e.currentTarget.style.background="rgba(0,150,136,0.22)"} onMouseLeave={e=>e.currentTarget.style.background="rgba(0,150,136,0.12)"}>
-                  ▶ Google Play
-                </a>
-              )}
-            </div>
-          </div>
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"16px"}}>
+          <span style={{fontSize:"52px"}}>{app.icon}</span>
           <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:"4px"}}>
-            <ScoreRing score={app.score} size={90}/>
+            <ScoreRing score={app.score} size={80}/>
             <span style={{color:gradeColor(app.privacyGrade),fontWeight:"900",fontSize:"26px",fontFamily:"'DM Mono', monospace"}}>{app.privacyGrade}</span>
             <span style={{color:"rgba(255,255,255,0.3)",fontSize:"10px",textTransform:"uppercase",letterSpacing:"0.5px"}}>Privacy grade</span>
           </div>
+        </div>
+        <h2 style={{color:"white",margin:"0 0 12px",fontSize:"clamp(20px,6vw,28px)",fontWeight:"800",letterSpacing:"-0.5px",lineHeight:1.2}}>{app.name}</h2>
+        <div style={{display:"flex",alignItems:"flex-start",gap:"8px",flexWrap:"wrap",marginBottom:"12px"}}>
+          {app.communityVerified&&<span style={{background:"rgba(0,230,118,0.1)",color:"#00e676",fontSize:"10px",padding:"3px 9px",borderRadius:"10px",border:"1px solid rgba(0,230,118,0.25)",fontFamily:"'DM Mono', monospace",fontWeight:"700",flexShrink:0}}>COMMUNITY VERIFIED</span>}
+          <span style={{color:"rgba(255,255,255,0.4)",fontSize:"13px"}}>{app.category} · Founded {app.founded} · {app.headquarters}</span>
+        </div>
+        <div style={{display:"flex",gap:"8px",flexWrap:"wrap",marginBottom:"12px"}}>
+          {app.sellsData&&<Tag label="Sells Data" color="#ef5350"/>}
+          {app.misleadingAds&&<Tag label="Deceptive Ads" color="#ff7043"/>}
+          <Tag label={`${app.thirdParties} 3rd-party recipients`} color="#607d8b"/>
+        </div>
+        <div style={{display:"flex",gap:"8px",flexWrap:"wrap",alignItems:"center"}}>
+          {playStoreUrl&&(<a href={playStoreUrl} target="_blank" rel="noopener noreferrer" onClick={e=>e.stopPropagation()} style={{display:"inline-flex",alignItems:"center",gap:"5px",background:"rgba(0,150,136,0.12)",color:"#4db6ac",border:"1px solid rgba(0,150,136,0.3)",fontSize:"11px",padding:"6px 14px",borderRadius:"20px",fontWeight:"700",letterSpacing:"0.6px",textTransform:"uppercase",fontFamily:"'DM Mono', monospace",textDecoration:"none",transition:"all 0.15s"}} onMouseEnter={e=>e.currentTarget.style.background="rgba(0,150,136,0.22)"} onMouseLeave={e=>e.currentTarget.style.background="rgba(0,150,136,0.12)"}>▶ Google Play</a>)}
+          {altPlayStoreUrl&&bestAlt&&(<a href={altPlayStoreUrl} target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",alignItems:"center",gap:"5px",background:"rgba(0,230,118,0.1)",color:"#00e676",border:"1px solid rgba(0,230,118,0.25)",fontSize:"11px",padding:"6px 14px",borderRadius:"20px",fontWeight:"700",fontFamily:"'DM Mono', monospace",textDecoration:"none",transition:"all 0.15s"}} onMouseEnter={e=>e.currentTarget.style.background="rgba(0,230,118,0.18)"} onMouseLeave={e=>e.currentTarget.style.background="rgba(0,230,118,0.1)"}>✅ Try {bestAlt.name} ({bestAlt.privacyGrade})</a>)}
         </div>
       </div>
 
       
 
-      {app.alternatives&&app.alternatives.length>0&&allApps&&onViewApp&&<AlternativesSection alternatives={app.alternatives} allApps={allApps} onViewApp={onViewApp}/>}
       <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:"16px",padding:"20px",marginBottom:"14px"}}>
         <SectionLabel>Summary</SectionLabel>
         <p style={{color:"rgba(255,255,255,0.7)",margin:0,lineHeight:1.75,fontSize:"14px"}}>{app.summary}</p>
