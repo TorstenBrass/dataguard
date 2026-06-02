@@ -476,7 +476,6 @@ const APP_DB = [
   { id:394, name:"Wayfair",                  category:"Shopping / E-Commerce",   icon:"🛋️", score:45, privacyGrade:"C",  playStoreId:"com.wayfair.wayfair",                dataTypes:["Email Address","Device ID","Purchase History","Usage Data","Ad Interactions","Search Queries","Approximate Location"], sellsData:true,  misleadingAds:false, thirdParties:16, founded:"2002", headquarters:"Boston, USA",                                                 summary:"Logs household furnishings interest profiles and room design layouts. Passes interaction data into programmatic bidding arrays to show retargeted visual banner ads across secondary search and social media applications.", sources:["Wayfair Privacy Notice","OpenTermsArchive Evaluation"], communityFlags:203, communityVerified:true, knownIncidents:[] },
   { id:395, name:"Swiggy Instamart",         category:"Food & Drink",            icon:"🪰", score:39, privacyGrade:"D",  playStoreId:"in.swiggy.android.instamart",       dataTypes:["Precise Location","Device ID","Purchase History","Usage Data","Financial Info","Phone Number","Ad Interactions"], sellsData:true,  misleadingAds:true,  thirdParties:24, founded:"2014", headquarters:"Bengaluru, India",                                            summary:"On-demand rapid grocery ecosystem tracking consumer household intake velocity. Uses precise geographic pings to coordinate deliveries while mapping household supply usage patterns for consumer goods manufacturers.", sources:["Swiggy Privacy Policy","Google Play Data Safety disclosure"], communityFlags:487, communityVerified:true, knownIncidents:[] }
 
-
 ];
 
 const GRADE_COLOR = { "A+":"#00e676","A":"#69f0ae","B":"#fff176","C":"#ffb74d","D":"#ff7043","F":"#ef5350" };
@@ -701,7 +700,6 @@ function MainApp() {
           <span style={{fontSize:"20px"}}>🔔</span>
           {unread>0&&<span style={{position:"absolute",top:0,right:0,background:"#ef5350",borderRadius:"50%",width:"14px",height:"14px",fontSize:"9px",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:"700",fontFamily:"'DM Mono', monospace"}}>{unread}</span>}
         </button>
-        <button onClick={()=>setShowAbout(true)} style={{background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"20px",color:"rgba(255,255,255,0.6)",fontSize:"12px",padding:"6px 14px",cursor:"pointer",fontWeight:"600"}}>About</button>
       </nav>
 
       {showNotifs&&(
@@ -745,6 +743,7 @@ function MainApp() {
       <div style={{flex:1,maxWidth:"800px",margin:"0 auto",width:"100%",padding:"24px 16px"}}>
         {view==="browse"&&(
           <>
+            <div style={{display:"flex",justifyContent:"flex-start",marginBottom:"16px"}}><button onClick={()=>setShowAbout(true)} style={{background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.09)",borderRadius:"20px",color:"rgba(255,255,255,0.45)",fontSize:"11px",padding:"5px 14px",cursor:"pointer",fontWeight:"600",letterSpacing:"0.3px"}}>ℹ️ About DataGuard</button></div>
             <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:"12px",marginBottom:"24px"}}>
               <SummaryTile icon="💀" label="Sell your data" value={`${APP_DB.filter(a=>a.sellsData).length}/${APP_DB.length}`} color="#ef5350" onClick={()=>{setFilter("sellers");setActiveCategory("All");}} active={filter==="sellers"}/>
               <SummaryTile icon="🎭" label="Deceptive ads" value={`${APP_DB.filter(a=>a.misleadingAds).length}/${APP_DB.length}`} color="#ff7043" onClick={()=>{setFilter("deceptive");setActiveCategory("All");}} active={filter==="deceptive"}/>
@@ -894,9 +893,9 @@ function DetailView({app, allApps, onViewApp, watched, onToggleWatch, onBack}) {
       <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:"20px",padding:"24px",marginBottom:"16px"}}>
         <div style={{display:"flex",alignItems:"flex-start",gap:"16px"}}>
           <div style={{fontSize:"52px"}}>{app.icon}</div>
-          <div style={{flex:1}}>
+          <div style={{flex:1,minWidth:0}}>
             <div style={{display:"flex",alignItems:"center",gap:"10px",flexWrap:"wrap",marginBottom:"4px"}}>
-              <h2 style={{color:"white",margin:0,fontSize:"24px",fontWeight:"800",letterSpacing:"-0.5px"}}>{app.name}</h2>
+              <h2 style={{color:"white",margin:0,fontSize:"24px",fontWeight:"800",letterSpacing:"-0.5px",wordBreak:"break-word"}}>{app.name}</h2>
               {app.communityVerified&&<span style={{background:"rgba(0,230,118,0.1)",color:"#00e676",fontSize:"10px",padding:"3px 9px",borderRadius:"10px",border:"1px solid rgba(0,230,118,0.25)",fontFamily:"'DM Mono', monospace",fontWeight:"700"}}>COMMUNITY VERIFIED</span>}
             </div>
             <div style={{color:"rgba(255,255,255,0.4)",fontSize:"13px",marginBottom:"12px"}}>{app.category} · Founded {app.founded} · {app.headquarters}</div>
@@ -919,16 +918,7 @@ function DetailView({app, allApps, onViewApp, watched, onToggleWatch, onBack}) {
         </div>
       </div>
 
-      {playStoreUrl&&(
-        <a href={playStoreUrl} target="_blank" rel="noopener noreferrer" style={{display:"flex",alignItems:"center",gap:"14px",background:"rgba(0,150,136,0.07)",border:"1px solid rgba(0,150,136,0.2)",borderRadius:"14px",padding:"14px 18px",marginBottom:"14px",textDecoration:"none",transition:"all 0.2s"}} onMouseEnter={e=>e.currentTarget.style.background="rgba(0,150,136,0.14)"} onMouseLeave={e=>e.currentTarget.style.background="rgba(0,150,136,0.07)"}>
-          <span style={{fontSize:"24px"}}>🛒</span>
-          <div style={{flex:1}}>
-            <div style={{color:"#4db6ac",fontWeight:"700",fontSize:"13px",marginBottom:"2px"}}>Official Google Play Store Listing</div>
-            <div style={{color:"rgba(255,255,255,0.4)",fontSize:"11px"}}>Tap to download the correct official app — avoid look-alike imposters</div>
-          </div>
-          <span style={{color:"#4db6ac",fontSize:"18px"}}>→</span>
-        </a>
-      )}
+      
 
       {app.alternatives&&app.alternatives.length>0&&allApps&&onViewApp&&<AlternativesSection alternatives={app.alternatives} allApps={allApps} onViewApp={onViewApp}/>}
       <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:"16px",padding:"20px",marginBottom:"14px"}}>
