@@ -1025,10 +1025,20 @@ function SubmitView({onBack}) {
   );
 }
 
+// True when running inside the Capacitor native app (Android/iOS), false on the web.
+// Capacitor injects window.Capacitor; isNativePlatform() is the official check.
+const isNativeApp =
+  typeof window !== "undefined" &&
+  window.Capacitor &&
+  typeof window.Capacitor.isNativePlatform === "function" &&
+  window.Capacitor.isNativePlatform();
+
 export default function DataGuardApp() {
   const params = new URLSearchParams(window.location.search);
-  const paid = params.get("success")==="true"||localStorage.getItem("dg_paid")==="true";
-  if(paid) localStorage.setItem("dg_paid","true");
+  // In the native app the full database is free (no paywall, no Stripe).
+  // On the web the paywall stays exactly as before.
+  const paid = isNativeApp || params.get("success")==="true" || localStorage.getItem("dg_paid")==="true";
+  if(paid && !isNativeApp) localStorage.setItem("dg_paid","true");
   const [screen, setScreen] = useState(paid?"app":"landing");
   return (
     <>
