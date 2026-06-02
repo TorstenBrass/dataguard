@@ -1,59 +1,52 @@
 name: Build Android Release
-
 on:
   push:
     branches: [main]
   workflow_dispatch:
-
 jobs:
   build:
     runs-on: ubuntu-latest
     env:
       CI: true
-
     steps:
       - uses: actions/checkout@v4
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '21'
-
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
-
       - name: Accept Android SDK licenses
         run: yes | sdkmanager --licenses || true
-
       - name: Install dependencies
         run: npm install
-
       - name: Build web app
         run: npx vite build
-
       - name: Verify dist exists
         run: ls -la dist/
-
       - name: Add Capacitor Android platform
         run: |
           rm -f capacitor.config.ts
           ./node_modules/.bin/cap add android
-
       - name: Sync web assets to Android
         run: ./node_modules/.bin/cap sync android
-
+      - name: Set version code and name
+        working-directory: android
+        run: |
+          VERSION_CODE=${{ github.run_number }}
+          sed -i "s/versionCode [0-9]*/versionCode ${VERSION_CODE}/" app/build.gradle
+          sed -i "s/versionName \"[^\"]*\"/versionName \"1.0.${VERSION_CODE}\"/" app/build.gradle
+          echo "Set versionCode to ${VERSION_CODE}"
+          grep -E "versionCode|versionName" app/build.gradle
       - name: Decode keystore
         run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > /tmp/upload-keystore.p12
-
       - name: Make gradlew executable
         run: chmod +x android/gradlew
-
       - name: Build signed release AAB
         working-directory: android
         run: |
@@ -62,7 +55,6 @@ jobs:
             -Pandroid.injected.signing.store.password=${{ secrets.KEYSTORE_PASSWORD }} \
             -Pandroid.injected.signing.key.alias=${{ secrets.KEY_ALIAS }} \
             -Pandroid.injected.signing.key.password=${{ secrets.KEYSTORE_PASSWORD }}
-
       - name: Upload release AAB
         uses: actions/upload-artifact@v4
         with:
