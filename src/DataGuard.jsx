@@ -552,31 +552,41 @@ function MetricBox({label, value, bad}) {
 }
 
 // ── NEW: CATEGORY FILTER BAR ─────────────────────────────────────────────────
-function CategoryBar({ activeCategory, onSelect }) {
+function CategoryMenu({ activeCategory, onSelect }) {
+  const [open, setOpen] = useState(false);
+  const sorted = [
+    CATEGORY_GROUPS.find(g => g.label === "All"),
+    ...CATEGORY_GROUPS.filter(g => g.label !== "All").sort((a,b) => a.label.localeCompare(b.label))
+  ].filter(Boolean);
+  const active = CATEGORY_GROUPS.find(g => g.label === activeCategory) || sorted[0];
   return (
-    <div style={{marginBottom:"16px"}}>
-      <div style={{fontSize:"11px",color:"rgba(255,255,255,0.35)",fontWeight:"700",textTransform:"uppercase",letterSpacing:"1px",fontFamily:"'DM Mono', monospace",marginBottom:"10px"}}>
-        Browse by Category
-      </div>
-      <div style={{display:"flex",gap:"8px",flexWrap:"wrap",paddingBottom:"6px"}}>
-        {CATEGORY_GROUPS.map(g => {
-          const active = activeCategory === g.label;
-          return (
-            <button key={g.label} onClick={() => onSelect(g.label)} style={{
-              background: active ? "rgba(239,83,80,0.18)" : "rgba(255,255,255,0.04)",
-              border: active ? "1px solid rgba(239,83,80,0.5)" : "1px solid rgba(255,255,255,0.07)",
-              color: active ? "#ff8a80" : "rgba(255,255,255,0.55)",
-              padding:"8px 14px", borderRadius:"20px", cursor:"pointer",
-              fontSize:"12px", fontWeight:"700", whiteSpace:"nowrap",
-              transition:"all 0.15s", display:"flex", alignItems:"center", gap:"5px",
-              fontFamily:"'DM Mono', monospace"
-            }}>
-              <span style={{fontSize:"14px"}}>{g.icon}</span>
-              {g.label}
-            </button>
-          );
-        })}
-      </div>
+    <div style={{position:"relative",marginBottom:"16px"}}>
+      <button onClick={()=>setOpen(v=>!v)} style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:"8px",width:"100%",background:activeCategory==="All"?"rgba(255,255,255,0.05)":"rgba(239,83,80,0.12)",border:activeCategory==="All"?"1px solid rgba(255,255,255,0.1)":"1px solid rgba(239,83,80,0.4)",borderRadius:"20px",padding:"9px 16px",cursor:"pointer",color:"white",fontFamily:"'DM Mono', monospace",transition:"all 0.15s"}}>
+        <div style={{display:"flex",alignItems:"center",gap:"8px"}}>
+          <span style={{fontSize:"15px"}}>{active?active.icon:"🌐"}</span>
+          <span style={{fontSize:"12px",fontWeight:"700",color:activeCategory==="All"?"rgba(255,255,255,0.7)":"#ff8a80"}}>{activeCategory==="All"?"All Categories":activeCategory}</span>
+        </div>
+        <span style={{fontSize:"9px",color:"rgba(255,255,255,0.35)",transition:"transform 0.2s",display:"inline-block",transform:open?"rotate(180deg)":"rotate(0deg)"}}>▼</span>
+      </button>
+      {open&&(
+        <>
+          <div style={{position:"fixed",inset:0,zIndex:99}} onClick={()=>setOpen(false)}/>
+          <div style={{position:"absolute",top:"calc(100% + 6px)",left:0,right:0,background:"#0f0f20",border:"1px solid rgba(255,255,255,0.12)",borderRadius:"16px",zIndex:100,overflow:"hidden",boxShadow:"0 20px 60px rgba(0,0,0,0.7)",maxHeight:"60vh",overflowY:"auto"}}>
+            {sorted.map((g,i)=>{
+              const isActive = activeCategory===g.label;
+              return (
+                <button key={g.label} onClick={()=>{onSelect(g.label);setOpen(false);}} style={{display:"flex",alignItems:"center",gap:"12px",width:"100%",padding:"11px 16px",background:isActive?"rgba(239,83,80,0.12)":"transparent",border:"none",borderBottom:i<sorted.length-1?"1px solid rgba(255,255,255,0.05)":"none",cursor:"pointer",textAlign:"left",fontFamily:"'DM Mono', monospace",transition:"background 0.1s"}}
+                  onMouseEnter={e=>{if(!isActive)e.currentTarget.style.background="rgba(255,255,255,0.05)";}}
+                  onMouseLeave={e=>{if(!isActive)e.currentTarget.style.background="transparent";}}>
+                  <span style={{fontSize:"17px",flexShrink:0}}>{g.icon}</span>
+                  <span style={{flex:1,fontSize:"13px",fontWeight:isActive?"700":"400",color:isActive?"#ff8a80":"rgba(255,255,255,0.7)"}}>{g.label}</span>
+                  {isActive&&<span style={{color:"#ff8a80",fontSize:"12px",flexShrink:0}}>✓</span>}
+                </button>
+              );
+            })}
+          </div>
+        </>
+      )}
     </div>
   );
 }
@@ -742,18 +752,18 @@ function MainApp() {
       )}
 
       {showAbout&&(
-        <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.8)",zIndex:300,display:"flex",alignItems:"center",justifyContent:"center",padding:"24px",backdropFilter:"blur(8px)"}} onClick={()=>setShowAbout(false)}>
-          <div onClick={e=>e.stopPropagation()} style={{background:"#0f0f20",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"24px",padding:"36px",maxWidth:"500px",width:"100%",position:"relative"}}>
+        <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.85)",zIndex:300,display:"flex",alignItems:"center",justifyContent:"center",padding:"16px",overflowY:"auto",backdropFilter:"blur(8px)"}} onClick={()=>setShowAbout(false)}>
+          <div onClick={e=>e.stopPropagation()} style={{background:"#0f0f20",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"20px",padding:"20px",maxWidth:"500px",width:"100%",position:"relative",maxHeight:"calc(100dvh - 80px)",overflowY:"auto"}}>
             <button onClick={()=>setShowAbout(false)} style={{position:"absolute",top:"16px",right:"16px",background:"rgba(255,255,255,0.08)",border:"none",color:"white",borderRadius:"50%",width:"32px",height:"32px",cursor:"pointer",fontSize:"16px"}}>×</button>
-            <div style={{fontSize:"40px",marginBottom:"16px"}}>🛡️</div>
-            <h3 style={{color:"white",fontFamily:"'DM Mono', monospace",margin:"0 0 12px",fontSize:"18px"}}>About DataGuard</h3>
-            <p style={{color:"rgba(255,255,255,0.55)",fontSize:"14px",lineHeight:1.8,marginBottom:"20px"}}>DataGuard was built because the app economy has a fundamental problem: most apps exist not to provide value, but to harvest and monetize user data. We believe people deserve to know exactly what they are signing up for.</p>
-            <div style={{background:"rgba(0,230,118,0.06)",border:"1px solid rgba(0,230,118,0.2)",borderRadius:"14px",padding:"20px",marginBottom:"20px"}}>
+            <div style={{fontSize:"26px",marginBottom:"8px"}}>🛡️</div>
+            <h3 style={{color:"white",fontFamily:"'DM Mono', monospace",margin:"0 0 8px",fontSize:"15px"}}>About DataGuard</h3>
+            <p style={{color:"rgba(255,255,255,0.55)",fontSize:"13px",lineHeight:1.5,marginBottom:"14px"}}>DataGuard was built because the app economy has a fundamental problem: most apps exist not to provide value, but to harvest and monetize user data. We believe people deserve to know exactly what they are signing up for.</p>
+            <div style={{background:"rgba(0,230,118,0.06)",border:"1px solid rgba(0,230,118,0.2)",borderRadius:"12px",padding:"14px",marginBottom:"0"}}>
               <div style={{color:"#00e676",fontWeight:"700",fontFamily:"'DM Mono', monospace",fontSize:"11px",letterSpacing:"1px",marginBottom:"12px"}}>OUR PROMISES</div>
               {["We collect zero user data — no analytics, no logs, no telemetry.","No advertising or sponsored content of any kind.","Your $7 purchase directly funds research and development.","Source code is fully public and auditable on GitHub.","Community contributions are welcome and credited."].map((p,i)=>(
-                <div key={i} style={{display:"flex",gap:"10px",alignItems:"flex-start",marginBottom:"8px"}}>
+                <div key={i} style={{display:"flex",gap:"8px",alignItems:"flex-start",marginBottom:"5px"}}>
                   <span style={{color:"#00e676",flexShrink:0}}>✓</span>
-                  <span style={{color:"rgba(255,255,255,0.65)",fontSize:"13px",lineHeight:1.5}}>{p}</span>
+                  <span style={{color:"rgba(255,255,255,0.65)",fontSize:"12px",lineHeight:1.4}}>{p}</span>
                 </div>
               ))}
             </div>
@@ -772,7 +782,7 @@ function MainApp() {
             </div>
 
             {/* ── NEW: Category bar ──────────────────────────────────────── */}
-            <CategoryBar activeCategory={activeCategory} onSelect={handleCategorySelect}/>
+            <CategoryMenu activeCategory={activeCategory} onSelect={handleCategorySelect}/>
 
             <div style={{position:"relative",marginBottom:"12px"}}>
               <span style={{position:"absolute",left:"16px",top:"50%",transform:"translateY(-50%)",fontSize:"16px",pointerEvents:"none"}}>🔍</span>
