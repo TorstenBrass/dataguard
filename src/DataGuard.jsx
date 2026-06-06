@@ -531,39 +531,76 @@ function tCategory(t, englishLabel) {
 }
 
 // ── LANGUAGE SWITCHER (drop into nav bar and/or landing page) ────────────────
-function LanguageSwitcher({ compact = false }) {
+function LanguageSwitcher() {
   const { lang, setLang } = useT();
+  const [open, setOpen] = useState(false);
   const langs = [
-    { code: "en", label: "EN" },
-    { code: "fr", label: "FR" },
-    { code: "de", label: "DE" },
+    { code: "en", label: "English", short: "EN" },
+    { code: "fr", label: "Français", short: "FR" },
+    { code: "de", label: "Deutsch", short: "DE" },
   ];
+  const current = langs.find((l) => l.code === lang) || langs[0];
   return (
-    <div style={{ display: "flex", gap: "4px", alignItems: "center" }}>
-      {langs.map((l) => {
-        const active = lang === l.code;
-        return (
-          <button
-            key={l.code}
-            onClick={() => setLang(l.code)}
-            style={{
-              background: active ? "rgba(239,83,80,0.18)" : "rgba(255,255,255,0.05)",
-              border: active ? "1px solid rgba(239,83,80,0.45)" : "1px solid rgba(255,255,255,0.1)",
-              color: active ? "#ff8a80" : "rgba(255,255,255,0.55)",
-              borderRadius: "10px",
-              padding: compact ? "4px 8px" : "5px 10px",
-              fontSize: "11px",
-              fontWeight: "700",
-              cursor: "pointer",
-              fontFamily: "'DM Mono', monospace",
-              letterSpacing: "0.5px",
-              transition: "all 0.15s",
-            }}
-          >
-            {l.label}
-          </button>
-        );
-      })}
+    <div style={{ position: "relative", flexShrink: 0 }}>
+      <button
+        onClick={() => setOpen((v) => !v)}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "5px",
+          background: "rgba(255,255,255,0.05)",
+          border: "1px solid rgba(255,255,255,0.12)",
+          color: "rgba(255,255,255,0.7)",
+          borderRadius: "10px",
+          padding: "5px 9px",
+          fontSize: "11px",
+          fontWeight: "700",
+          cursor: "pointer",
+          fontFamily: "'DM Mono', monospace",
+          letterSpacing: "0.5px",
+          transition: "all 0.15s",
+        }}
+      >
+        <span style={{ fontSize: "13px" }}>🌐</span>
+        <span>{current.short}</span>
+        <span style={{ fontSize: "8px", display: "inline-block", transform: open ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }}>▼</span>
+      </button>
+      {open && (
+        <>
+          <div style={{ position: "fixed", inset: 0, zIndex: 199 }} onClick={() => setOpen(false)} />
+          <div style={{ position: "absolute", top: "calc(100% + 6px)", right: 0, background: "#0f0f20", border: "1px solid rgba(255,255,255,0.12)", borderRadius: "12px", zIndex: 200, overflow: "hidden", boxShadow: "0 12px 40px rgba(0,0,0,0.6)", minWidth: "130px" }}>
+            {langs.map((l, i) => {
+              const active = lang === l.code;
+              return (
+                <button
+                  key={l.code}
+                  onClick={() => { setLang(l.code); setOpen(false); }}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    gap: "10px",
+                    width: "100%",
+                    padding: "11px 14px",
+                    background: active ? "rgba(239,83,80,0.12)" : "transparent",
+                    border: "none",
+                    borderBottom: i < langs.length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none",
+                    color: active ? "#ff8a80" : "rgba(255,255,255,0.7)",
+                    fontSize: "13px",
+                    fontWeight: active ? "700" : "400",
+                    cursor: "pointer",
+                    textAlign: "left",
+                    fontFamily: "'DM Mono', monospace",
+                  }}
+                >
+                  <span>{l.label}</span>
+                  <span style={{ fontSize: "10px", opacity: 0.6 }}>{l.short}</span>
+                </button>
+              );
+            })}
+          </div>
+        </>
+      )}
     </div>
   );
 }
@@ -1174,7 +1211,7 @@ function LandingScreen({onPurchase}) {
   ];
   return (
     <div style={{minHeight:"100vh",background:"#060610",color:"white",fontFamily:"'Syne', sans-serif",overflowX:"hidden"}}>
-      <div style={{position:"absolute",top:"16px",right:"16px",zIndex:5}}><LanguageSwitcher/></div>
+      <div style={{position:"fixed",top:"12px",right:"12px",zIndex:60}}><LanguageSwitcher/></div>
       <div style={{position:"relative",minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"40px 24px",textAlign:"center",overflow:"hidden"}}>
         <div style={{position:"absolute",inset:0,pointerEvents:"none"}}>
           <div style={{position:"absolute",top:"20%",left:"50%",transform:"translateX(-50%)",width:"700px",height:"700px",background:"radial-gradient(ellipse, rgba(239,83,80,0.09) 0%, transparent 70%)",borderRadius:"50%"}}/>
@@ -1298,8 +1335,8 @@ function MainApp() {
 
   return (
     <div style={{minHeight:"100vh",background:"#060610",color:"white",fontFamily:"'Syne', sans-serif",display:"flex",flexDirection:"column"}}>
-      <nav style={{background:"rgba(6,6,16,0.95)",borderBottom:"1px solid rgba(255,255,255,0.07)",padding:"0 20px",display:"flex",alignItems:"center",gap:"16px",height:"58px",position:"sticky",top:0,zIndex:50,backdropFilter:"blur(12px)"}}>
-        <div style={{display:"flex",alignItems:"center",gap:"8px",marginRight:"auto"}}>
+      <nav style={{background:"rgba(6,6,16,0.95)",borderBottom:"1px solid rgba(255,255,255,0.07)",padding:"0 14px",display:"flex",alignItems:"center",gap:"10px",height:"58px",position:"sticky",top:0,zIndex:50,backdropFilter:"blur(12px)"}}>
+        <div style={{display:"flex",alignItems:"center",gap:"8px",marginRight:"auto",minWidth:0,overflow:"hidden"}}>
           <span style={{fontSize:"22px"}}>🛡️</span>
           <span style={{fontWeight:"800",fontSize:"17px",letterSpacing:"-0.3px"}}>DataGuard</span>
           <span style={{background:"rgba(0,230,118,0.12)",color:"#00e676",fontSize:"9px",fontWeight:"700",padding:"2px 7px",borderRadius:"10px",border:"1px solid rgba(0,230,118,0.25)",fontFamily:"'DM Mono', monospace",letterSpacing:"1px"}}>{t("openSourceBadge")}</span>
