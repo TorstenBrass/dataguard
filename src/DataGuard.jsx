@@ -1341,7 +1341,6 @@ function MainApp() {
           <span style={{fontWeight:"800",fontSize:"17px",letterSpacing:"-0.3px"}}>DataGuard</span>
           <span style={{background:"rgba(0,230,118,0.12)",color:"#00e676",fontSize:"9px",fontWeight:"700",padding:"2px 7px",borderRadius:"10px",border:"1px solid rgba(0,230,118,0.25)",fontFamily:"'DM Mono', monospace",letterSpacing:"1px"}}>{t("openSourceBadge")}</span>
         </div>
-        <LanguageSwitcher/>
       </nav>
 
       {showNotifs&&(
@@ -1385,7 +1384,7 @@ function MainApp() {
       <div style={{flex:1,maxWidth:"800px",margin:"0 auto",width:"100%",padding:"24px 16px"}}>
         {view==="browse"&&(
           <>
-            <div style={{display:"flex",alignItems:"center",gap:"10px",marginBottom:"16px"}}><button onClick={()=>setShowAbout(true)} style={{background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.09)",borderRadius:"20px",color:"rgba(255,255,255,0.45)",fontSize:"11px",padding:"5px 14px",cursor:"pointer",fontWeight:"600",letterSpacing:"0.3px"}}>{t("aboutBtn")}</button><button onClick={()=>setShowNotifs(v=>!v)} style={{background:"none",border:"1px solid rgba(255,255,255,0.09)",borderRadius:"20px",cursor:"pointer",position:"relative",padding:"5px 12px",display:"flex",alignItems:"center"}}><span style={{fontSize:"16px"}}>🔔</span>{unread>0&&<span style={{position:"absolute",top:"-3px",right:"-3px",background:"#ef5350",borderRadius:"50%",width:"14px",height:"14px",fontSize:"9px",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:"700",fontFamily:"'DM Mono', monospace",color:"white"}}>{unread}</span>}</button></div>
+            <div style={{display:"flex",alignItems:"center",gap:"10px",marginBottom:"16px"}}><button onClick={()=>setShowAbout(true)} style={{background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.09)",borderRadius:"20px",color:"rgba(255,255,255,0.45)",fontSize:"11px",padding:"5px 14px",cursor:"pointer",fontWeight:"600",letterSpacing:"0.3px"}}>{t("aboutBtn")}</button><button onClick={()=>setShowNotifs(v=>!v)} style={{background:"none",border:"1px solid rgba(255,255,255,0.09)",borderRadius:"20px",cursor:"pointer",position:"relative",padding:"5px 12px",display:"flex",alignItems:"center"}}><span style={{fontSize:"16px"}}>🔔</span>{unread>0&&<span style={{position:"absolute",top:"-3px",right:"-3px",background:"#ef5350",borderRadius:"50%",width:"14px",height:"14px",fontSize:"9px",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:"700",fontFamily:"'DM Mono', monospace",color:"white"}}>{unread}</span>}</button><LanguageSwitcher/></div>
             <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:"12px",marginBottom:"24px"}}>
               <SummaryTile icon="💀" label={t("tileSell")} value={`${APP_DB.filter(a=>a.sellsData).length}/${APP_DB.length}`} color="#ef5350" onClick={()=>{setFilter("sellers");setActiveCategory("All");}} active={filter==="sellers"}/>
               <SummaryTile icon="🎭" label={t("tileDeceptive")} value={`${APP_DB.filter(a=>a.misleadingAds).length}/${APP_DB.length}`} color="#ff7043" onClick={()=>{setFilter("deceptive");setActiveCategory("All");}} active={filter==="deceptive"}/>
