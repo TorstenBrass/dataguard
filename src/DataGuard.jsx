@@ -1,4 +1,573 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, createContext, useContext } from "react";
+
+// ============================================================================
+// DataGuard — Trilingual (EN / FR / DE) UI layer
+// ----------------------------------------------------------------------------
+// This module holds ALL user-facing UI text. The APP_DB (app descriptions,
+// summaries, incidents) is intentionally NOT translated — it stays English.
+//
+// How it gets wired in (Step 2 — I'll do this programmatically on your real file):
+//   1. Wrap the app in <LanguageProvider> at the top level.
+//   2. Add <LanguageSwitcher/> to the nav bar and the landing page.
+//   3. Replace hardcoded UI strings with t("key") lookups.
+//
+// IMPORTANT: category MATCHING logic keeps using the English label as the key.
+// Only the DISPLAYED category name is translated, via tCategory(label).
+// This means filtering never breaks when the language changes.
+// ============================================================================
+
+
+// ── TRANSLATION STRINGS ─────────────────────────────────────────────────────
+const TRANSLATIONS = {
+  // ---------------------------------------------------------------- ENGLISH ----
+  en: {
+    // common
+    back: "← Back",
+    yes: "YES",
+    no: "NO",
+    openSourceBadge: "OPEN SOURCE",
+
+    // landing — hero
+    heroBadge: "OPEN SOURCE · COMMUNITY DRIVEN · NO ADS",
+    tagline: "The app that watches the apps watching you. Built to expose data harvesting, deceptive advertising, and the hidden economy of selling your personal information.",
+    pledgeTitle: "OUR PRIVACY PLEDGE",
+    pledge1: "We collect zero user data. None. Not even analytics.",
+    pledge2: "No advertising. No sponsored results. Ever.",
+    pledge3: "One-time $7 purchase. No subscriptions. No hidden fees.",
+    pledge4: "Full source code is public and auditable on GitHub.",
+    buyButton: "Get DataGuard — $7 one-time",
+    buySub: "One-time payment · No subscription · Instant access",
+
+    // landing — features
+    featuresTitle: "Everything you need to take back control",
+    featuresSub: "One app. No nonsense. No irony in how it collects your data.",
+    feat1Title: "Deep App Analysis",
+    feat1Desc: "Privacy scores built from real data: app store labels, policy audits, known incidents, and third-party research.",
+    feat2Title: "Community-Powered",
+    feat2Desc: "Real users flag new findings. Every report is reviewed and scored transparently. You can contribute too.",
+    feat3Title: "Data Broker Map",
+    feat3Desc: "See exactly which third parties an app shares your data with — not just how many, but who they are.",
+    feat4Title: "Incident History",
+    feat4Desc: "Every known fine, breach, or scandal listed with sources. No greenwashing, no PR spin.",
+    feat5Title: "Watchlist Alerts",
+    feat5Desc: "Follow apps you use. Get notified when their privacy score changes or a new incident is reported.",
+    feat6Title: "100% Open Source",
+    feat6Desc: "Every line of code is public. No hidden trackers, no analytics, no ads. Ever. Auditable by anyone.",
+
+    // landing — stats
+    statApps: "apps in database",
+    statReports: "community reports",
+    statAdRev: "ad revenue",
+    statOpenSource: "open source",
+    statDataPoints: "data points collected about you",
+    donateNote: "Every dollar goes directly to maintaining the database and funding community research. No investors. No VCs. Just you.",
+    buyButton2: "Get DataGuard for $7",
+
+    // about modal
+    aboutBtn: "ℹ️ About DataGuard",
+    aboutTitle: "About DataGuard",
+    aboutBody: "DataGuard was built because the app economy has a fundamental problem: most apps exist not to provide value, but to harvest and monetize user data. We believe people deserve to know exactly what they are signing up for.",
+    promisesTitle: "OUR PROMISES",
+    promise1: "We collect zero user data — no analytics, no logs, no telemetry.",
+    promise2: "No advertising or sponsored content of any kind.",
+    promise3: "Your $7 purchase directly funds research and development.",
+    promise4: "Source code is fully public and auditable on GitHub.",
+    promise5: "Community contributions are welcome and credited.",
+
+    // browse — summary tiles
+    tileSell: "Sell your data",
+    tileDeceptive: "Deceptive ads",
+    tileSafe: "Privacy safe",
+
+    // browse — categories / search / filters
+    allCategories: "All Categories",
+    searchPlaceholder: "Search apps by name or category…",
+    filterAll: "All",
+    filterSellers: "Sells Data",
+    filterDeceptive: "Deceptive",
+    filterSafe: "Safe",
+    filterWatchlist: "Watchlist",
+    sortWorst: "Worst first",
+    sortBest: "Best first",
+    sortAZ: "A → Z",
+    showingApps: "Showing",          // "Showing 5 apps in Gaming"
+    appsWord: "apps",
+    appWord: "app",
+    inWord: "in",
+
+    // browse — empty state
+    noAppsTitle: "No apps found",
+    noAppsSub: "Try a different category or search term",
+    clearFilters: "Clear filters",
+    submitAppShort: "Submit an app",
+
+    // browse — bottom CTA
+    ctaTitle: "Know a data-hungry app we are missing?",
+    ctaSub: "Submit it for community review. Our researchers will analyze and score it within 72 hours.",
+    ctaBtn: "Submit an App",
+
+    // alerts
+    alertsTitle: "Alerts",
+    markAllRead: "Mark all read",
+
+    // app row + detail tags
+    verified: "VERIFIED",
+    reportsWord: "reports",
+    tagSells: "Sells Data",
+    tagDeceptive: "Deceptive Ads",
+    thirdPartiesShort: "3rd parties",      // "47 3rd parties"
+    thirdPartiesLong: "3rd-party recipients",
+
+    // detail view
+    privacyGrade: "Privacy grade",
+    communityVerified: "COMMUNITY VERIFIED",
+    foundedWord: "Founded",
+    googlePlay: "▶ Google Play",
+    tryWord: "Try",                         // "✅ Try Signal (A+)"
+    summary: "Summary",
+    mSells: "Sells Data",
+    mDeceptive: "Deceptive Ads",
+    m3rd: "3rd Parties",
+    dataCollected: "Data Collected",        // "Data Collected (10 types)"
+    typesWord: "types",
+    incidentsTitle: "Known Incidents and Fines",
+    sourcesTitle: "Sources",
+    communityReportsWord: "community reports",  // "3,842 community reports"
+    flaggedSub: "People have flagged this app's privacy practices",
+    watching: "🔔 Watching",
+    watch: "🔕 Watch",
+    feedbackTitle: "📣 Submit Community Feedback",
+    feedbackIntro: "Spotted something we missed? Found a new source? Disagree with our score? Tell us.",
+    fbCorrection: "Correction",
+    fbNewFinding: "New Finding",
+    fbFalsePositive: "False Positive",
+    fbPraise: "Praise",
+    feedbackPlaceholder: "Your feedback, source links, personal experience…",
+    submitFeedback: "Submit Feedback",
+    submitting: "Submitting…",
+    feedbackThanks: "Thank you! Your report has been saved to our database.",
+
+    // submit view
+    submitTitle: "Submit an App for Review",
+    submitDesc: "Our community researchers will analyze the app's privacy policy, data practices, and third-party relationships and publish a full score within 72 hours.",
+    fieldAppName: "App Name",
+    fieldAppNamePlaceholder: "e.g. FaceApp",
+    fieldCategory: "Category",
+    fieldCategoryPlaceholder: "e.g. Photo Editor, Shopping, Social Media",
+    fieldNoticed: "What did you notice?",
+    submitPlaceholder: "Describe your concerns — suspicious permissions, data policy clauses, news articles, personal experience…",
+    privacyNoteLabel: "Privacy note:",
+    privacyNoteBody: "Submitting this form sends only the text above. No metadata, no IP address, no account linking. Your submission is completely anonymous.",
+    submitReview: "Submit for Community Review",
+    submittedTitle: "Submitted!",
+    submittedBodyPart1: "has been saved to our database. Expect a full analysis within 72 hours. Thank you for helping the community.",
+    backToBrowse: "← Back to Browse",
+
+    // category display names (keyed by English label used for matching)
+    "cat_All": "All",
+    "cat_Social Media": "Social Media",
+    "cat_Messaging": "Messaging",
+    "cat_Gaming": "Gaming",
+    "cat_Streaming": "Streaming",
+    "cat_Food & Drink": "Food & Drink",
+    "cat_Travel": "Travel",
+    "cat_Automotive": "Automotive",
+    "cat_Banking": "Banking",
+    "cat_Shopping": "Shopping",
+    "cat_News & Music": "News & Music",
+    "cat_Gambling": "Gambling",
+    "cat_Privacy+": "Privacy+",
+    "cat_Health & Fitness": "Health & Fitness",
+    "cat_Dating": "Dating",
+    "cat_Education": "Education",
+    "cat_Other": "Other",
+  },
+
+  // ---------------------------------------------------------------- FRENCH -----
+  // NOTE: have a native French speaker spot-check before shipping the FR locale.
+  fr: {
+    back: "← Retour",
+    yes: "OUI",
+    no: "NON",
+    openSourceBadge: "OPEN SOURCE",
+
+    heroBadge: "OPEN SOURCE · COMMUNAUTAIRE · SANS PUBLICITÉ",
+    tagline: "L'application qui surveille les applications qui vous surveillent. Conçue pour dénoncer la collecte de données, la publicité trompeuse et le marché caché de la vente de vos informations personnelles.",
+    pledgeTitle: "NOTRE ENGAGEMENT CONFIDENTIALITÉ",
+    pledge1: "Nous ne collectons aucune donnée. Aucune. Pas même des statistiques.",
+    pledge2: "Aucune publicité. Aucun résultat sponsorisé. Jamais.",
+    pledge3: "Achat unique de 7 $. Aucun abonnement. Aucuns frais cachés.",
+    pledge4: "Le code source complet est public et vérifiable sur GitHub.",
+    buyButton: "Obtenir DataGuard — 7 $ une seule fois",
+    buySub: "Paiement unique · Sans abonnement · Accès immédiat",
+
+    featuresTitle: "Tout ce qu'il faut pour reprendre le contrôle",
+    featuresSub: "Une seule application. Sans détour. Sans ironie sur la façon dont elle collecte vos données.",
+    feat1Title: "Analyse approfondie des applications",
+    feat1Desc: "Des scores de confidentialité fondés sur des données réelles : étiquettes des magasins d'applications, audits de politiques, incidents connus et recherches indépendantes.",
+    feat2Title: "Alimentée par la communauté",
+    feat2Desc: "De vrais utilisateurs signalent de nouvelles découvertes. Chaque signalement est examiné et noté en toute transparence. Vous pouvez aussi contribuer.",
+    feat3Title: "Carte des courtiers en données",
+    feat3Desc: "Voyez exactement avec quels tiers une application partage vos données — pas seulement combien, mais lesquels.",
+    feat4Title: "Historique des incidents",
+    feat4Desc: "Chaque amende, fuite ou scandale connu, listé avec ses sources. Pas de greenwashing, pas de discours marketing.",
+    feat5Title: "Alertes de surveillance",
+    feat5Desc: "Suivez les applications que vous utilisez. Soyez averti lorsque leur score de confidentialité change ou qu'un nouvel incident est signalé.",
+    feat6Title: "100 % open source",
+    feat6Desc: "Chaque ligne de code est publique. Aucun traceur caché, aucune statistique, aucune publicité. Jamais. Vérifiable par tous.",
+
+    statApps: "applications dans la base",
+    statReports: "signalements de la communauté",
+    statAdRev: "revenu publicitaire",
+    statOpenSource: "open source",
+    statDataPoints: "données collectées sur vous",
+    donateNote: "Chaque dollar sert directement à maintenir la base de données et à financer la recherche communautaire. Pas d'investisseurs. Pas de capital-risque. Juste vous.",
+    buyButton2: "Obtenir DataGuard pour 7 $",
+
+    aboutBtn: "ℹ️ À propos de DataGuard",
+    aboutTitle: "À propos de DataGuard",
+    aboutBody: "DataGuard est né d'un constat : l'économie des applications a un problème fondamental. La plupart des applications n'existent pas pour rendre service, mais pour récolter et monétiser les données des utilisateurs. Nous pensons que chacun mérite de savoir exactement à quoi il s'engage.",
+    promisesTitle: "NOS ENGAGEMENTS",
+    promise1: "Nous ne collectons aucune donnée — aucune statistique, aucun journal, aucune télémétrie.",
+    promise2: "Aucune publicité ni contenu sponsorisé, d'aucune sorte.",
+    promise3: "Votre achat de 7 $ finance directement la recherche et le développement.",
+    promise4: "Le code source est entièrement public et vérifiable sur GitHub.",
+    promise5: "Les contributions de la communauté sont les bienvenues et créditées.",
+
+    tileSell: "Vendent vos données",
+    tileDeceptive: "Pubs trompeuses",
+    tileSafe: "Respectueuses",
+
+    allCategories: "Toutes les catégories",
+    searchPlaceholder: "Rechercher par nom ou catégorie…",
+    filterAll: "Toutes",
+    filterSellers: "Vendent",
+    filterDeceptive: "Trompeuses",
+    filterSafe: "Sûres",
+    filterWatchlist: "Surveillées",
+    sortWorst: "Pire d'abord",
+    sortBest: "Meilleure d'abord",
+    sortAZ: "A → Z",
+    showingApps: "Affichage de",
+    appsWord: "applications",
+    appWord: "application",
+    inWord: "dans",
+
+    noAppsTitle: "Aucune application trouvée",
+    noAppsSub: "Essayez une autre catégorie ou un autre terme de recherche",
+    clearFilters: "Réinitialiser les filtres",
+    submitAppShort: "Proposer une application",
+
+    ctaTitle: "Une application avide de données nous échappe ?",
+    ctaSub: "Proposez-la pour examen communautaire. Nos chercheurs l'analyseront et la noteront sous 72 heures.",
+    ctaBtn: "Proposer une application",
+
+    alertsTitle: "Alertes",
+    markAllRead: "Tout marquer comme lu",
+
+    verified: "VÉRIFIÉ",
+    reportsWord: "signalements",
+    tagSells: "Vend les données",
+    tagDeceptive: "Pubs trompeuses",
+    thirdPartiesShort: "tiers",
+    thirdPartiesLong: "destinataires tiers",
+
+    privacyGrade: "Note de confidentialité",
+    communityVerified: "VÉRIFIÉ PAR LA COMMUNAUTÉ",
+    foundedWord: "Fondée en",
+    googlePlay: "▶ Google Play",
+    tryWord: "Essayer",
+    summary: "Résumé",
+    mSells: "Vend les données",
+    mDeceptive: "Pubs trompeuses",
+    m3rd: "Tiers",
+    dataCollected: "Données collectées",
+    typesWord: "types",
+    incidentsTitle: "Incidents et amendes connus",
+    sourcesTitle: "Sources",
+    communityReportsWord: "signalements de la communauté",
+    flaggedSub: "Des personnes ont signalé les pratiques de confidentialité de cette application",
+    watching: "🔔 Suivie",
+    watch: "🔕 Suivre",
+    feedbackTitle: "📣 Envoyer un commentaire",
+    feedbackIntro: "Vous avez repéré quelque chose ? Trouvé une nouvelle source ? Pas d'accord avec notre score ? Dites-le-nous.",
+    fbCorrection: "Correction",
+    fbNewFinding: "Nouvelle découverte",
+    fbFalsePositive: "Faux positif",
+    fbPraise: "Éloge",
+    feedbackPlaceholder: "Votre commentaire, liens de sources, expérience personnelle…",
+    submitFeedback: "Envoyer le commentaire",
+    submitting: "Envoi en cours…",
+    feedbackThanks: "Merci ! Votre signalement a été enregistré dans notre base de données.",
+
+    submitTitle: "Proposer une application à examiner",
+    submitDesc: "Nos chercheurs communautaires analyseront la politique de confidentialité de l'application, ses pratiques de données et ses relations avec des tiers, puis publieront un score complet sous 72 heures.",
+    fieldAppName: "Nom de l'application",
+    fieldAppNamePlaceholder: "ex. FaceApp",
+    fieldCategory: "Catégorie",
+    fieldCategoryPlaceholder: "ex. Éditeur photo, Achats, Réseau social",
+    fieldNoticed: "Qu'avez-vous remarqué ?",
+    submitPlaceholder: "Décrivez vos préoccupations — autorisations suspectes, clauses de politique de données, articles de presse, expérience personnelle…",
+    privacyNoteLabel: "Note de confidentialité :",
+    privacyNoteBody: "L'envoi de ce formulaire ne transmet que le texte ci-dessus. Aucune métadonnée, aucune adresse IP, aucun lien de compte. Votre envoi est entièrement anonyme.",
+    submitReview: "Soumettre pour examen communautaire",
+    submittedTitle: "Envoyé !",
+    submittedBodyPart1: "a été enregistrée dans notre base de données. Une analyse complète est attendue sous 72 heures. Merci d'aider la communauté.",
+    backToBrowse: "← Retour à la liste",
+
+    "cat_All": "Toutes",
+    "cat_Social Media": "Réseaux sociaux",
+    "cat_Messaging": "Messagerie",
+    "cat_Gaming": "Jeux",
+    "cat_Streaming": "Streaming",
+    "cat_Food & Drink": "Alimentation",
+    "cat_Travel": "Voyage",
+    "cat_Automotive": "Automobile",
+    "cat_Banking": "Banque",
+    "cat_Shopping": "Achats",
+    "cat_News & Music": "Actualités & Musique",
+    "cat_Gambling": "Jeux d'argent",
+    "cat_Privacy+": "Confidentialité+",
+    "cat_Health & Fitness": "Santé & Forme",
+    "cat_Dating": "Rencontres",
+    "cat_Education": "Éducation",
+    "cat_Other": "Autre",
+  },
+
+  // ---------------------------------------------------------------- GERMAN -----
+  // Torsten: please review/adjust the German wording to taste.
+  de: {
+    back: "← Zurück",
+    yes: "JA",
+    no: "NEIN",
+    openSourceBadge: "OPEN SOURCE",
+
+    heroBadge: "OPEN SOURCE · VON DER COMMUNITY · KEINE WERBUNG",
+    tagline: "Die App, die die Apps beobachtet, die dich beobachten. Entwickelt, um Datensammelei, irreführende Werbung und den verborgenen Handel mit deinen persönlichen Daten aufzudecken.",
+    pledgeTitle: "UNSER DATENSCHUTZ-VERSPRECHEN",
+    pledge1: "Wir erheben keinerlei Nutzerdaten. Keine. Nicht einmal Statistiken.",
+    pledge2: "Keine Werbung. Keine gesponserten Ergebnisse. Niemals.",
+    pledge3: "Einmaliger Kauf für 7 $. Keine Abos. Keine versteckten Gebühren.",
+    pledge4: "Der gesamte Quellcode ist öffentlich und auf GitHub überprüfbar.",
+    buyButton: "DataGuard holen — einmalig 7 $",
+    buySub: "Einmalige Zahlung · Kein Abo · Sofortiger Zugang",
+
+    featuresTitle: "Alles, um die Kontrolle zurückzugewinnen",
+    featuresSub: "Eine App. Kein Schnickschnack. Keine Ironie dabei, wie sie deine Daten sammelt.",
+    feat1Title: "Tiefgehende App-Analyse",
+    feat1Desc: "Datenschutz-Bewertungen auf Basis echter Daten: App-Store-Angaben, Richtlinien-Audits, bekannte Vorfälle und unabhängige Forschung.",
+    feat2Title: "Von der Community getragen",
+    feat2Desc: "Echte Nutzer melden neue Erkenntnisse. Jede Meldung wird transparent geprüft und bewertet. Auch du kannst beitragen.",
+    feat3Title: "Datenhändler-Karte",
+    feat3Desc: "Sieh genau, mit welchen Dritten eine App deine Daten teilt — nicht nur wie viele, sondern wer.",
+    feat4Title: "Vorfall-Historie",
+    feat4Desc: "Jede bekannte Strafe, jedes Datenleck, jeder Skandal — mit Quellen belegt. Kein Greenwashing, kein PR-Gerede.",
+    feat5Title: "Beobachtungs-Warnungen",
+    feat5Desc: "Folge den Apps, die du nutzt. Werde benachrichtigt, wenn sich ihre Datenschutz-Bewertung ändert oder ein neuer Vorfall gemeldet wird.",
+    feat6Title: "100 % Open Source",
+    feat6Desc: "Jede Codezeile ist öffentlich. Keine versteckten Tracker, keine Statistiken, keine Werbung. Niemals. Von allen überprüfbar.",
+
+    statApps: "Apps in der Datenbank",
+    statReports: "Community-Meldungen",
+    statAdRev: "Werbeeinnahmen",
+    statOpenSource: "Open Source",
+    statDataPoints: "über dich gesammelte Datenpunkte",
+    donateNote: "Jeder Dollar fließt direkt in die Pflege der Datenbank und die Finanzierung der Community-Forschung. Keine Investoren. Kein Risikokapital. Nur du.",
+    buyButton2: "DataGuard für 7 $ holen",
+
+    aboutBtn: "ℹ️ Über DataGuard",
+    aboutTitle: "Über DataGuard",
+    aboutBody: "DataGuard wurde entwickelt, weil die App-Wirtschaft ein grundlegendes Problem hat: Die meisten Apps existieren nicht, um einen Nutzen zu bieten, sondern um Nutzerdaten zu sammeln und zu Geld zu machen. Wir finden, jeder verdient zu wissen, worauf er sich genau einlässt.",
+    promisesTitle: "UNSERE VERSPRECHEN",
+    promise1: "Wir erheben keinerlei Nutzerdaten — keine Statistiken, keine Protokolle, keine Telemetrie.",
+    promise2: "Keinerlei Werbung oder gesponserte Inhalte.",
+    promise3: "Dein Kauf für 7 $ finanziert direkt Forschung und Entwicklung.",
+    promise4: "Der Quellcode ist vollständig öffentlich und auf GitHub überprüfbar.",
+    promise5: "Beiträge aus der Community sind willkommen und werden genannt.",
+
+    tileSell: "Verkaufen deine Daten",
+    tileDeceptive: "Irreführende Werbung",
+    tileSafe: "Datenschutzfreundlich",
+
+    allCategories: "Alle Kategorien",
+    searchPlaceholder: "Apps nach Name oder Kategorie suchen…",
+    filterAll: "Alle",
+    filterSellers: "Verkaufen Daten",
+    filterDeceptive: "Irreführend",
+    filterSafe: "Sicher",
+    filterWatchlist: "Beobachtet",
+    sortWorst: "Schlechteste zuerst",
+    sortBest: "Beste zuerst",
+    sortAZ: "A → Z",
+    showingApps: "Zeige",
+    appsWord: "Apps",
+    appWord: "App",
+    inWord: "in",
+
+    noAppsTitle: "Keine Apps gefunden",
+    noAppsSub: "Versuche eine andere Kategorie oder einen anderen Suchbegriff",
+    clearFilters: "Filter zurücksetzen",
+    submitAppShort: "App vorschlagen",
+
+    ctaTitle: "Kennst du eine datenhungrige App, die uns fehlt?",
+    ctaSub: "Reiche sie zur Prüfung durch die Community ein. Unsere Forscher analysieren und bewerten sie innerhalb von 72 Stunden.",
+    ctaBtn: "App einreichen",
+
+    alertsTitle: "Warnungen",
+    markAllRead: "Alle als gelesen markieren",
+
+    verified: "VERIFIZIERT",
+    reportsWord: "Meldungen",
+    tagSells: "Verkauft Daten",
+    tagDeceptive: "Irreführende Werbung",
+    thirdPartiesShort: "Dritte",
+    thirdPartiesLong: "Drittempfänger",
+
+    privacyGrade: "Datenschutz-Note",
+    communityVerified: "VON DER COMMUNITY VERIFIZIERT",
+    foundedWord: "Gegründet",
+    googlePlay: "▶ Google Play",
+    tryWord: "Probiere",
+    summary: "Zusammenfassung",
+    mSells: "Verkauft Daten",
+    mDeceptive: "Irreführende Werbung",
+    m3rd: "Dritte",
+    dataCollected: "Gesammelte Daten",
+    typesWord: "Arten",
+    incidentsTitle: "Bekannte Vorfälle und Strafen",
+    sourcesTitle: "Quellen",
+    communityReportsWord: "Community-Meldungen",
+    flaggedSub: "Nutzer haben die Datenschutzpraktiken dieser App gemeldet",
+    watching: "🔔 Beobachtet",
+    watch: "🔕 Beobachten",
+    feedbackTitle: "📣 Community-Feedback senden",
+    feedbackIntro: "Etwas entdeckt, das uns entgangen ist? Eine neue Quelle gefunden? Anderer Meinung zu unserer Bewertung? Sag es uns.",
+    fbCorrection: "Korrektur",
+    fbNewFinding: "Neue Erkenntnis",
+    fbFalsePositive: "Falschmeldung",
+    fbPraise: "Lob",
+    feedbackPlaceholder: "Dein Feedback, Quellenlinks, persönliche Erfahrung…",
+    submitFeedback: "Feedback senden",
+    submitting: "Wird gesendet…",
+    feedbackThanks: "Danke! Deine Meldung wurde in unserer Datenbank gespeichert.",
+
+    submitTitle: "App zur Prüfung einreichen",
+    submitDesc: "Unsere Community-Forscher analysieren die Datenschutzrichtlinie der App, ihre Datenpraktiken und ihre Beziehungen zu Dritten und veröffentlichen innerhalb von 72 Stunden eine vollständige Bewertung.",
+    fieldAppName: "App-Name",
+    fieldAppNamePlaceholder: "z. B. FaceApp",
+    fieldCategory: "Kategorie",
+    fieldCategoryPlaceholder: "z. B. Fotobearbeitung, Shopping, Soziale Medien",
+    fieldNoticed: "Was ist dir aufgefallen?",
+    submitPlaceholder: "Beschreibe deine Bedenken — verdächtige Berechtigungen, Klauseln in der Datenrichtlinie, Presseartikel, persönliche Erfahrung…",
+    privacyNoteLabel: "Datenschutzhinweis:",
+    privacyNoteBody: "Das Absenden dieses Formulars übermittelt nur den obigen Text. Keine Metadaten, keine IP-Adresse, keine Kontoverknüpfung. Deine Einsendung ist vollständig anonym.",
+    submitReview: "Zur Community-Prüfung einreichen",
+    submittedTitle: "Eingereicht!",
+    submittedBodyPart1: "wurde in unserer Datenbank gespeichert. Eine vollständige Analyse folgt innerhalb von 72 Stunden. Danke, dass du der Community hilfst.",
+    backToBrowse: "← Zurück zur Übersicht",
+
+    "cat_All": "Alle",
+    "cat_Social Media": "Soziale Medien",
+    "cat_Messaging": "Messenger",
+    "cat_Gaming": "Spiele",
+    "cat_Streaming": "Streaming",
+    "cat_Food & Drink": "Essen & Trinken",
+    "cat_Travel": "Reisen",
+    "cat_Automotive": "Auto",
+    "cat_Banking": "Banking",
+    "cat_Shopping": "Shopping",
+    "cat_News & Music": "Nachrichten & Musik",
+    "cat_Gambling": "Glücksspiel",
+    "cat_Privacy+": "Datenschutz+",
+    "cat_Health & Fitness": "Gesundheit & Fitness",
+    "cat_Dating": "Dating",
+    "cat_Education": "Bildung",
+    "cat_Other": "Sonstiges",
+  },
+};
+
+// ── LANGUAGE CONTEXT + PROVIDER ──────────────────────────────────────────────
+const LanguageContext = createContext({ lang: "en", setLang: () => {}, t: (k) => k });
+
+function detectInitialLang() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const urlLang = params.get("lang");
+    if (urlLang && TRANSLATIONS[urlLang]) return urlLang;
+    const saved = localStorage.getItem("dg_lang");
+    if (saved && TRANSLATIONS[saved]) return saved;
+    const nav = (navigator.language || "en").slice(0, 2);
+    if (TRANSLATIONS[nav]) return nav;
+  } catch (e) { /* ignore */ }
+  return "en";
+}
+
+function LanguageProvider({ children }) {
+  const [lang, setLangState] = useState(detectInitialLang());
+  const setLang = (l) => {
+    setLangState(l);
+    try { localStorage.setItem("dg_lang", l); } catch (e) { /* ignore */ }
+  };
+  // t(key): returns the string for the current language, falling back to English, then the key itself.
+  const t = (key) =>
+    (TRANSLATIONS[lang] && TRANSLATIONS[lang][key]) ??
+    (TRANSLATIONS.en && TRANSLATIONS.en[key]) ??
+    key;
+  return (
+    <LanguageContext.Provider value={{ lang, setLang, t }}>
+      {children}
+    </LanguageContext.Provider>
+  );
+}
+
+// Hook used inside components: const { t, lang, setLang } = useT();
+function useT() {
+  return useContext(LanguageContext);
+}
+
+// Translate a CATEGORY label for DISPLAY only. Matching logic keeps the English label.
+function tCategory(t, englishLabel) {
+  return t("cat_" + englishLabel);
+}
+
+// ── LANGUAGE SWITCHER (drop into nav bar and/or landing page) ────────────────
+function LanguageSwitcher({ compact = false }) {
+  const { lang, setLang } = useT();
+  const langs = [
+    { code: "en", label: "EN" },
+    { code: "fr", label: "FR" },
+    { code: "de", label: "DE" },
+  ];
+  return (
+    <div style={{ display: "flex", gap: "4px", alignItems: "center" }}>
+      {langs.map((l) => {
+        const active = lang === l.code;
+        return (
+          <button
+            key={l.code}
+            onClick={() => setLang(l.code)}
+            style={{
+              background: active ? "rgba(239,83,80,0.18)" : "rgba(255,255,255,0.05)",
+              border: active ? "1px solid rgba(239,83,80,0.45)" : "1px solid rgba(255,255,255,0.1)",
+              color: active ? "#ff8a80" : "rgba(255,255,255,0.55)",
+              borderRadius: "10px",
+              padding: compact ? "4px 8px" : "5px 10px",
+              fontSize: "11px",
+              fontWeight: "700",
+              cursor: "pointer",
+              fontFamily: "'DM Mono', monospace",
+              letterSpacing: "0.5px",
+              transition: "all 0.15s",
+            }}
+          >
+            {l.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 
 // ── SUPABASE CONFIG ───────────────────────────────────────────────────────────
 const SUPABASE_URL = "https://pgwrfbbznklerwipakrw.supabase.co";
@@ -553,6 +1122,7 @@ function MetricBox({label, value, bad}) {
 
 // ── NEW: CATEGORY FILTER BAR ─────────────────────────────────────────────────
 function CategoryMenu({ activeCategory, onSelect }) {
+  const { t } = useT();
   const [open, setOpen] = useState(false);
   const sorted = [
     CATEGORY_GROUPS.find(g => g.label === "All"),
@@ -564,7 +1134,7 @@ function CategoryMenu({ activeCategory, onSelect }) {
       <button onClick={()=>setOpen(v=>!v)} style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:"8px",width:"100%",background:activeCategory==="All"?"rgba(255,255,255,0.05)":"rgba(239,83,80,0.12)",border:activeCategory==="All"?"1px solid rgba(255,255,255,0.1)":"1px solid rgba(239,83,80,0.4)",borderRadius:"20px",padding:"9px 16px",cursor:"pointer",color:"white",fontFamily:"'DM Mono', monospace",transition:"all 0.15s"}}>
         <div style={{display:"flex",alignItems:"center",gap:"8px"}}>
           <span style={{fontSize:"15px"}}>{active?active.icon:"🌐"}</span>
-          <span style={{fontSize:"12px",fontWeight:"700",color:activeCategory==="All"?"rgba(255,255,255,0.7)":"#ff8a80"}}>{activeCategory==="All"?"All Categories":activeCategory}</span>
+          <span style={{fontSize:"12px",fontWeight:"700",color:activeCategory==="All"?"rgba(255,255,255,0.7)":"#ff8a80"}}>{activeCategory==="All"?t("allCategories"):tCategory(t, activeCategory)}</span>
         </div>
         <span style={{fontSize:"9px",color:"rgba(255,255,255,0.35)",transition:"transform 0.2s",display:"inline-block",transform:open?"rotate(180deg)":"rotate(0deg)"}}>▼</span>
       </button>
@@ -579,7 +1149,7 @@ function CategoryMenu({ activeCategory, onSelect }) {
                   onMouseEnter={e=>{if(!isActive)e.currentTarget.style.background="rgba(255,255,255,0.05)";}}
                   onMouseLeave={e=>{if(!isActive)e.currentTarget.style.background="transparent";}}>
                   <span style={{fontSize:"17px",flexShrink:0}}>{g.icon}</span>
-                  <span style={{flex:1,fontSize:"13px",fontWeight:isActive?"700":"400",color:isActive?"#ff8a80":"rgba(255,255,255,0.7)"}}>{g.label}</span>
+                  <span style={{flex:1,fontSize:"13px",fontWeight:isActive?"700":"400",color:isActive?"#ff8a80":"rgba(255,255,255,0.7)"}}>{tCategory(t, g.label)}</span>
                   {isActive&&<span style={{color:"#ff8a80",fontSize:"12px",flexShrink:0}}>✓</span>}
                 </button>
               );
@@ -592,17 +1162,19 @@ function CategoryMenu({ activeCategory, onSelect }) {
 }
 
 function LandingScreen({onPurchase}) {
+  const { t } = useT();
   const [hov, setHov] = useState(false);
   const features = [
-    {icon:"🔍",title:"Deep App Analysis",desc:"Privacy scores built from real data: app store labels, policy audits, known incidents, and third-party research."},
-    {icon:"👥",title:"Community-Powered",desc:"Real users flag new findings. Every report is reviewed and scored transparently. You can contribute too."},
-    {icon:"📊",title:"Data Broker Map",desc:"See exactly which third parties an app shares your data with — not just how many, but who they are."},
-    {icon:"🚨",title:"Incident History",desc:"Every known fine, breach, or scandal listed with sources. No greenwashing, no PR spin."},
-    {icon:"🔔",title:"Watchlist Alerts",desc:"Follow apps you use. Get notified when their privacy score changes or a new incident is reported."},
-    {icon:"🌍",title:"100% Open Source",desc:"Every line of code is public. No hidden trackers, no analytics, no ads. Ever. Auditable by anyone."},
+    {icon:"🔍",title:t("feat1Title"),desc:t("feat1Desc")},
+    {icon:"👥",title:t("feat2Title"),desc:t("feat2Desc")},
+    {icon:"📊",title:t("feat3Title"),desc:t("feat3Desc")},
+    {icon:"🚨",title:t("feat4Title"),desc:t("feat4Desc")},
+    {icon:"🔔",title:t("feat5Title"),desc:t("feat5Desc")},
+    {icon:"🌍",title:t("feat6Title"),desc:t("feat6Desc")},
   ];
   return (
     <div style={{minHeight:"100vh",background:"#060610",color:"white",fontFamily:"'Syne', sans-serif",overflowX:"hidden"}}>
+      <div style={{position:"absolute",top:"16px",right:"16px",zIndex:5}}><LanguageSwitcher/></div>
       <div style={{position:"relative",minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"40px 24px",textAlign:"center",overflow:"hidden"}}>
         <div style={{position:"absolute",inset:0,pointerEvents:"none"}}>
           <div style={{position:"absolute",top:"20%",left:"50%",transform:"translateX(-50%)",width:"700px",height:"700px",background:"radial-gradient(ellipse, rgba(239,83,80,0.09) 0%, transparent 70%)",borderRadius:"50%"}}/>
@@ -611,15 +1183,15 @@ function LandingScreen({onPurchase}) {
         <div style={{position:"relative",zIndex:1,maxWidth:"680px"}}>
           <div style={{display:"inline-flex",alignItems:"center",gap:"8px",background:"rgba(239,83,80,0.12)",border:"1px solid rgba(239,83,80,0.3)",borderRadius:"20px",padding:"6px 16px",marginBottom:"32px"}}>
             <span style={{width:"6px",height:"6px",borderRadius:"50%",background:"#ef5350",display:"inline-block",animation:"blink 1.5s ease infinite"}}/>
-            <span style={{fontSize:"11px",color:"#ef5350",fontWeight:"700",letterSpacing:"1.5px",fontFamily:"'DM Mono', monospace"}}>OPEN SOURCE · COMMUNITY DRIVEN · NO ADS</span>
+            <span style={{fontSize:"11px",color:"#ef5350",fontWeight:"700",letterSpacing:"1.5px",fontFamily:"'DM Mono', monospace"}}>{t("heroBadge")}</span>
           </div>
           <div style={{fontSize:"80px",marginBottom:"16px",lineHeight:1}}>🛡️</div>
           <h1 style={{margin:"0 0 20px",fontSize:"clamp(40px,8vw,72px)",fontWeight:"800",lineHeight:1.05,letterSpacing:"-2px",background:"linear-gradient(135deg, #ffffff 0%, #ffffff 50%, #ef5350 100%)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>DataGuard</h1>
-          <p style={{fontSize:"clamp(16px,2.5vw,20px)",color:"rgba(255,255,255,0.55)",lineHeight:1.7,margin:"0 auto 48px",maxWidth:"520px"}}>The app that watches the apps watching you. Built to expose data harvesting, deceptive advertising, and the hidden economy of selling your personal information.</p>
+          <p style={{fontSize:"clamp(16px,2.5vw,20px)",color:"rgba(255,255,255,0.55)",lineHeight:1.7,margin:"0 auto 48px",maxWidth:"520px"}}>{t("tagline")}</p>
           <div style={{background:"rgba(0,230,118,0.06)",border:"1px solid rgba(0,230,118,0.2)",borderRadius:"20px",padding:"24px 32px",marginBottom:"40px",display:"inline-block",maxWidth:"480px"}}>
-            <div style={{color:"#00e676",fontWeight:"800",fontFamily:"'DM Mono', monospace",fontSize:"12px",letterSpacing:"1px",marginBottom:"16px"}}>OUR PRIVACY PLEDGE</div>
+            <div style={{color:"#00e676",fontWeight:"800",fontFamily:"'DM Mono', monospace",fontSize:"12px",letterSpacing:"1px",marginBottom:"16px"}}>{t("pledgeTitle")}</div>
             <div style={{display:"flex",flexDirection:"column",gap:"10px"}}>
-              {["We collect zero user data. None. Not even analytics.","No advertising. No sponsored results. Ever.","One-time $7 purchase. No subscriptions. No hidden fees.","Full source code is public and auditable on GitHub."].map((p,i)=>(
+              {[t("pledge1"),t("pledge2"),t("pledge3"),t("pledge4")].map((p,i)=>(
                 <div key={i} style={{display:"flex",gap:"12px",alignItems:"flex-start",textAlign:"left"}}>
                   <span style={{color:"#00e676",fontSize:"14px",flexShrink:0,marginTop:"1px"}}>✓</span>
                   <span style={{color:"rgba(255,255,255,0.75)",fontSize:"14px",lineHeight:1.5}}>{p}</span>
@@ -628,15 +1200,15 @@ function LandingScreen({onPurchase}) {
             </div>
           </div>
           <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:"12px"}}>
-            <button onClick={onPurchase} onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)} style={{background:hov?"#ff6b6b":"#ef5350",border:"none",borderRadius:"16px",color:"white",fontWeight:"800",fontSize:"18px",padding:"18px 48px",cursor:"pointer",fontFamily:"'Syne', sans-serif",boxShadow:hov?"0 0 40px rgba(239,83,80,0.5)":"0 0 20px rgba(239,83,80,0.3)",transition:"all 0.2s ease",transform:hov?"translateY(-2px)":"translateY(0)"}}>Get DataGuard — $7 one-time</button>
-            <span style={{color:"rgba(255,255,255,0.3)",fontSize:"12px"}}>One-time payment · No subscription · Instant access</span>
+            <button onClick={onPurchase} onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)} style={{background:hov?"#ff6b6b":"#ef5350",border:"none",borderRadius:"16px",color:"white",fontWeight:"800",fontSize:"18px",padding:"18px 48px",cursor:"pointer",fontFamily:"'Syne', sans-serif",boxShadow:hov?"0 0 40px rgba(239,83,80,0.5)":"0 0 20px rgba(239,83,80,0.3)",transition:"all 0.2s ease",transform:hov?"translateY(-2px)":"translateY(0)"}}>{t("buyButton")}</button>
+            <span style={{color:"rgba(255,255,255,0.3)",fontSize:"12px"}}>{t("buySub")}</span>
           </div>
         </div>
       </div>
       <div style={{maxWidth:"900px",margin:"0 auto",padding:"0 24px 80px"}}>
         <div style={{textAlign:"center",marginBottom:"56px"}}>
-          <h2 style={{fontSize:"clamp(28px,5vw,44px)",fontWeight:"800",letterSpacing:"-1px",margin:"0 0 12px"}}>Everything you need to take back control</h2>
-          <p style={{color:"rgba(255,255,255,0.4)",fontSize:"16px"}}>One app. No nonsense. No irony in how it collects your data.</p>
+          <h2 style={{fontSize:"clamp(28px,5vw,44px)",fontWeight:"800",letterSpacing:"-1px",margin:"0 0 12px"}}>{t("featuresTitle")}</h2>
+          <p style={{color:"rgba(255,255,255,0.4)",fontSize:"16px"}}>{t("featuresSub")}</p>
         </div>
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:"20px",marginBottom:"80px"}}>
           {features.map((f,i)=>(
@@ -648,13 +1220,13 @@ function LandingScreen({onPurchase}) {
           ))}
         </div>
         <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:"24px",padding:"40px",display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:"32px",textAlign:"center",marginBottom:"64px"}}>
-          {[["hundreds","apps in database"],["18,000+","community reports"],["$0","ad revenue"],["100%","open source"],["0","data points collected about you"]].map(([n,l],i)=>(
+          {[["hundreds",t("statApps")],["18,000+",t("statReports")],["$0",t("statAdRev")],["100%",t("statOpenSource")],["0",t("statDataPoints")]].map(([n,l],i)=>(
             <div key={i}><div style={{fontSize:"clamp(28px,5vw,40px)",fontWeight:"800",letterSpacing:"-1px",fontFamily:"'DM Mono', monospace",color:"#ef5350"}}>{n}</div><div style={{color:"rgba(255,255,255,0.4)",fontSize:"12px",marginTop:"4px"}}>{l}</div></div>
           ))}
         </div>
         <div style={{textAlign:"center"}}>
-          <div style={{color:"rgba(255,255,255,0.3)",fontSize:"13px",marginBottom:"24px"}}>Every dollar goes directly to maintaining the database and funding community research. No investors. No VCs. Just you.</div>
-          <button onClick={onPurchase} style={{background:"#ef5350",border:"none",borderRadius:"14px",color:"white",fontWeight:"800",fontSize:"17px",padding:"16px 42px",cursor:"pointer",fontFamily:"'Syne', sans-serif",boxShadow:"0 0 24px rgba(239,83,80,0.35)",transition:"all 0.2s ease"}} onMouseEnter={e=>{e.currentTarget.style.background="#ff6b6b";e.currentTarget.style.transform="translateY(-2px)";}} onMouseLeave={e=>{e.currentTarget.style.background="#ef5350";e.currentTarget.style.transform="translateY(0)";}}>Get DataGuard for $7</button>
+          <div style={{color:"rgba(255,255,255,0.3)",fontSize:"13px",marginBottom:"24px"}}>{t("donateNote")}</div>
+          <button onClick={onPurchase} style={{background:"#ef5350",border:"none",borderRadius:"14px",color:"white",fontWeight:"800",fontSize:"17px",padding:"16px 42px",cursor:"pointer",fontFamily:"'Syne', sans-serif",boxShadow:"0 0 24px rgba(239,83,80,0.35)",transition:"all 0.2s ease"}} onMouseEnter={e=>{e.currentTarget.style.background="#ff6b6b";e.currentTarget.style.transform="translateY(-2px)";}} onMouseLeave={e=>{e.currentTarget.style.background="#ef5350";e.currentTarget.style.transform="translateY(0)";}}>{t("buyButton2")}</button>
         </div>
       </div>
       <style>{`@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}`}</style>
@@ -663,6 +1235,7 @@ function LandingScreen({onPurchase}) {
 }
 
 function MainApp() {
+  const { t } = useT();
   const [view, setView] = useState("browse");
   const [selected, setSelected] = useState(null);
   const [search, setSearch] = useState("");
@@ -729,15 +1302,16 @@ function MainApp() {
         <div style={{display:"flex",alignItems:"center",gap:"8px",marginRight:"auto"}}>
           <span style={{fontSize:"22px"}}>🛡️</span>
           <span style={{fontWeight:"800",fontSize:"17px",letterSpacing:"-0.3px"}}>DataGuard</span>
-          <span style={{background:"rgba(0,230,118,0.12)",color:"#00e676",fontSize:"9px",fontWeight:"700",padding:"2px 7px",borderRadius:"10px",border:"1px solid rgba(0,230,118,0.25)",fontFamily:"'DM Mono', monospace",letterSpacing:"1px"}}>OPEN SOURCE</span>
+          <span style={{background:"rgba(0,230,118,0.12)",color:"#00e676",fontSize:"9px",fontWeight:"700",padding:"2px 7px",borderRadius:"10px",border:"1px solid rgba(0,230,118,0.25)",fontFamily:"'DM Mono', monospace",letterSpacing:"1px"}}>{t("openSourceBadge")}</span>
         </div>
+        <LanguageSwitcher/>
       </nav>
 
       {showNotifs&&(
         <div style={{position:"fixed",top:"66px",right:"16px",width:"320px",background:"#0f0f20",border:"1px solid rgba(255,255,255,0.12)",borderRadius:"16px",zIndex:200,overflow:"hidden",boxShadow:"0 20px 60px rgba(0,0,0,0.6)"}}>
           <div style={{padding:"14px 18px",borderBottom:"1px solid rgba(255,255,255,0.07)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-            <span style={{fontWeight:"700",fontSize:"14px"}}>Alerts</span>
-            <button onClick={()=>{setNotifications(n=>n.map(x=>({...x,read:true})));setShowNotifs(false);}} style={{background:"none",border:"none",color:"rgba(255,255,255,0.4)",cursor:"pointer",fontSize:"12px"}}>Mark all read</button>
+            <span style={{fontWeight:"700",fontSize:"14px"}}>{t("alertsTitle")}</span>
+            <button onClick={()=>{setNotifications(n=>n.map(x=>({...x,read:true})));setShowNotifs(false);}} style={{background:"none",border:"none",color:"rgba(255,255,255,0.4)",cursor:"pointer",fontSize:"12px"}}>{t("markAllRead")}</button>
           </div>
           {notifications.map(n=>(
             <div key={n.id} style={{padding:"14px 18px",borderBottom:"1px solid rgba(255,255,255,0.05)",background:n.read?"transparent":"rgba(239,83,80,0.05)"}}>
@@ -756,11 +1330,11 @@ function MainApp() {
           <div onClick={e=>e.stopPropagation()} style={{background:"#0f0f20",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"20px",padding:"20px",maxWidth:"500px",width:"100%",position:"relative",maxHeight:"calc(100dvh - 80px)",overflowY:"auto"}}>
             <button onClick={()=>setShowAbout(false)} style={{position:"absolute",top:"16px",right:"16px",background:"rgba(255,255,255,0.08)",border:"none",color:"white",borderRadius:"50%",width:"32px",height:"32px",cursor:"pointer",fontSize:"16px"}}>×</button>
             <div style={{fontSize:"26px",marginBottom:"8px"}}>🛡️</div>
-            <h3 style={{color:"white",fontFamily:"'DM Mono', monospace",margin:"0 0 8px",fontSize:"15px"}}>About DataGuard</h3>
-            <p style={{color:"rgba(255,255,255,0.55)",fontSize:"13px",lineHeight:1.5,marginBottom:"14px"}}>DataGuard was built because the app economy has a fundamental problem: most apps exist not to provide value, but to harvest and monetize user data. We believe people deserve to know exactly what they are signing up for.</p>
+            <h3 style={{color:"white",fontFamily:"'DM Mono', monospace",margin:"0 0 8px",fontSize:"15px"}}>{t("aboutTitle")}</h3>
+            <p style={{color:"rgba(255,255,255,0.55)",fontSize:"13px",lineHeight:1.5,marginBottom:"14px"}}>{t("aboutBody")}</p>
             <div style={{background:"rgba(0,230,118,0.06)",border:"1px solid rgba(0,230,118,0.2)",borderRadius:"12px",padding:"14px",marginBottom:"0"}}>
-              <div style={{color:"#00e676",fontWeight:"700",fontFamily:"'DM Mono', monospace",fontSize:"11px",letterSpacing:"1px",marginBottom:"12px"}}>OUR PROMISES</div>
-              {["We collect zero user data — no analytics, no logs, no telemetry.","No advertising or sponsored content of any kind.","Your $7 purchase directly funds research and development.","Source code is fully public and auditable on GitHub.","Community contributions are welcome and credited."].map((p,i)=>(
+              <div style={{color:"#00e676",fontWeight:"700",fontFamily:"'DM Mono', monospace",fontSize:"11px",letterSpacing:"1px",marginBottom:"12px"}}>{t("promisesTitle")}</div>
+              {[t("promise1"),t("promise2"),t("promise3"),t("promise4"),t("promise5")].map((p,i)=>(
                 <div key={i} style={{display:"flex",gap:"8px",alignItems:"flex-start",marginBottom:"5px"}}>
                   <span style={{color:"#00e676",flexShrink:0}}>✓</span>
                   <span style={{color:"rgba(255,255,255,0.65)",fontSize:"12px",lineHeight:1.4}}>{p}</span>
@@ -774,11 +1348,11 @@ function MainApp() {
       <div style={{flex:1,maxWidth:"800px",margin:"0 auto",width:"100%",padding:"24px 16px"}}>
         {view==="browse"&&(
           <>
-            <div style={{display:"flex",alignItems:"center",gap:"10px",marginBottom:"16px"}}><button onClick={()=>setShowAbout(true)} style={{background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.09)",borderRadius:"20px",color:"rgba(255,255,255,0.45)",fontSize:"11px",padding:"5px 14px",cursor:"pointer",fontWeight:"600",letterSpacing:"0.3px"}}>ℹ️ About DataGuard</button><button onClick={()=>setShowNotifs(v=>!v)} style={{background:"none",border:"1px solid rgba(255,255,255,0.09)",borderRadius:"20px",cursor:"pointer",position:"relative",padding:"5px 12px",display:"flex",alignItems:"center"}}><span style={{fontSize:"16px"}}>🔔</span>{unread>0&&<span style={{position:"absolute",top:"-3px",right:"-3px",background:"#ef5350",borderRadius:"50%",width:"14px",height:"14px",fontSize:"9px",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:"700",fontFamily:"'DM Mono', monospace",color:"white"}}>{unread}</span>}</button></div>
+            <div style={{display:"flex",alignItems:"center",gap:"10px",marginBottom:"16px"}}><button onClick={()=>setShowAbout(true)} style={{background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.09)",borderRadius:"20px",color:"rgba(255,255,255,0.45)",fontSize:"11px",padding:"5px 14px",cursor:"pointer",fontWeight:"600",letterSpacing:"0.3px"}}>{t("aboutBtn")}</button><button onClick={()=>setShowNotifs(v=>!v)} style={{background:"none",border:"1px solid rgba(255,255,255,0.09)",borderRadius:"20px",cursor:"pointer",position:"relative",padding:"5px 12px",display:"flex",alignItems:"center"}}><span style={{fontSize:"16px"}}>🔔</span>{unread>0&&<span style={{position:"absolute",top:"-3px",right:"-3px",background:"#ef5350",borderRadius:"50%",width:"14px",height:"14px",fontSize:"9px",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:"700",fontFamily:"'DM Mono', monospace",color:"white"}}>{unread}</span>}</button></div>
             <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:"12px",marginBottom:"24px"}}>
-              <SummaryTile icon="💀" label="Sell your data" value={`${APP_DB.filter(a=>a.sellsData).length}/${APP_DB.length}`} color="#ef5350" onClick={()=>{setFilter("sellers");setActiveCategory("All");}} active={filter==="sellers"}/>
-              <SummaryTile icon="🎭" label="Deceptive ads" value={`${APP_DB.filter(a=>a.misleadingAds).length}/${APP_DB.length}`} color="#ff7043" onClick={()=>{setFilter("deceptive");setActiveCategory("All");}} active={filter==="deceptive"}/>
-              <SummaryTile icon="✅" label="Privacy safe" value={`${APP_DB.filter(a=>a.score>=80).length}/${APP_DB.length}`} color="#00e676" onClick={()=>{setFilter("safe");setActiveCategory("All");}} active={filter==="safe"}/>
+              <SummaryTile icon="💀" label={t("tileSell")} value={`${APP_DB.filter(a=>a.sellsData).length}/${APP_DB.length}`} color="#ef5350" onClick={()=>{setFilter("sellers");setActiveCategory("All");}} active={filter==="sellers"}/>
+              <SummaryTile icon="🎭" label={t("tileDeceptive")} value={`${APP_DB.filter(a=>a.misleadingAds).length}/${APP_DB.length}`} color="#ff7043" onClick={()=>{setFilter("deceptive");setActiveCategory("All");}} active={filter==="deceptive"}/>
+              <SummaryTile icon="✅" label={t("tileSafe")} value={`${APP_DB.filter(a=>a.score>=80).length}/${APP_DB.length}`} color="#00e676" onClick={()=>{setFilter("safe");setActiveCategory("All");}} active={filter==="safe"}/>
             </div>
 
             {/* ── NEW: Category bar ──────────────────────────────────────── */}
@@ -786,36 +1360,36 @@ function MainApp() {
 
             <div style={{position:"relative",marginBottom:"12px"}}>
               <span style={{position:"absolute",left:"16px",top:"50%",transform:"translateY(-50%)",fontSize:"16px",pointerEvents:"none"}}>🔍</span>
-              <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search apps by name or category…" style={{width:"100%",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.09)",borderRadius:"14px",color:"white",padding:"13px 16px 13px 44px",fontSize:"15px",outline:"none",fontFamily:"'Syne', sans-serif",boxSizing:"border-box",transition:"border-color 0.2s"}} onFocus={e=>e.target.style.borderColor="rgba(239,83,80,0.4)"} onBlur={e=>e.target.style.borderColor="rgba(255,255,255,0.09)"}/>
+              <input value={search} onChange={e=>setSearch(e.target.value)} placeholder={t("searchPlaceholder")} style={{width:"100%",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.09)",borderRadius:"14px",color:"white",padding:"13px 16px 13px 44px",fontSize:"15px",outline:"none",fontFamily:"'Syne', sans-serif",boxSizing:"border-box",transition:"border-color 0.2s"}} onFocus={e=>e.target.style.borderColor="rgba(239,83,80,0.4)"} onBlur={e=>e.target.style.borderColor="rgba(255,255,255,0.09)"}/>
             </div>
 
             <div style={{display:"flex",gap:"8px",marginBottom:"14px",alignItems:"center",flexWrap:"wrap",paddingBottom:"4px"}}>
-              {[["all","All"],["sellers","Sells Data"],["deceptive","Deceptive"],["safe","Safe"],["watchlist","Watchlist"]].map(([k,l])=>(
+              {[["all",t("filterAll")],["sellers",t("filterSellers")],["deceptive",t("filterDeceptive")],["safe",t("filterSafe")],["watchlist",t("filterWatchlist")]].map(([k,l])=>(
                 <button key={k} onClick={()=>setFilter(k)} style={{background:filter===k?"rgba(239,83,80,0.18)":"rgba(255,255,255,0.04)",border:filter===k?"1px solid rgba(239,83,80,0.45)":"1px solid rgba(255,255,255,0.07)",color:filter===k?"#ff8a80":"rgba(255,255,255,0.5)",padding:"7px 15px",borderRadius:"20px",cursor:"pointer",fontSize:"12px",fontWeight:"700",textTransform:"uppercase",letterSpacing:"0.5px",whiteSpace:"nowrap",transition:"all 0.15s"}}>{l}{k==="watchlist"?` (${watchlist.length})`:""}</button>
               ))}
               <div style={{marginLeft:"auto",flexShrink:0}}>
                 <select value={sort} onChange={e=>setSort(e.target.value)} style={{background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.08)",color:"rgba(255,255,255,0.5)",padding:"7px 12px",borderRadius:"20px",cursor:"pointer",fontSize:"12px",outline:"none"}}>
-                  <option value="worst">Worst first</option>
-                  <option value="best">Best first</option>
-                  <option value="az">A → Z</option>
+                  <option value="worst">{t("sortWorst")}</option>
+                  <option value="best">{t("sortBest")}</option>
+                  <option value="az">{t("sortAZ")}</option>
                 </select>
               </div>
             </div>
 
             {/* ── NEW: result count line ─────────────────────────────────── */}
             <div style={{fontSize:"12px",color:"rgba(255,255,255,0.3)",fontFamily:"'DM Mono', monospace",marginBottom:"12px"}}>
-              Showing {filtered.length} app{filtered.length !== 1 ? "s" : ""}
-              {activeCategory !== "All" ? ` in ${activeCategory}` : ""}
+              {t("showingApps")} {filtered.length} {filtered.length !== 1 ? t("appsWord") : t("appWord")}
+              {activeCategory !== "All" ? ` ${t("inWord")} ${tCategory(t, activeCategory)}` : ""}
             </div>
 
             <div style={{display:"flex",flexDirection:"column",gap:"10px"}}>
               {filtered.length===0?(
                 <div style={{textAlign:"center",padding:"64px 24px",color:"rgba(255,255,255,0.25)"}}>
                   <div style={{fontSize:"40px",marginBottom:"12px"}}>🔍</div>
-                  <div style={{fontSize:"15px",marginBottom:"8px"}}>No apps found</div>
-                  <div style={{fontSize:"13px",marginBottom:"20px",color:"rgba(255,255,255,0.2)"}}>Try a different category or search term</div>
-                  <button onClick={()=>{setActiveCategory("All");setFilter("all");setSearch("");}} style={{background:"rgba(239,83,80,0.12)",border:"1px solid rgba(239,83,80,0.3)",color:"#ef5350",padding:"10px 20px",borderRadius:"20px",cursor:"pointer",fontSize:"13px",fontWeight:"700",marginRight:"10px"}}>Clear filters</button>
-                  <button onClick={()=>setView("submit")} style={{background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",color:"rgba(255,255,255,0.5)",padding:"10px 20px",borderRadius:"20px",cursor:"pointer",fontSize:"13px",fontWeight:"700"}}>Submit an app</button>
+                  <div style={{fontSize:"15px",marginBottom:"8px"}}>{t("noAppsTitle")}</div>
+                  <div style={{fontSize:"13px",marginBottom:"20px",color:"rgba(255,255,255,0.2)"}}>{t("noAppsSub")}</div>
+                  <button onClick={()=>{setActiveCategory("All");setFilter("all");setSearch("");}} style={{background:"rgba(239,83,80,0.12)",border:"1px solid rgba(239,83,80,0.3)",color:"#ef5350",padding:"10px 20px",borderRadius:"20px",cursor:"pointer",fontSize:"13px",fontWeight:"700",marginRight:"10px"}}>{t("clearFilters")}</button>
+                  <button onClick={()=>setView("submit")} style={{background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",color:"rgba(255,255,255,0.5)",padding:"10px 20px",borderRadius:"20px",cursor:"pointer",fontSize:"13px",fontWeight:"700"}}>{t("submitAppShort")}</button>
                 </div>
               ):filtered.map(app=>(
                 <AppRow key={app.id} app={app} onOpen={()=>openApp(app)} watched={watchlist.includes(app.id)} onToggleWatch={()=>toggleWatch(app.id)}/>
@@ -823,9 +1397,9 @@ function MainApp() {
             </div>
             <div style={{marginTop:"32px",background:"rgba(239,83,80,0.05)",border:"1px solid rgba(239,83,80,0.15)",borderRadius:"18px",padding:"28px",textAlign:"center"}}>
               <div style={{fontSize:"28px",marginBottom:"10px"}}>🕵️</div>
-              <div style={{fontWeight:"800",fontSize:"16px",marginBottom:"6px"}}>Know a data-hungry app we are missing?</div>
-              <div style={{color:"rgba(255,255,255,0.4)",fontSize:"13px",marginBottom:"18px"}}>Submit it for community review. Our researchers will analyze and score it within 72 hours.</div>
-              <button onClick={()=>setView("submit")} style={{background:"#ef5350",border:"none",borderRadius:"12px",color:"white",padding:"12px 28px",cursor:"pointer",fontWeight:"800",fontFamily:"'Syne', sans-serif",fontSize:"14px"}}>Submit an App</button>
+              <div style={{fontWeight:"800",fontSize:"16px",marginBottom:"6px"}}>{t("ctaTitle")}</div>
+              <div style={{color:"rgba(255,255,255,0.4)",fontSize:"13px",marginBottom:"18px"}}>{t("ctaSub")}</div>
+              <button onClick={()=>setView("submit")} style={{background:"#ef5350",border:"none",borderRadius:"12px",color:"white",padding:"12px 28px",cursor:"pointer",fontWeight:"800",fontFamily:"'Syne', sans-serif",fontSize:"14px"}}>{t("ctaBtn")}</button>
             </div>
           </>
         )}
@@ -847,6 +1421,7 @@ function SummaryTile({icon,label,value,color,onClick,active}) {
 }
 
 function AppRow({app, onOpen, watched, onToggleWatch}) {
+  const { t } = useT();
   const [hov, setHov] = useState(false);
   return (
     <div style={{background:hov?"rgba(255,255,255,0.06)":"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:"16px",padding:"16px",display:"flex",alignItems:"center",gap:"14px",cursor:"pointer",transition:"all 0.18s",userSelect:"none"}} onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)} onClick={onOpen}>
@@ -854,13 +1429,13 @@ function AppRow({app, onOpen, watched, onToggleWatch}) {
       <div style={{flex:1,minWidth:0}}>
         <div style={{display:"flex",alignItems:"center",gap:"8px",flexWrap:"wrap",marginBottom:"4px"}}>
           <span style={{color:"white",fontWeight:"700",fontSize:"15px"}}>{app.name}</span>
-          {app.communityVerified&&<span style={{background:"rgba(0,230,118,0.1)",color:"#00e676",fontSize:"9px",padding:"2px 7px",borderRadius:"10px",border:"1px solid rgba(0,230,118,0.25)",fontFamily:"'DM Mono', monospace",fontWeight:"700",letterSpacing:"0.5px"}}>VERIFIED</span>}
+          {app.communityVerified&&<span style={{background:"rgba(0,230,118,0.1)",color:"#00e676",fontSize:"9px",padding:"2px 7px",borderRadius:"10px",border:"1px solid rgba(0,230,118,0.25)",fontFamily:"'DM Mono', monospace",fontWeight:"700",letterSpacing:"0.5px"}}>{t("verified")}</span>}
         </div>
-        <div style={{color:"rgba(255,255,255,0.35)",fontSize:"11px",marginBottom:"8px"}}>{app.category} · 🚩 {app.communityFlags.toLocaleString()} reports</div>
+        <div style={{color:"rgba(255,255,255,0.35)",fontSize:"11px",marginBottom:"8px"}}>{app.category} · 🚩 {app.communityFlags.toLocaleString()} {t("reportsWord")}</div>
         <div style={{display:"flex",gap:"6px",flexWrap:"wrap"}}>
-          {app.sellsData&&<Tag label="Sells Data" color="#ef5350"/>}
-          {app.misleadingAds&&<Tag label="Deceptive Ads" color="#ff7043"/>}
-          <Tag label={`${app.thirdParties} 3rd parties`} color="#607d8b"/>
+          {app.sellsData&&<Tag label={t("tagSells")} color="#ef5350"/>}
+          {app.misleadingAds&&<Tag label={t("tagDeceptive")} color="#ff7043"/>}
+          <Tag label={`${app.thirdParties} ${t("thirdPartiesShort")}`} color="#607d8b"/>
         </div>
       </div>
       <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:"2px",flexShrink:0}}>
@@ -875,6 +1450,8 @@ function AppRow({app, onOpen, watched, onToggleWatch}) {
 }
 
 function DetailView({app, allApps, watched, onToggleWatch, onBack}) {
+  const { t } = useT();
+  useEffect(() => { window.scrollTo(0, 0); }, []);
   const [feedbackType, setFeedbackType] = useState("correction");
   const [feedbackText, setFeedbackText] = useState("");
   const [submitted, setSubmitted] = useState(false);
@@ -893,52 +1470,52 @@ function DetailView({app, allApps, watched, onToggleWatch, onBack}) {
 
   return (
     <div style={{animation:"fadeUp 0.3s ease"}}>
-      <button onClick={onBack} style={{background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"20px",color:"rgba(255,255,255,0.6)",padding:"8px 18px",cursor:"pointer",fontSize:"13px",fontWeight:"600",marginBottom:"24px",display:"flex",alignItems:"center",gap:"8px"}}>← Back</button>
+      <button onClick={onBack} style={{background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"20px",color:"rgba(255,255,255,0.6)",padding:"8px 18px",cursor:"pointer",fontSize:"13px",fontWeight:"600",marginBottom:"24px",display:"flex",alignItems:"center",gap:"8px"}}>{t("back")}</button>
       <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:"20px",padding:"24px",marginBottom:"16px"}}>
         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"16px"}}>
           <span style={{fontSize:"52px"}}>{app.icon}</span>
           <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:"4px"}}>
             <ScoreRing score={app.score} size={80}/>
             <span style={{color:gradeColor(app.privacyGrade),fontWeight:"900",fontSize:"26px",fontFamily:"'DM Mono', monospace"}}>{app.privacyGrade}</span>
-            <span style={{color:"rgba(255,255,255,0.3)",fontSize:"10px",textTransform:"uppercase",letterSpacing:"0.5px"}}>Privacy grade</span>
+            <span style={{color:"rgba(255,255,255,0.3)",fontSize:"10px",textTransform:"uppercase",letterSpacing:"0.5px"}}>{t("privacyGrade")}</span>
           </div>
         </div>
         <h2 style={{color:"white",margin:"0 0 12px",fontSize:"clamp(20px,6vw,28px)",fontWeight:"800",letterSpacing:"-0.5px",lineHeight:1.2}}>{app.name}</h2>
         <div style={{display:"flex",alignItems:"flex-start",gap:"8px",flexWrap:"wrap",marginBottom:"12px"}}>
-          {app.communityVerified&&<span style={{background:"rgba(0,230,118,0.1)",color:"#00e676",fontSize:"10px",padding:"3px 9px",borderRadius:"10px",border:"1px solid rgba(0,230,118,0.25)",fontFamily:"'DM Mono', monospace",fontWeight:"700",flexShrink:0}}>COMMUNITY VERIFIED</span>}
-          <span style={{color:"rgba(255,255,255,0.4)",fontSize:"13px"}}>{app.category} · Founded {app.founded} · {app.headquarters}</span>
+          {app.communityVerified&&<span style={{background:"rgba(0,230,118,0.1)",color:"#00e676",fontSize:"10px",padding:"3px 9px",borderRadius:"10px",border:"1px solid rgba(0,230,118,0.25)",fontFamily:"'DM Mono', monospace",fontWeight:"700",flexShrink:0}}>{t("communityVerified")}</span>}
+          <span style={{color:"rgba(255,255,255,0.4)",fontSize:"13px"}}>{app.category} · {t("foundedWord")} {app.founded} · {app.headquarters}</span>
         </div>
         <div style={{display:"flex",gap:"8px",flexWrap:"wrap",marginBottom:"12px"}}>
-          {app.sellsData&&<Tag label="Sells Data" color="#ef5350"/>}
-          {app.misleadingAds&&<Tag label="Deceptive Ads" color="#ff7043"/>}
-          <Tag label={`${app.thirdParties} 3rd-party recipients`} color="#607d8b"/>
+          {app.sellsData&&<Tag label={t("tagSells")} color="#ef5350"/>}
+          {app.misleadingAds&&<Tag label={t("tagDeceptive")} color="#ff7043"/>}
+          <Tag label={`${app.thirdParties} ${t("thirdPartiesLong")}`} color="#607d8b"/>
         </div>
         <div style={{display:"flex",gap:"8px",flexWrap:"wrap",alignItems:"center"}}>
-          {playStoreUrl&&(<a href={playStoreUrl} target="_blank" rel="noopener noreferrer" onClick={e=>e.stopPropagation()} style={{display:"inline-flex",alignItems:"center",gap:"5px",background:"rgba(0,150,136,0.12)",color:"#4db6ac",border:"1px solid rgba(0,150,136,0.3)",fontSize:"11px",padding:"6px 14px",borderRadius:"20px",fontWeight:"700",letterSpacing:"0.6px",textTransform:"uppercase",fontFamily:"'DM Mono', monospace",textDecoration:"none",transition:"all 0.15s"}} onMouseEnter={e=>e.currentTarget.style.background="rgba(0,150,136,0.22)"} onMouseLeave={e=>e.currentTarget.style.background="rgba(0,150,136,0.12)"}>▶ Google Play</a>)}
-          {altPlayStoreUrl&&bestAlt&&(<a href={altPlayStoreUrl} target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",alignItems:"center",gap:"5px",background:"rgba(0,230,118,0.1)",color:"#00e676",border:"1px solid rgba(0,230,118,0.25)",fontSize:"11px",padding:"6px 14px",borderRadius:"20px",fontWeight:"700",fontFamily:"'DM Mono', monospace",textDecoration:"none",transition:"all 0.15s"}} onMouseEnter={e=>e.currentTarget.style.background="rgba(0,230,118,0.18)"} onMouseLeave={e=>e.currentTarget.style.background="rgba(0,230,118,0.1)"}>✅ Try {bestAlt.name} ({bestAlt.privacyGrade})</a>)}
+          {playStoreUrl&&(<a href={playStoreUrl} target="_blank" rel="noopener noreferrer" onClick={e=>e.stopPropagation()} style={{display:"inline-flex",alignItems:"center",gap:"5px",background:"rgba(0,150,136,0.12)",color:"#4db6ac",border:"1px solid rgba(0,150,136,0.3)",fontSize:"11px",padding:"6px 14px",borderRadius:"20px",fontWeight:"700",letterSpacing:"0.6px",textTransform:"uppercase",fontFamily:"'DM Mono', monospace",textDecoration:"none",transition:"all 0.15s"}} onMouseEnter={e=>e.currentTarget.style.background="rgba(0,150,136,0.22)"} onMouseLeave={e=>e.currentTarget.style.background="rgba(0,150,136,0.12)"}>{t("googlePlay")}</a>)}
+          {altPlayStoreUrl&&bestAlt&&(<a href={altPlayStoreUrl} target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",alignItems:"center",gap:"5px",background:"rgba(0,230,118,0.1)",color:"#00e676",border:"1px solid rgba(0,230,118,0.25)",fontSize:"11px",padding:"6px 14px",borderRadius:"20px",fontWeight:"700",fontFamily:"'DM Mono', monospace",textDecoration:"none",transition:"all 0.15s"}} onMouseEnter={e=>e.currentTarget.style.background="rgba(0,230,118,0.18)"} onMouseLeave={e=>e.currentTarget.style.background="rgba(0,230,118,0.1)"}>✅ {t("tryWord")} {bestAlt.name} ({bestAlt.privacyGrade})</a>)}
         </div>
       </div>
 
       
 
       <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:"16px",padding:"20px",marginBottom:"14px"}}>
-        <SectionLabel>Summary</SectionLabel>
+        <SectionLabel>{t("summary")}</SectionLabel>
         <p style={{color:"rgba(255,255,255,0.7)",margin:0,lineHeight:1.75,fontSize:"14px"}}>{app.summary}</p>
       </div>
       <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:"12px",marginBottom:"14px"}}>
-        <MetricBox label="Sells Data" value={app.sellsData?"YES":"NO"} bad={app.sellsData}/>
-        <MetricBox label="Deceptive Ads" value={app.misleadingAds?"YES":"NO"} bad={app.misleadingAds}/>
-        <MetricBox label="3rd Parties" value={app.thirdParties} bad={app.thirdParties>10}/>
+        <MetricBox label={t("mSells")} value={app.sellsData?t("yes"):t("no")} bad={app.sellsData}/>
+        <MetricBox label={t("mDeceptive")} value={app.misleadingAds?t("yes"):t("no")} bad={app.misleadingAds}/>
+        <MetricBox label={t("m3rd")} value={app.thirdParties} bad={app.thirdParties>10}/>
       </div>
       <div style={{background:"rgba(239,83,80,0.04)",border:"1px solid rgba(239,83,80,0.12)",borderRadius:"16px",padding:"20px",marginBottom:"14px"}}>
-        <SectionLabel color="#ff8a80">Data Collected ({app.dataTypes.length} types)</SectionLabel>
+        <SectionLabel color="#ff8a80">{t("dataCollected")} ({app.dataTypes.length} {t("typesWord")})</SectionLabel>
         <div style={{display:"flex",flexWrap:"wrap",gap:"8px"}}>
           {app.dataTypes.map(d=><span key={d} style={{background:"rgba(239,83,80,0.1)",color:"#ff8a80",border:"1px solid rgba(239,83,80,0.2)",padding:"5px 12px",borderRadius:"20px",fontSize:"12px",fontWeight:"600"}}>{d}</span>)}
         </div>
       </div>
       {app.knownIncidents.length>0&&(
         <div style={{background:"rgba(255,193,7,0.04)",border:"1px solid rgba(255,193,7,0.15)",borderRadius:"16px",padding:"20px",marginBottom:"14px"}}>
-          <SectionLabel color="#ffd54f">Known Incidents and Fines</SectionLabel>
+          <SectionLabel color="#ffd54f">{t("incidentsTitle")}</SectionLabel>
           <div style={{display:"flex",flexDirection:"column",gap:"8px"}}>
             {app.knownIncidents.map((inc,i)=>(
               <div key={i} style={{display:"flex",gap:"10px",alignItems:"flex-start"}}>
@@ -950,7 +1527,7 @@ function DetailView({app, allApps, watched, onToggleWatch, onBack}) {
         </div>
       )}
       <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:"16px",padding:"20px",marginBottom:"14px"}}>
-        <SectionLabel>Sources</SectionLabel>
+        <SectionLabel>{t("sourcesTitle")}</SectionLabel>
         <div style={{display:"flex",flexWrap:"wrap",gap:"8px"}}>
           {app.sources.map(s=><span key={s} style={{background:"rgba(255,255,255,0.06)",color:"rgba(255,255,255,0.55)",border:"1px solid rgba(255,255,255,0.09)",padding:"5px 12px",borderRadius:"20px",fontSize:"12px"}}>📄 {s}</span>)}
         </div>
@@ -958,32 +1535,32 @@ function DetailView({app, allApps, watched, onToggleWatch, onBack}) {
       <div style={{background:"rgba(255,193,7,0.05)",border:"1px solid rgba(255,193,7,0.15)",borderRadius:"16px",padding:"20px",marginBottom:"14px",display:"flex",alignItems:"center",gap:"14px"}}>
         <span style={{fontSize:"28px"}}>🚩</span>
         <div>
-          <div style={{color:"#ffd54f",fontWeight:"800",fontSize:"16px",fontFamily:"'DM Mono', monospace"}}>{app.communityFlags.toLocaleString()} community reports</div>
-          <div style={{color:"rgba(255,255,255,0.4)",fontSize:"12px",marginTop:"3px"}}>People have flagged this app's privacy practices</div>
+          <div style={{color:"#ffd54f",fontWeight:"800",fontSize:"16px",fontFamily:"'DM Mono', monospace"}}>{app.communityFlags.toLocaleString()} {t("communityReportsWord")}</div>
+          <div style={{color:"rgba(255,255,255,0.4)",fontSize:"12px",marginTop:"3px"}}>{t("flaggedSub")}</div>
         </div>
         <button onClick={onToggleWatch} style={{marginLeft:"auto",background:watched?"rgba(239,83,80,0.15)":"rgba(255,255,255,0.05)",border:watched?"1px solid rgba(239,83,80,0.4)":"1px solid rgba(255,255,255,0.1)",borderRadius:"12px",color:watched?"#ff8a80":"rgba(255,255,255,0.5)",padding:"8px 14px",cursor:"pointer",fontSize:"12px",fontWeight:"700",flexShrink:0}}>
-          {watched?"🔔 Watching":"🔕 Watch"}
+          {watched?t("watching"):t("watch")}
         </button>
       </div>
       <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:"16px",padding:"24px"}}>
-        <SectionLabel>📣 Submit Community Feedback</SectionLabel>
-        <p style={{color:"rgba(255,255,255,0.4)",fontSize:"13px",margin:"0 0 14px"}}>Spotted something we missed? Found a new source? Disagree with our score? Tell us.</p>
+        <SectionLabel>{t("feedbackTitle")}</SectionLabel>
+        <p style={{color:"rgba(255,255,255,0.4)",fontSize:"13px",margin:"0 0 14px"}}>{t("feedbackIntro")}</p>
         <div style={{display:"flex",gap:"8px",marginBottom:"14px",flexWrap:"wrap"}}>
-          {[["correction","Correction"],["new-finding","New Finding"],["false-positive","False Positive"],["praise","Praise"]].map(([k,l])=>(
+          {[["correction",t("fbCorrection")],["new-finding",t("fbNewFinding")],["false-positive",t("fbFalsePositive")],["praise",t("fbPraise")]].map(([k,l])=>(
             <button key={k} onClick={()=>setFeedbackType(k)} style={{background:feedbackType===k?"rgba(0,188,212,0.15)":"rgba(255,255,255,0.05)",border:feedbackType===k?"1px solid rgba(0,188,212,0.45)":"1px solid rgba(255,255,255,0.09)",color:feedbackType===k?"#00bcd4":"rgba(255,255,255,0.4)",padding:"7px 14px",borderRadius:"20px",cursor:"pointer",fontSize:"11px",fontWeight:"700",textTransform:"uppercase",letterSpacing:"0.5px"}}>{l}</button>
           ))}
         </div>
         {!submitted?(
           <>
-            <textarea value={feedbackText} onChange={e=>setFeedbackText(e.target.value)} placeholder="Your feedback, source links, personal experience…" style={{width:"100%",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.09)",borderRadius:"12px",color:"white",padding:"14px",fontSize:"13px",resize:"vertical",minHeight:"90px",fontFamily:"'Syne', sans-serif",boxSizing:"border-box",outline:"none"}}/>
+            <textarea value={feedbackText} onChange={e=>setFeedbackText(e.target.value)} placeholder={t("feedbackPlaceholder")} style={{width:"100%",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.09)",borderRadius:"12px",color:"white",padding:"14px",fontSize:"13px",resize:"vertical",minHeight:"90px",fontFamily:"'Syne', sans-serif",boxSizing:"border-box",outline:"none"}}/>
             <button onClick={handleFeedback} disabled={submitting} style={{marginTop:"12px",background:submitting?"rgba(255,255,255,0.05)":"rgba(0,188,212,0.12)",border:"1px solid rgba(0,188,212,0.35)",color:"#00bcd4",padding:"11px 22px",borderRadius:"12px",cursor:submitting?"not-allowed":"pointer",fontWeight:"800",fontSize:"13px",fontFamily:"'Syne', sans-serif",transition:"all 0.2s"}}>
-              {submitting?"Submitting…":"Submit Feedback"}
+              {submitting?t("submitting"):t("submitFeedback")}
             </button>
           </>
         ):(
           <div style={{textAlign:"center",padding:"24px",background:"rgba(0,230,118,0.06)",borderRadius:"12px",border:"1px solid rgba(0,230,118,0.15)"}}>
             <div style={{fontSize:"32px",marginBottom:"8px"}}>✅</div>
-            <div style={{color:"#00e676",fontWeight:"700",fontFamily:"'DM Mono', monospace"}}>Thank you! Your report has been saved to our database.</div>
+            <div style={{color:"#00e676",fontWeight:"700",fontFamily:"'DM Mono', monospace"}}>{t("feedbackThanks")}</div>
           </div>
         )}
       </div>
@@ -993,6 +1570,7 @@ function DetailView({app, allApps, watched, onToggleWatch, onBack}) {
 }
 
 function SubmitView({onBack}) {
+  const { t } = useT();
   const [name, setName] = useState("");
   const [category, setCategory] = useState("");
   const [details, setDetails] = useState("");
@@ -1009,34 +1587,34 @@ function SubmitView({onBack}) {
 
   return (
     <div style={{animation:"fadeUp 0.3s ease"}}>
-      <button onClick={onBack} style={{background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"20px",color:"rgba(255,255,255,0.6)",padding:"8px 18px",cursor:"pointer",fontSize:"13px",fontWeight:"600",marginBottom:"24px"}}>← Back</button>
+      <button onClick={onBack} style={{background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"20px",color:"rgba(255,255,255,0.6)",padding:"8px 18px",cursor:"pointer",fontSize:"13px",fontWeight:"600",marginBottom:"24px"}}>{t("back")}</button>
       <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:"20px",padding:"32px"}}>
         {!submitted?(
           <>
             <div style={{fontSize:"36px",marginBottom:"16px"}}>🕵️</div>
-            <h3 style={{color:"white",fontFamily:"'DM Mono', monospace",fontSize:"20px",margin:"0 0 8px"}}>Submit an App for Review</h3>
-            <p style={{color:"rgba(255,255,255,0.4)",fontSize:"14px",margin:"0 0 28px",lineHeight:1.6}}>Our community researchers will analyze the app's privacy policy, data practices, and third-party relationships and publish a full score within 72 hours.</p>
+            <h3 style={{color:"white",fontFamily:"'DM Mono', monospace",fontSize:"20px",margin:"0 0 8px"}}>{t("submitTitle")}</h3>
+            <p style={{color:"rgba(255,255,255,0.4)",fontSize:"14px",margin:"0 0 28px",lineHeight:1.6}}>{t("submitDesc")}</p>
             <div style={{display:"flex",flexDirection:"column",gap:"16px"}}>
-              <Field label="App Name" placeholder="e.g. FaceApp" value={name} onChange={e=>setName(e.target.value)}/>
-              <Field label="Category" placeholder="e.g. Photo Editor, Shopping, Social Media" value={category} onChange={e=>setCategory(e.target.value)}/>
+              <Field label={t("fieldAppName")} placeholder={t("fieldAppNamePlaceholder")} value={name} onChange={e=>setName(e.target.value)}/>
+              <Field label={t("fieldCategory")} placeholder={t("fieldCategoryPlaceholder")} value={category} onChange={e=>setCategory(e.target.value)}/>
               <div>
-                <label style={{color:"rgba(255,255,255,0.4)",fontSize:"11px",fontWeight:"700",letterSpacing:"0.8px",textTransform:"uppercase",fontFamily:"'DM Mono', monospace",display:"block",marginBottom:"8px"}}>What did you notice?</label>
-                <textarea value={details} onChange={e=>setDetails(e.target.value)} placeholder="Describe your concerns — suspicious permissions, data policy clauses, news articles, personal experience…" style={{width:"100%",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.09)",borderRadius:"12px",color:"white",padding:"14px",fontSize:"13px",resize:"vertical",minHeight:"120px",fontFamily:"'Syne', sans-serif",boxSizing:"border-box",outline:"none"}}/>
+                <label style={{color:"rgba(255,255,255,0.4)",fontSize:"11px",fontWeight:"700",letterSpacing:"0.8px",textTransform:"uppercase",fontFamily:"'DM Mono', monospace",display:"block",marginBottom:"8px"}}>{t("fieldNoticed")}</label>
+                <textarea value={details} onChange={e=>setDetails(e.target.value)} placeholder={t("submitPlaceholder")} style={{width:"100%",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.09)",borderRadius:"12px",color:"white",padding:"14px",fontSize:"13px",resize:"vertical",minHeight:"120px",fontFamily:"'Syne', sans-serif",boxSizing:"border-box",outline:"none"}}/>
               </div>
               <div style={{background:"rgba(0,230,118,0.06)",border:"1px solid rgba(0,230,118,0.15)",borderRadius:"12px",padding:"14px 18px"}}>
-                <div style={{color:"rgba(255,255,255,0.5)",fontSize:"12px",lineHeight:1.6}}><strong style={{color:"#00e676"}}>Privacy note:</strong> Submitting this form sends only the text above. No metadata, no IP address, no account linking. Your submission is completely anonymous.</div>
+                <div style={{color:"rgba(255,255,255,0.5)",fontSize:"12px",lineHeight:1.6}}><strong style={{color:"#00e676"}}>{t("privacyNoteLabel")}</strong> {t("privacyNoteBody")}</div>
               </div>
               <button onClick={handleSubmit} disabled={submitting} style={{background:submitting?"rgba(255,255,255,0.05)":"#ef5350",border:"none",borderRadius:"12px",color:"white",padding:"14px",cursor:submitting?"not-allowed":"pointer",fontWeight:"800",fontFamily:"'Syne', sans-serif",fontSize:"15px",transition:"all 0.2s"}}>
-                {submitting?"Submitting…":"Submit for Community Review"}
+                {submitting?t("submitting"):t("submitReview")}
               </button>
             </div>
           </>
         ):(
           <div style={{textAlign:"center",padding:"32px 0"}}>
             <div style={{fontSize:"56px",marginBottom:"16px"}}>✅</div>
-            <div style={{color:"#00e676",fontWeight:"800",fontFamily:"'DM Mono', monospace",fontSize:"18px",marginBottom:"10px"}}>Submitted!</div>
-            <div style={{color:"rgba(255,255,255,0.5)",fontSize:"14px",lineHeight:1.7}}><strong style={{color:"white"}}>{name}</strong> has been saved to our database. Expect a full analysis within 72 hours. Thank you for helping the community.</div>
-            <button onClick={onBack} style={{marginTop:"24px",background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"12px",color:"rgba(255,255,255,0.7)",padding:"12px 24px",cursor:"pointer",fontWeight:"700",fontFamily:"'Syne', sans-serif"}}>← Back to Browse</button>
+            <div style={{color:"#00e676",fontWeight:"800",fontFamily:"'DM Mono', monospace",fontSize:"18px",marginBottom:"10px"}}>{t("submittedTitle")}</div>
+            <div style={{color:"rgba(255,255,255,0.5)",fontSize:"14px",lineHeight:1.7}}><strong style={{color:"white"}}>{name}</strong> {t("submittedBodyPart1")}</div>
+            <button onClick={onBack} style={{marginTop:"24px",background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"12px",color:"rgba(255,255,255,0.7)",padding:"12px 24px",cursor:"pointer",fontWeight:"700",fontFamily:"'Syne', sans-serif"}}>{t("backToBrowse")}</button>
           </div>
         )}
       </div>
@@ -1061,7 +1639,7 @@ export default function DataGuardApp() {
   if(paid && !isNativeApp) localStorage.setItem("dg_paid","true");
   const [screen, setScreen] = useState(paid?"app":"landing");
   return (
-    <>
+    <LanguageProvider>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap');
         *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -1072,6 +1650,6 @@ export default function DataGuardApp() {
       `}</style>
       {screen==="landing"&&<LandingScreen onPurchase={()=>window.location.href="https://buy.stripe.com/3cI4gza0AdXY4qScyL97G01"}/>}
       {screen==="app"&&<MainApp/>}
-    </>
+    </LanguageProvider>
   );
 }
