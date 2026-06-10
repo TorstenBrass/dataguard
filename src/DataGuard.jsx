@@ -1312,19 +1312,21 @@ function MainApp() {
     }
   }, [view]);
 
-  // Android hardware/gesture back button: step back through overlays and views instead of closing the app outright.
+  // Push a browser-history entry whenever we enter a sub-view (an app's details or the submit form).
+  // Capacitor's default back behavior steps back through this history, so the Android hardware/gesture
+  // back button returns to the list — and only exits the app from the list itself. No native plugin required.
   useEffect(() => {
-    if (!isNativeApp) return;
-    const CapApp = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App;
-    if (!CapApp || !CapApp.addListener) return;
-    const sub = CapApp.addListener("backButton", () => {
-      if (showAbout) { setShowAbout(false); return; }
-      if (showNotifs) { setShowNotifs(false); return; }
-      if (view === "detail" || view === "submit") { setView("browse"); return; }
-      if (CapApp.exitApp) CapApp.exitApp();
-    });
-    return () => { Promise.resolve(sub).then(h => h && h.remove && h.remove()); };
-  }, [view, showAbout, showNotifs]);
+    if (view === "detail" || view === "submit") {
+      window.history.pushState({ dgView: view }, "");
+    }
+  }, [view]);
+
+  // Back button (Android hardware/gesture, or the browser back button): close any overlay and return to the list.
+  useEffect(() => {
+    const onPop = () => { setShowAbout(false); setShowNotifs(false); setView("browse"); };
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, []);
 
   // ── NEW: resolve which raw category strings the active group covers ──────
   const categoryMatch = useMemo(() => {
@@ -1470,8 +1472,8 @@ function MainApp() {
             </div>
           </>
         )}
-        {view==="detail"&&selected&&<DetailView key={selected.id} app={selected} allApps={APP_DB} watched={watchlist.includes(selected.id)} onToggleWatch={()=>toggleWatch(selected.id)} onBack={()=>setView("browse")}/>}
-        {view==="submit"&&<SubmitView onBack={()=>setView("browse")}/>}
+        {view==="detail"&&selected&&<DetailView key={selected.id} app={selected} allApps={APP_DB} watched={watchlist.includes(selected.id)} onToggleWatch={()=>toggleWatch(selected.id)} onBack={()=>window.history.back()}/>}
+        {view==="submit"&&<SubmitView onBack={()=>window.history.back()}/>}
       </div>
     </div>
   );
