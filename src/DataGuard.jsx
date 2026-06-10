@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, createContext, useContext } from "react";
+import { useState, useMemo, useEffect, useRef, createContext, useContext } from "react";
 
 // ============================================================================
 // DataGuard — Trilingual (EN / FR / DE) UI layer
@@ -1302,6 +1302,30 @@ function MainApp() {
   const [showNotifs, setShowNotifs] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
 
+  // ── Remembers the browse-list scroll position so we can return to it after viewing an app's details. ──
+  const browseScrollRef = useRef(0);
+
+  // Restore the list scroll position whenever we return to the browse view (e.g. after backing out of a detail).
+  useEffect(() => {
+    if (view === "browse") {
+      requestAnimationFrame(() => requestAnimationFrame(() => window.scrollTo(0, browseScrollRef.current)));
+    }
+  }, [view]);
+
+  // Android hardware/gesture back button: step back through overlays and views instead of closing the app outright.
+  useEffect(() => {
+    if (!isNativeApp) return;
+    const CapApp = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App;
+    if (!CapApp || !CapApp.addListener) return;
+    const sub = CapApp.addListener("backButton", () => {
+      if (showAbout) { setShowAbout(false); return; }
+      if (showNotifs) { setShowNotifs(false); return; }
+      if (view === "detail" || view === "submit") { setView("browse"); return; }
+      if (CapApp.exitApp) CapApp.exitApp();
+    });
+    return () => { Promise.resolve(sub).then(h => h && h.remove && h.remove()); };
+  }, [view, showAbout, showNotifs]);
+
   // ── NEW: resolve which raw category strings the active group covers ──────
   const categoryMatch = useMemo(() => {
     const group = CATEGORY_GROUPS.find(g => g.label === activeCategory);
@@ -1330,7 +1354,7 @@ function MainApp() {
   }, [search, filter, activeCategory, categoryMatch, sort, watchlist]);
 
   const unread = notifications.filter(n => !n.read).length;
-  function openApp(app) { setSelected(app); setView("detail"); }
+  function openApp(app) { browseScrollRef.current = window.scrollY; setSelected(app); setView("detail"); }
   function toggleWatch(id) { setWatchlist(w => w.includes(id) ? w.filter(x => x !== id) : [...w, id]); }
 
   // ── NEW: selecting a category resets behavior filter and search ──────────
