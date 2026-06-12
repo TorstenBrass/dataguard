@@ -1477,9 +1477,13 @@ function MainApp() {
 
             <div style={{position:"relative",marginBottom:"12px"}}>
               <span style={{position:"absolute",left:"16px",top:"50%",transform:"translateY(-50%)",fontSize:"16px",pointerEvents:"none"}}>🔍</span>
-              <input value={search} onChange={e=>setSearch(e.target.value)} placeholder={t("searchPlaceholder")} style={{width:"100%",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.09)",borderRadius:"14px",color:"white",padding:"13px 16px 13px 44px",fontSize:"15px",outline:"none",fontFamily:"'Syne', sans-serif",boxSizing:"border-box",transition:"border-color 0.2s"}} onFocus={e=>e.target.style.borderColor="rgba(239,83,80,0.4)"} onBlur={e=>e.target.style.borderColor="rgba(255,255,255,0.09)"}/>
+              <input value={search} onChange={e=>setSearch(e.target.value)} placeholder={t("searchPlaceholder")} style={{width:"100%",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.09)",borderRadius:"14px",color:"white",padding:"13px 44px 13px 44px",fontSize:"15px",outline:"none",fontFamily:"'Syne', sans-serif",boxSizing:"border-box",transition:"border-color 0.2s"}} onFocus={e=>e.target.style.borderColor="rgba(239,83,80,0.4)"} onBlur={e=>e.target.style.borderColor="rgba(255,255,255,0.09)"}/>
+              {search && (
+                <button type="button" aria-label="Clear search" onMouseDown={e=>e.preventDefault()} onClick={()=>setSearch("")} onMouseEnter={e=>{e.currentTarget.style.background="rgba(239,83,80,0.25)";e.currentTarget.style.color="#ff8a80";}} onMouseLeave={e=>{e.currentTarget.style.background="rgba(255,255,255,0.08)";e.currentTarget.style.color="rgba(255,255,255,0.6)";}} style={{position:"absolute",right:"8px",top:"50%",transform:"translateY(-50%)",width:"24px",height:"24px",display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(255,255,255,0.08)",border:"none",borderRadius:"50%",color:"rgba(255,255,255,0.6)",fontSize:"15px",lineHeight:"1",cursor:"pointer",padding:0,transition:"all 0.15s"}}>✕</button>
+              )}
             </div>
 
+            
             <div style={{display:"flex",gap:"8px",marginBottom:"14px",alignItems:"center",flexWrap:"wrap",paddingBottom:"4px"}}>
               {[["all",t("filterAll")],["sellers",t("filterSellers")],["deceptive",t("filterDeceptive")],["safe",t("filterSafe")],["watchlist",t("filterWatchlist")]].map(([k,l])=>(
                 <button key={k} onClick={()=>setFilter(k)} style={{background:filter===k?"rgba(239,83,80,0.18)":"rgba(255,255,255,0.04)",border:filter===k?"1px solid rgba(239,83,80,0.45)":"1px solid rgba(255,255,255,0.07)",color:filter===k?"#ff8a80":"rgba(255,255,255,0.5)",padding:"7px 15px",borderRadius:"20px",cursor:"pointer",fontSize:"12px",fontWeight:"700",textTransform:"uppercase",letterSpacing:"0.5px",whiteSpace:"nowrap",transition:"all 0.15s"}}>{l}{k==="watchlist"?` (${watchlist.length})`:""}</button>
