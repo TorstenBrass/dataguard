@@ -67,7 +67,7 @@ Scores are compiled from public sources — privacy policies, app-store data-saf
 | Frontend | React + Vite |
 | Mobile | Capacitor (wraps the web app as a native Android build) |
 | Data | Curated dataset bundled in the app; Supabase (PostgreSQL) stores community submissions |
-| Payments (web) | Stripe (one-time) — the Android app is free |
+| Payments | None — DataGuard is free on the web and on Android |
 | Hosting (web) | Vercel |
 | CI/CD | GitHub Actions (builds the signed Android app bundle) |
 

@@ -1465,79 +1465,6 @@ function CategoryMenu({ activeCategory, onSelect }) {
   );
 }
 
-function LandingScreen({onPurchase}) {
-  const { t } = useT();
-  const [hov, setHov] = useState(false);
-  const features = [
-    {icon:"🔍",title:t("feat1Title"),desc:t("feat1Desc")},
-    {icon:"👥",title:t("feat2Title"),desc:t("feat2Desc")},
-    {icon:"📊",title:t("feat3Title"),desc:t("feat3Desc")},
-    {icon:"🚨",title:t("feat4Title"),desc:t("feat4Desc")},
-    {icon:"🔔",title:t("feat5Title"),desc:t("feat5Desc")},
-    {icon:"🌍",title:t("feat6Title"),desc:t("feat6Desc")},
-  ];
-  return (
-    <div style={{minHeight:"100vh",background:"#060610",color:"white",fontFamily:"'Syne', sans-serif",overflowX:"hidden"}}>
-      <div style={{position:"fixed",top:"12px",right:"12px",zIndex:60}}><LanguageSwitcher/></div>
-      <div style={{position:"relative",minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"40px 24px",textAlign:"center",overflow:"hidden"}}>
-        <div style={{position:"absolute",inset:0,pointerEvents:"none"}}>
-          <div style={{position:"absolute",top:"20%",left:"50%",transform:"translateX(-50%)",width:"700px",height:"700px",background:"radial-gradient(ellipse, rgba(239,83,80,0.09) 0%, transparent 70%)",borderRadius:"50%"}}/>
-          <svg width="100%" height="100%" style={{position:"absolute",opacity:0.04}}><defs><pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse"><path d="M 60 0 L 0 0 0 60" fill="none" stroke="white" strokeWidth="0.5"/></pattern></defs><rect width="100%" height="100%" fill="url(#grid)"/></svg>
-        </div>
-        <div style={{position:"relative",zIndex:1,maxWidth:"680px"}}>
-          <div style={{display:"inline-flex",alignItems:"center",gap:"8px",background:"rgba(239,83,80,0.12)",border:"1px solid rgba(239,83,80,0.3)",borderRadius:"20px",padding:"6px 16px",marginBottom:"32px"}}>
-            <span style={{width:"6px",height:"6px",borderRadius:"50%",background:"#ef5350",display:"inline-block",animation:"blink 1.5s ease infinite"}}/>
-            <span style={{fontSize:"11px",color:"#ef5350",fontWeight:"700",letterSpacing:"1.5px",fontFamily:"'DM Mono', monospace"}}>{t("heroBadge")}</span>
-          </div>
-          <div style={{fontSize:"80px",marginBottom:"16px",lineHeight:1}}>🛡️</div>
-          <h1 style={{margin:"0 0 20px",fontSize:"clamp(40px,8vw,72px)",fontWeight:"800",lineHeight:1.05,letterSpacing:"-2px",background:"linear-gradient(135deg, #ffffff 0%, #ffffff 50%, #ef5350 100%)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>DataGuard</h1>
-          <p style={{fontSize:"clamp(16px,2.5vw,20px)",color:"rgba(255,255,255,0.55)",lineHeight:1.7,margin:"0 auto 48px",maxWidth:"520px"}}>{t("tagline")}</p>
-          <div style={{background:"rgba(0,230,118,0.06)",border:"1px solid rgba(0,230,118,0.2)",borderRadius:"20px",padding:"24px 32px",marginBottom:"40px",display:"inline-block",maxWidth:"480px"}}>
-            <div style={{color:"#00e676",fontWeight:"800",fontFamily:"'DM Mono', monospace",fontSize:"12px",letterSpacing:"1px",marginBottom:"16px"}}>{t("pledgeTitle")}</div>
-            <div style={{display:"flex",flexDirection:"column",gap:"10px"}}>
-              {[t("pledge1"),t("pledge2"),t("pledge3"),t("pledge4")].map((p,i)=>(
-                <div key={i} style={{display:"flex",gap:"12px",alignItems:"flex-start",textAlign:"left"}}>
-                  <span style={{color:"#00e676",fontSize:"14px",flexShrink:0,marginTop:"1px"}}>✓</span>
-                  <span style={{color:"rgba(255,255,255,0.75)",fontSize:"14px",lineHeight:1.5}}>{p}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:"12px"}}>
-            <button onClick={onPurchase} onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)} style={{background:hov?"#ff6b6b":"#ef5350",border:"none",borderRadius:"16px",color:"white",fontWeight:"800",fontSize:"18px",padding:"18px 48px",cursor:"pointer",fontFamily:"'Syne', sans-serif",boxShadow:hov?"0 0 40px rgba(239,83,80,0.5)":"0 0 20px rgba(239,83,80,0.3)",transition:"all 0.2s ease",transform:hov?"translateY(-2px)":"translateY(0)"}}>{t("buyButton")}</button>
-            <span style={{color:"rgba(255,255,255,0.3)",fontSize:"12px"}}>{t("buySub")}</span>
-          </div>
-        </div>
-      </div>
-      <div style={{maxWidth:"900px",margin:"0 auto",padding:"0 24px 80px"}}>
-        <div style={{textAlign:"center",marginBottom:"56px"}}>
-          <h2 style={{fontSize:"clamp(28px,5vw,44px)",fontWeight:"800",letterSpacing:"-1px",margin:"0 0 12px"}}>{t("featuresTitle")}</h2>
-          <p style={{color:"rgba(255,255,255,0.4)",fontSize:"16px"}}>{t("featuresSub")}</p>
-        </div>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:"20px",marginBottom:"80px"}}>
-          {features.map((f,i)=>(
-            <div key={i} style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:"18px",padding:"24px",transition:"all 0.2s ease"}} onMouseEnter={e=>{e.currentTarget.style.background="rgba(255,255,255,0.06)";e.currentTarget.style.borderColor="rgba(255,255,255,0.14)";}} onMouseLeave={e=>{e.currentTarget.style.background="rgba(255,255,255,0.03)";e.currentTarget.style.borderColor="rgba(255,255,255,0.07)";}}>
-              <div style={{fontSize:"28px",marginBottom:"12px"}}>{f.icon}</div>
-              <div style={{fontWeight:"700",fontSize:"15px",marginBottom:"8px"}}>{f.title}</div>
-              <div style={{color:"rgba(255,255,255,0.45)",fontSize:"13px",lineHeight:1.6}}>{f.desc}</div>
-            </div>
-          ))}
-        </div>
-        <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:"24px",padding:"40px",display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:"32px",textAlign:"center",marginBottom:"64px"}}>
-          {[["hundreds",t("statApps")],["18,000+",t("statReports")],["$0",t("statAdRev")],["100%",t("statOpenSource")],["0",t("statDataPoints")]].map(([n,l],i)=>(
-            <div key={i}><div style={{fontSize:"clamp(28px,5vw,40px)",fontWeight:"800",letterSpacing:"-1px",fontFamily:"'DM Mono', monospace",color:"#ef5350"}}>{n}</div><div style={{color:"rgba(255,255,255,0.4)",fontSize:"12px",marginTop:"4px"}}>{l}</div></div>
-          ))}
-        </div>
-        <div style={{textAlign:"center"}}>
-          <div style={{color:"rgba(255,255,255,0.3)",fontSize:"13px",marginBottom:"24px"}}>{t("donateNote")}</div>
-          <button onClick={onPurchase} style={{background:"#ef5350",border:"none",borderRadius:"14px",color:"white",fontWeight:"800",fontSize:"17px",padding:"16px 42px",cursor:"pointer",fontFamily:"'Syne', sans-serif",boxShadow:"0 0 24px rgba(239,83,80,0.35)",transition:"all 0.2s ease"}} onMouseEnter={e=>{e.currentTarget.style.background="#ff6b6b";e.currentTarget.style.transform="translateY(-2px)";}} onMouseLeave={e=>{e.currentTarget.style.background="#ef5350";e.currentTarget.style.transform="translateY(0)";}}>{t("buyButton2")}</button>
-        </div>
-      </div>
-      <style>{`@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}`}</style>
-    </div>
-  );
-}
-
 function MainApp() {
   const { t } = useT();
   const [view, setView] = useState("browse");
@@ -1956,21 +1883,8 @@ function SubmitView({onBack}) {
   );
 }
 
-// True when running inside the Capacitor native app (Android/iOS), false on the web.
-// Capacitor injects window.Capacitor; isNativePlatform() is the official check.
-const isNativeApp =
-  typeof window !== "undefined" &&
-  window.Capacitor &&
-  typeof window.Capacitor.isNativePlatform === "function" &&
-  window.Capacitor.isNativePlatform();
-
 export default function DataGuardApp() {
-  const params = new URLSearchParams(window.location.search);
-  // In the native app the full database is free (no paywall, no Stripe).
-  // On the web the paywall stays exactly as before.
-  const paid = isNativeApp || params.get("success")==="true" || localStorage.getItem("dg_paid")==="true";
-  if(paid && !isNativeApp) localStorage.setItem("dg_paid","true");
-  const [screen, setScreen] = useState(paid?"app":"landing");
+  // DataGuard is free everywhere — full database, no paywall, no payment processor.
   return (
     <LanguageProvider>
       <style>{`
@@ -1981,8 +1895,7 @@ export default function DataGuardApp() {
         ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:2px;}
         select option{background:#0f0f20;color:white;}
       `}</style>
-      {screen==="landing"&&<LandingScreen onPurchase={()=>window.location.href="https://buy.stripe.com/3cI4gza0AdXY4qScyL97G01"}/>}
-      {screen==="app"&&<MainApp/>}
+      <MainApp/>
     </LanguageProvider>
   );
 }
